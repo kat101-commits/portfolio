@@ -53,6 +53,17 @@ Running list of fidelity gaps and polish items to revisit. Add to this as new is
 - **Case-study color palette inlined** — `#0e361e` (title), `#eafbe1` (mint), `#009516` (emerald), `#e6ded6` (beige before), `#5d5a54` (beige border), `#e5f2db` (green after), `#27452e` (green border), `#fafafa` (tools bg). Lives in a local `COLORS` const in `app/selfserve/page.tsx`. If these recur across other case studies, promote to `globals.css` tokens.
 - **Lessons timeline line offset** — the connecting line uses `top: 15px; bottom: -47px` to bridge the gap-10 (40px) between rows. Works as long as the lessons section uses `gap-10`; if you change the gap, retune the `-bottom` offset to `-(gap + 7)`.
 
+## Mobile responsive
+
+- **Breakpoint**: `md` = 768px in Tailwind v4. Below that, mobile styles apply via `max-md:` prefix; above, desktop styles run unchanged.
+- **Mobile components**: `MobileNav` (floating pill, sticky `bottom-[120px]`, `md:hidden`) and `MobileFooter` (`md:hidden`). Desktop `Nav` and `Footer` get `max-md:hidden`.
+- **`viewport` export in `layout.tsx`** is required for proper mobile rendering. Without it, mobile browsers (and headless Chrome) treat the viewport as ~980px and zoom out — producing very small text and broken layouts.
+- **Body `overflow-x-hidden`** masks any horizontal overflow at narrow widths (e.g. the desktop Hero's `min-w-[1440px]` Collage is `max-md:hidden` but `overflow-x-hidden` is belt-and-suspenders).
+- **Mobile bottom padding**: `main` has `max-md:pb-[200px]` to prevent the last content from being covered by the floating nav.
+- **Polaroid carousel on home (mobile)** uses `ImageCarousel`. Each polaroid renders without its decorative stickers — stickers are desktop-only.
+- **Snapshot carousels on about (mobile)** use `ImageCarousel` and a unified `MobileSnapshot` wrapper with `SnapshotCard`. The desktop absolute-positioned arrangements (`GenerateSnapshots`, `FoodSnapshots`) are `max-md:hidden`.
+- **Headless Chrome rendering quirk**: at `--window-size=393,800`, some browser-driven layout edge cases (notably text positioning in flex containers) don't reflect what real mobile devices show. Always test on a real phone via the Vercel URL, not via headless screenshots.
+
 ## Components
 
 - **VideoPlaceholder** awaits real `src` props. Currently passing none in `page.tsx` for BCG / SelfServe / CineCircle cards on the home grid, the SelfServe hero, and the 3 feature-row videos on SelfServe. mp4 files go in `public/videos/`.

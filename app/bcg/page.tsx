@@ -44,8 +44,8 @@ const TEAM_TESTIMONIALS = [
 
 export default function BCG() {
   return (
-    <div className="mx-auto w-full max-w-frame px-page pt-[60px] pb-[60px] text-black">
-      <div className="mx-auto flex w-full max-w-[1250px] flex-col gap-[93px]">
+    <div className="mx-auto w-full max-w-frame px-page pt-[60px] pb-[60px] text-black max-md:px-6 max-md:pt-10 max-md:pb-12">
+      <div className="mx-auto flex w-full max-w-[1250px] flex-col gap-[93px] max-md:gap-12">
         <TitleAndHero />
         <OverviewAndGallery />
         <Reflections />
@@ -68,7 +68,7 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 function TitleAndHero() {
   return (
     <section className="flex flex-col gap-10">
-      <div className="flex w-full items-start justify-between gap-[92px]">
+      <div className="flex w-full items-start justify-between gap-[92px] max-md:flex-col max-md:gap-6">
         <div className="flex flex-col gap-[19px]">
           <div className="relative h-[71px] w-[170px] overflow-hidden">
             <Image
@@ -81,12 +81,12 @@ function TitleAndHero() {
               style={{ width: "193.53%", height: "260.65%" }}
             />
           </div>
-          <p className="w-[614px] font-medium text-[24px] leading-[1.35]">
+          <p className="w-[614px] font-medium text-[24px] leading-[1.35] max-md:w-full max-md:text-[20px]">
             Build AI products that automate busywork, freeing consultants for
             high-impact thinking.
           </p>
         </div>
-        <div className="flex shrink-0 gap-2 pt-1">
+        <div className="flex shrink-0 gap-2 pt-1 max-md:flex-wrap max-md:gap-4 max-md:pt-0">
           <InfoColumn title="My Role">UX Research &amp; Design</InfoColumn>
           <InfoColumn title="The Team">UX COE GenAI</InfoColumn>
           <InfoColumn title="Duration" width={141}>
@@ -95,7 +95,7 @@ function TitleAndHero() {
         </div>
       </div>
 
-      <div className="relative h-[612px] w-full overflow-hidden rounded-[4px]">
+      <div className="relative h-[612px] w-full overflow-hidden rounded-[4px] max-md:h-[260px]">
         <Image
           src="/images/bcg/hero.png"
           alt="BCG office building"
@@ -131,8 +131,8 @@ function InfoColumn({
 
 function OverviewAndGallery() {
   return (
-    <section className="flex w-full items-start gap-[41px]">
-      <div className="flex w-[707px] shrink-0 flex-col justify-between gap-[48px] self-stretch">
+    <section className="flex w-full items-start gap-[41px] max-md:flex-col max-md:gap-10">
+      <div className="flex w-[707px] shrink-0 flex-col justify-between gap-[48px] self-stretch max-md:w-full">
         <div className="flex flex-col gap-2">
           <SectionHeading>Overview</SectionHeading>
           <p className="text-body">
@@ -207,7 +207,7 @@ function Testimonials() {
 
 function ManagerTestimonial() {
   return (
-    <div className="flex items-center gap-8">
+    <div className="flex items-center gap-8 max-md:flex-col max-md:items-start max-md:gap-4">
       <div className="flex flex-col items-start justify-center shrink-0">
         <p className="text-subtext whitespace-nowrap">From my manager</p>
         <div className="relative size-[120px]">
@@ -220,7 +220,7 @@ function ManagerTestimonial() {
           />
         </div>
       </div>
-      <p className="w-[925px] text-body">
+      <p className="w-[925px] text-body max-md:w-full">
         &ldquo;Katherine has continued to mature as a designer, demonstrating
         strong curiosity, thoughtful inquiry, and a strong capacity to break
         down assignments into user focused details. Her interest in research
@@ -234,9 +234,9 @@ function TeamTestimonials() {
   return (
     <div className="flex flex-col gap-0">
       <p className="text-subtext">From the team:</p>
-      <div className="flex w-full items-start gap-6 pt-[19px]">
+      <div className="flex w-full items-start gap-6 pt-[19px] max-md:flex-col">
         {TEAM_TESTIMONIALS.map((t, i) => (
-          <div key={i} className="flex flex-1 items-center gap-6">
+          <div key={i} className="flex flex-1 items-center gap-6 max-md:w-full">
             <div className="relative size-[120px] shrink-0">
               <Image
                 src={t.avatar}

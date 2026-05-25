@@ -15,7 +15,7 @@ const COLORS = {
 
 export default function SelfServe() {
   return (
-    <div className="mx-auto w-full max-w-frame px-page pt-[60px] pb-[60px] text-black">
+    <div className="mx-auto w-full max-w-frame px-page pt-[60px] pb-[60px] text-black max-md:px-6 max-md:pt-10 max-md:pb-12">
       <TitleSection />
       <Hero />
       <Body />
@@ -25,30 +25,30 @@ export default function SelfServe() {
 
 function TitleSection() {
   return (
-    <section className="flex items-start justify-between gap-10 pb-[66px]">
-      <div className="flex w-[526px] flex-col gap-6">
+    <section className="flex items-start justify-between gap-10 pb-[66px] max-md:flex-col max-md:gap-8 max-md:pb-10">
+      <div className="flex w-[526px] flex-col gap-6 max-md:w-full">
         <div className="flex items-baseline gap-[15px]">
           <Image
             src="/images/selfserve/logo.png"
             alt=""
             width={39}
             height={81}
-            className="h-[81px] w-auto"
+            className="h-[81px] w-auto max-md:h-[56px]"
           />
           <h1
-            className="font-sans font-bold leading-none tracking-[0.01em]"
+            className="font-sans font-bold leading-none tracking-[0.01em] max-md:text-[56px]"
             style={{ fontSize: 83.25, color: COLORS.selfserveGreen }}
           >
             SelfServe
           </h1>
         </div>
-        <p className="font-sans text-[24px] leading-[1.35]">
+        <p className="font-sans text-[24px] leading-[1.35] max-md:text-[18px]">
           Unify fragmented hotel operations into one intelligent, automated
           platform.
         </p>
       </div>
 
-      <div className="flex shrink-0 items-start gap-4 pt-1">
+      <div className="flex shrink-0 items-start gap-4 pt-1 max-md:flex-wrap max-md:gap-4 max-md:pt-0">
         <InfoColumn title="My Role">
           <p>Design Lead</p>
         </InfoColumn>
@@ -98,7 +98,7 @@ function Hero() {
 
 function Body() {
   return (
-    <div className="mx-auto mt-[66px] w-full max-w-[1076px] flex flex-col">
+    <div className="mx-auto mt-[66px] w-full max-w-[1076px] flex flex-col max-md:mt-10">
       <Overview />
       <Problem />
       <CompetitiveAnalysis />
@@ -432,7 +432,7 @@ function Solution() {
   return (
     <section className="mt-[150px] flex w-full flex-col items-start gap-8">
       <SectionHeading>The Solution</SectionHeading>
-      <div className="flex w-full flex-col gap-[310px]">
+      <div className="flex w-full flex-col gap-[310px] max-md:gap-16">
         {features.map((f) => (
           <FeatureRow key={f.title} {...f} />
         ))}
@@ -453,13 +453,13 @@ function FeatureRow({
   videoSrc?: string;
 }) {
   const text = (
-    <div className="flex w-[343px] shrink-0 flex-col gap-3 text-body">
+    <div className="flex w-[343px] shrink-0 flex-col gap-3 text-body max-md:w-full">
       <p className="font-medium">{title}</p>
       <p>{description}</p>
     </div>
   );
   const video = (
-    <div className="relative w-[707px] shrink-0">
+    <div className="relative w-[707px] shrink-0 max-md:w-full">
       <VideoPlaceholder aspectRatio="707/500" src={videoSrc} />
       {videoSrc ? null : (
         <p className="pointer-events-none absolute inset-0 flex items-center justify-center text-h3 font-medium">
@@ -469,7 +469,7 @@ function FeatureRow({
     </div>
   );
   return (
-    <div className="flex w-full items-end gap-6">
+    <div className="flex w-full items-end gap-6 max-md:flex-col max-md:items-start max-md:gap-4">
       {videoOnRight ? (
         <>
           {text}

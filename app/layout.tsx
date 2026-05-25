@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Instrument_Sans,
   Instrument_Serif,
@@ -8,6 +8,8 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
+import MobileNav from "./components/MobileNav";
+import MobileFooter from "./components/MobileFooter";
 
 const instrumentSans = Instrument_Sans({
   variable: "--font-instrument-sans",
@@ -31,6 +33,12 @@ export const metadata: Metadata = {
   description: "Portfolio of Katherine Zhang — designer, 2026.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -41,14 +49,18 @@ export default function RootLayout({
       lang="en"
       className={`${instrumentSans.variable} ${instrumentSerif.variable} ${maShanZheng.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <header className="relative z-50 mx-auto w-full max-w-frame px-page pt-8">
+      <body className="min-h-full flex flex-col overflow-x-hidden">
+        <header className="relative z-50 mx-auto w-full max-w-frame px-page pt-8 max-md:hidden">
           <Nav />
         </header>
-        <main className="flex-1">{children}</main>
-        <div className="mx-auto w-full max-w-frame px-page">
+        <main className="flex-1 w-full max-md:pb-[200px]">{children}</main>
+        <div className="mx-auto w-full max-w-frame px-page max-md:hidden">
           <Footer />
         </div>
+        <div className="md:hidden">
+          <MobileFooter />
+        </div>
+        <MobileNav />
         <Analytics />
       </body>
     </html>

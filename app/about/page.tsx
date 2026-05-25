@@ -1,11 +1,12 @@
 import Image from "next/image";
 
+import ImageCarousel from "../components/ImageCarousel";
 import SnapshotCard from "../components/SnapshotCard";
 
 export default function About() {
   return (
-    <div className="mx-auto w-full max-w-frame px-page pt-[60px] pb-[60px]">
-      <div className="mx-auto flex w-full max-w-[1260px] flex-col gap-[130px]">
+    <div className="mx-auto w-full max-w-frame px-page pt-[60px] pb-[60px] max-md:px-6 max-md:pt-10 max-md:pb-12">
+      <div className="mx-auto flex w-full max-w-[1260px] flex-col gap-[130px] max-md:gap-12">
         <BioAndExperience />
         <SnapshotsSection />
       </div>
@@ -15,7 +16,7 @@ export default function About() {
 
 function BioAndExperience() {
   return (
-    <div className="flex flex-col gap-[86px]">
+    <div className="flex flex-col gap-[86px] max-md:gap-10">
       <BioRow />
       <ExperienceRow />
     </div>
@@ -123,24 +124,97 @@ function ExperienceRow() {
 function SnapshotsSection() {
   return (
     <section className="flex flex-col gap-8">
-      <h2 className="font-serif text-[32px] leading-none text-black tracking-[0.64px]">
+      <h2 className="font-serif text-[32px] leading-none text-black tracking-[0.64px] max-md:text-[28px]">
         Snapshots of my life
       </h2>
-      <div className="flex flex-col gap-20">
+      <div className="flex flex-col gap-20 max-md:gap-10">
         <SnapshotSubsection
           title="Generate"
           subtitle="Creating communities while designing"
         >
-          <GenerateSnapshots />
+          <div className="max-md:hidden">
+            <GenerateSnapshots />
+          </div>
+          <div className="md:hidden">
+            <GenerateSnapshotsMobile />
+          </div>
         </SnapshotSubsection>
         <SnapshotSubsection
           title="Food"
           subtitle="Am always open to trying new places"
         >
-          <FoodSnapshots />
+          <div className="max-md:hidden">
+            <FoodSnapshots />
+          </div>
+          <div className="md:hidden">
+            <FoodSnapshotsMobile />
+          </div>
         </SnapshotSubsection>
       </div>
     </section>
+  );
+}
+
+const GENERATE_SNAPSHOTS: { src: string; rotation: number }[] = [
+  { src: "/images/about/snap-0.png", rotation: 1.83 },
+  { src: "/images/about/snap-1.png", rotation: -6 },
+  { src: "/images/about/snap-2.png", rotation: 4 },
+  { src: "/images/about/snap-3.png", rotation: -3 },
+  { src: "/images/about/snap-4.png", rotation: 0 },
+];
+
+const FOOD_SNAPSHOTS: { src: string; rotation: number }[] = [
+  { src: "/images/about/snap-5.png", rotation: 0 },
+  { src: "/images/about/snap-7.png", rotation: 5 },
+  { src: "/images/about/snap-8.png", rotation: -4 },
+  { src: "/images/about/snap-10.png", rotation: 6 },
+  { src: "/images/about/snap-9.png", rotation: -3 },
+];
+
+function GenerateSnapshotsMobile() {
+  return (
+    <ImageCarousel hint="Swipe to view">
+      {GENERATE_SNAPSHOTS.map((s, i) => (
+        <MobileSnapshot key={i} src={s.src} rotation={s.rotation} />
+      ))}
+    </ImageCarousel>
+  );
+}
+
+function FoodSnapshotsMobile() {
+  return (
+    <ImageCarousel hint="Swipe to view">
+      {FOOD_SNAPSHOTS.map((s, i) => (
+        <MobileSnapshot key={i} src={s.src} rotation={s.rotation} />
+      ))}
+    </ImageCarousel>
+  );
+}
+
+function MobileSnapshot({
+  src,
+  rotation,
+}: {
+  src: string;
+  rotation: number;
+}) {
+  return (
+    <div className="flex w-full justify-center py-6">
+      <SnapshotCard
+        width={260}
+        height={260}
+        rotation={rotation}
+        padding={12}
+        radius={4}
+      >
+        <div
+          className="relative h-full w-full overflow-hidden"
+          style={{ borderRadius: 2 }}
+        >
+          <Image src={src} alt="" fill sizes="260px" className="object-cover" />
+        </div>
+      </SnapshotCard>
+    </div>
   );
 }
 

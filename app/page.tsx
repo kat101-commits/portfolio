@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import ImageCarousel from "./components/ImageCarousel";
 import PolaroidPhoto from "./components/PolaroidPhoto";
 import ProjectCard from "./components/ProjectCard";
 import VideoPlaceholder from "./components/VideoPlaceholder";
@@ -7,15 +8,74 @@ import VideoPlaceholder from "./components/VideoPlaceholder";
 export default function Home() {
   return (
     <>
+      <MobileHero />
       <Hero />
       <ProjectGrid />
     </>
   );
 }
 
+function MobileHero() {
+  const polaroids = [
+    { src: "/images/home/polaroid-0.png", w: 220, h: 278, rotation: 8 },
+    { src: "/images/home/polaroid-3.png", w: 220, h: 278, rotation: -4 },
+    { src: "/images/home/polaroid-4.png", w: 220, h: 278, rotation: 6 },
+    { src: "/images/home/polaroid-1.png", w: 220, h: 278, rotation: -7 },
+    { src: "/images/home/polaroid-5.png", w: 220, h: 278, rotation: 5 },
+  ];
+  return (
+    <section className="flex flex-col gap-8 px-6 pt-10 pb-6 md:hidden">
+      <h1 className="w-full font-serif font-normal leading-[0.95] text-black text-[clamp(40px,12vw,56px)]">
+        <span className="block text-left">Katherine</span>
+        <span className="block text-right">Zhang</span>
+      </h1>
+      <ImageCarousel hint="Swipe to view">
+        {polaroids.map((p, i) => (
+          <div key={i} className="flex w-full justify-center py-6">
+            <PolaroidPhoto
+              src={p.src}
+              alt=""
+              width={p.w}
+              height={p.h}
+              rotation={p.rotation}
+              imageStyle={
+                p.src === "/images/home/polaroid-0.png"
+                  ? {
+                      width: "180%",
+                      height: "180%",
+                      left: "-3%",
+                      top: "-25%",
+                    }
+                  : p.src === "/images/home/polaroid-3.png"
+                  ? {
+                      height: "164.4%",
+                      left: "-32.05%",
+                      top: "-27.72%",
+                      width: "156.24%",
+                    }
+                  : p.src === "/images/home/polaroid-5.png"
+                  ? {
+                      height: "115.94%",
+                      left: "-3.81%",
+                      top: "-10.41%",
+                      width: "110.19%",
+                    }
+                  : undefined
+              }
+            />
+          </div>
+        ))}
+      </ImageCarousel>
+      <p className="text-center font-sans font-medium text-[16px] leading-[1.35] text-black">
+        Product designer obsessed with digging deeper and asking &ldquo;Why&rdquo;?
+      </p>
+    </section>
+  );
+}
+
 function Hero() {
   return (
-    <section className="relative mx-auto w-full max-w-frame overflow-hidden min-h-[720px]">
+    <section className="relative mx-auto w-full max-w-frame overflow-hidden min-h-[720px] max-md:hidden">
       {/* Title — "Katherine" anchored left, "Zhang" anchored right inside 1170px row */}
       <h1 className="relative z-0 mx-auto flex w-full max-w-[1170px] justify-between pt-[50px] font-serif font-normal leading-normal text-black text-[clamp(72px,10.235vw,147.392px)]">
         <span>Katherine</span>
@@ -370,8 +430,8 @@ function Tooltip({
 
 function ProjectGrid() {
   return (
-    <section className="mx-auto w-full max-w-frame px-page pt-[90px] pb-[220px]">
-      <div className="mx-auto grid w-full max-w-[1260px] grid-cols-1 gap-x-6 gap-y-[160px] md:grid-cols-2">
+    <section className="mx-auto w-full max-w-frame px-page pt-[90px] pb-[220px] max-md:px-6 max-md:pt-6 max-md:pb-12">
+      <div className="mx-auto grid w-full max-w-[1260px] grid-cols-1 gap-x-6 gap-y-[160px] max-md:gap-y-12 md:grid-cols-2">
         <ProjectCard
           title="BCG"
           tag="Internship 💻"
