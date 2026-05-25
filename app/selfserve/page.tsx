@@ -27,21 +27,12 @@ function TitleSection() {
   return (
     <section className="flex items-start justify-between gap-10 pb-[66px] max-md:flex-col max-md:gap-8 max-md:pb-10">
       <div className="flex w-[526px] flex-col gap-6 max-md:w-full">
-        <div className="flex items-baseline gap-[15px]">
-          <Image
-            src="/images/selfserve/logo.png"
-            alt=""
-            width={39}
-            height={81}
-            className="h-[81px] w-auto max-md:h-[56px]"
-          />
-          <h1
-            className="font-sans font-bold leading-none tracking-[0.01em] max-md:text-[56px]"
-            style={{ fontSize: 83.25, color: COLORS.selfserveGreen }}
-          >
-            SelfServe
-          </h1>
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/SelfServe_Logo.svg"
+          alt="SelfServe"
+          className="h-[81px] w-auto max-md:h-[56px]"
+        />
         <p className="font-sans text-[24px] leading-[1.35] max-md:text-[18px]">
           Unify fragmented hotel operations into one intelligent, automated
           platform.
@@ -457,6 +448,9 @@ function Solution() {
         "Housekeeping and maintenance staff can manage tasks, update room statuses, and communicate with front desk—all from their phones while moving through the property.",
       videoOnRight: true,
       videoSrc: "/videos/selfserve-feature-3.mp4",
+      videoFit: "contain" as const,
+      videoAspectRatio: "9/16",
+      videoWidthClass: "w-[395px]",
     },
   ];
 
@@ -477,21 +471,40 @@ function FeatureRow({
   description,
   videoOnRight,
   videoSrc,
+  videoFit = "cover",
+  videoAspectRatio = "707/500",
+  videoWidthClass = "w-[707px]",
 }: {
   title: string;
   description: string;
   videoOnRight: boolean;
   videoSrc?: string;
+  videoFit?: "cover" | "contain";
+  videoAspectRatio?: string;
+  videoWidthClass?: string;
 }) {
+  // DOM order is always [video, text] so on mobile (flex-col) the video
+  // appears above its caption. On desktop, flex `order` reverses the row
+  // when the design wants the video on the right.
+  const textOrder = videoOnRight ? "md:order-1" : "md:order-2";
+  const videoOrder = videoOnRight ? "md:order-2" : "md:order-1";
   const text = (
-    <div className="flex w-[343px] shrink-0 flex-col gap-3 text-body max-md:w-full">
+    <div
+      className={`flex w-[343px] shrink-0 flex-col gap-3 text-body max-md:w-full ${textOrder}`}
+    >
       <p className="font-medium">{title}</p>
       <p>{description}</p>
     </div>
   );
   const video = (
-    <div className="relative w-[707px] shrink-0 max-md:w-full">
-      <VideoPlaceholder aspectRatio="707/500" src={videoSrc} />
+    <div
+      className={`relative shrink-0 max-md:w-full ${videoWidthClass} ${videoOrder}`}
+    >
+      <VideoPlaceholder
+        aspectRatio={videoAspectRatio}
+        src={videoSrc}
+        videoFit={videoFit}
+      />
       {videoSrc ? null : (
         <p className="pointer-events-none absolute inset-0 flex items-center justify-center text-h3 font-medium">
           video demo goes here
@@ -501,17 +514,8 @@ function FeatureRow({
   );
   return (
     <div className="flex w-full items-end gap-6 max-md:flex-col max-md:items-start max-md:gap-4">
-      {videoOnRight ? (
-        <>
-          {text}
-          {video}
-        </>
-      ) : (
-        <>
-          {video}
-          {text}
-        </>
-      )}
+      {video}
+      {text}
     </div>
   );
 }

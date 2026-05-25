@@ -70,14 +70,14 @@ function TitleAndHero() {
     <section className="flex flex-col gap-10">
       <div className="flex w-full items-start justify-between gap-[92px] max-md:flex-col max-md:gap-6">
         <div className="flex flex-col gap-[19px]">
-          <div className="relative h-[71px] w-[170px] overflow-hidden">
+          <div className="relative h-[71px] w-[170px] overflow-hidden max-md:h-[35.5px] max-md:w-[85px]">
             <Image
               src="/images/bcg/logo.png"
               alt="BCG"
               width={329}
               height={185}
               priority
-              className="absolute left-0 top-[-57px] max-w-none"
+              className="absolute left-0 top-[-57px] max-w-none max-md:top-[-28.5px]"
               style={{ width: "193.53%", height: "260.65%" }}
             />
           </div>
@@ -95,7 +95,7 @@ function TitleAndHero() {
         </div>
       </div>
 
-      <div className="relative h-[612px] w-full overflow-hidden rounded-[4px] max-md:h-[260px]">
+      <div className="relative h-[612px] w-full overflow-hidden rounded-[4px] max-md:h-[130px]">
         <Image
           src="/images/bcg/hero.png"
           alt="BCG office building"
@@ -210,7 +210,7 @@ function ManagerTestimonial() {
     <div className="flex items-center gap-8 max-md:flex-col max-md:items-start max-md:gap-4">
       <div className="flex flex-col items-start justify-center shrink-0">
         <p className="text-subtext whitespace-nowrap">From my manager</p>
-        <div className="relative size-[120px]">
+        <div className="relative size-[120px] max-md:size-[60px]">
           <Image
             src="/images/bcg/face-manager.png"
             alt="Manager"
@@ -237,7 +237,7 @@ function TeamTestimonials() {
       <div className="flex w-full items-start gap-6 pt-[19px] max-md:flex-col">
         {TEAM_TESTIMONIALS.map((t, i) => (
           <div key={i} className="flex flex-1 items-center gap-6 max-md:w-full">
-            <div className="relative size-[120px] shrink-0">
+            <div className="relative size-[120px] shrink-0 max-md:size-[60px]">
               <Image
                 src={t.avatar}
                 alt=""
