@@ -175,16 +175,16 @@ function Reflections() {
   return (
     <section className="flex flex-col gap-4">
       <SectionHeading>Reflections</SectionHeading>
-      <div className="flex flex-wrap items-start gap-x-5 gap-y-8">
+      <div className="flex flex-wrap items-start gap-x-5 gap-y-8 max-md:flex-col max-md:gap-8">
         {REFLECTIONS.map((r) => (
           <div
             key={r.headline}
-            className="flex w-[615px] flex-col gap-3"
+            className="flex w-[615px] flex-col gap-3 max-md:w-full"
           >
             <p className="font-medium text-h3">{r.headline}</p>
             <div className="flex items-start gap-3">
               <p className="shrink-0 font-medium text-h3">{r.number}</p>
-              <p className="w-[558px] text-body">{r.detail}</p>
+              <p className="w-[558px] text-body max-md:w-full">{r.detail}</p>
             </div>
           </div>
         ))}

@@ -16,60 +16,140 @@ export default function Home() {
 }
 
 function MobileHero() {
-  const polaroids = [
-    { src: "/images/home/polaroid-0.png", w: 220, h: 278, rotation: 8 },
-    { src: "/images/home/polaroid-3.png", w: 220, h: 278, rotation: -4 },
-    { src: "/images/home/polaroid-4.png", w: 220, h: 278, rotation: 6 },
-    { src: "/images/home/polaroid-1.png", w: 220, h: 278, rotation: -7 },
-    { src: "/images/home/polaroid-5.png", w: 220, h: 278, rotation: 5 },
-  ];
   return (
-    <section className="flex flex-col gap-8 px-6 pt-10 pb-6 md:hidden">
-      <h1 className="w-full font-serif font-normal leading-[0.95] text-black text-[clamp(40px,12vw,56px)]">
+    <section className="flex flex-col gap-6 px-6 pt-10 pb-6 md:hidden">
+      <h1 className="w-full font-serif font-normal leading-[0.95] text-black text-[clamp(48px,14.4vw,67px)]">
         <span className="block text-left">Katherine</span>
         <span className="block text-right">Zhang</span>
       </h1>
-      <ImageCarousel hint="Swipe to view">
-        {polaroids.map((p, i) => (
-          <div key={i} className="flex w-full justify-center py-6">
-            <PolaroidPhoto
-              src={p.src}
-              alt=""
-              width={p.w}
-              height={p.h}
-              rotation={p.rotation}
-              imageStyle={
-                p.src === "/images/home/polaroid-0.png"
-                  ? {
-                      width: "180%",
-                      height: "180%",
-                      left: "-3%",
-                      top: "-25%",
-                    }
-                  : p.src === "/images/home/polaroid-3.png"
-                  ? {
-                      height: "164.4%",
-                      left: "-32.05%",
-                      top: "-27.72%",
-                      width: "156.24%",
-                    }
-                  : p.src === "/images/home/polaroid-5.png"
-                  ? {
-                      height: "115.94%",
-                      left: "-3.81%",
-                      top: "-10.41%",
-                      width: "110.19%",
-                    }
-                  : undefined
-              }
-            />
-          </div>
-        ))}
-      </ImageCarousel>
+      <MobileCollage />
       <p className="text-center font-sans font-medium text-[16px] leading-[1.35] text-black">
         Product designer obsessed with digging deeper and asking &ldquo;Why&rdquo;?
       </p>
     </section>
+  );
+}
+
+function MobileCollage() {
+  // Stacked polaroid collage matching Figma "Mobile Home" (707:7682). All five
+  // polaroid groups overlap inside a 393×330 area. Coordinates are pulled from
+  // Figma metadata (y values shifted down by -240 so the topmost group sits at
+  // y=0 of this container). DOM order = z-order (back to front): polaroid 0,
+  // 5+sticker, 4+paperclip+sticker-13, 1+stickers, 3+sticker-16.
+  return (
+    <div className="relative -mx-6 h-[340px] w-[393px] self-center">
+      {/* Polaroid 0 — anonymous, no stickers */}
+      <PolaroidPhoto
+        src="/images/home/polaroid-0.png"
+        alt=""
+        width={180}
+        height={228}
+        rotation={16.43}
+        className="absolute left-[138px] top-[26px]"
+        imageStyle={{ width: "180%", height: "180%", left: "-3%", top: "-25%" }}
+      />
+
+      {/* Group "5" — polaroid 5 + small sticker */}
+      <PolaroidPhoto
+        src="/images/home/polaroid-5.png"
+        alt=""
+        width={188}
+        height={239}
+        rotation={15}
+        className="absolute left-[152px] top-[45px]"
+        imageStyle={{
+          height: "115.94%",
+          left: "-3.81%",
+          top: "-10.41%",
+          width: "110.19%",
+        }}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/home/sticker-near-5.png"
+        alt=""
+        className="absolute h-[38px] w-[64px]"
+        style={{ left: 252, top: 270 }}
+      />
+
+      {/* Group "4" — polaroid 4 + paperclip + sticker-13 */}
+      <PolaroidPhoto
+        src="/images/home/polaroid-4.png"
+        alt=""
+        width={173}
+        height={219}
+        rotation={-11.41}
+        className="absolute left-[87px] top-[77px]"
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/home/paperclip.png"
+        alt=""
+        className="absolute h-[63px] w-[101px] rotate-[-13.62deg]"
+        style={{ left: 108, top: 24 }}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/home/sticker-13.png"
+        alt=""
+        className="absolute h-[80px] w-[81px] rounded-[3px]"
+        style={{ left: 212, top: 201 }}
+      />
+
+      {/* Group "1" — polaroid 1 + 3 stickers */}
+      <PolaroidPhoto
+        src="/images/home/polaroid-1.png"
+        alt=""
+        width={185}
+        height={235}
+        rotation={-10.63}
+        className="absolute left-[74px] top-[89px]"
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/home/sale-sticker.png"
+        alt=""
+        className="absolute h-[50px] w-[68px]"
+        style={{ left: 82, top: 265 }}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/home/sticker-17.png"
+        alt=""
+        className="absolute h-[74px] w-[74px] rotate-[-16.55deg]"
+        style={{ left: 110, top: 36 }}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/home/sticker-12.png"
+        alt=""
+        className="absolute h-[62px] w-[56px]"
+        style={{ left: 227, top: 45 }}
+      />
+
+      {/* Group "3" — polaroid 3 + sticker-16 (FRONT) */}
+      <PolaroidPhoto
+        src="/images/home/polaroid-3.png"
+        alt=""
+        width={187}
+        height={237}
+        rotation={3.72}
+        className="absolute left-[113px] top-[81px]"
+        imageStyle={{
+          height: "164.4%",
+          left: "-32.05%",
+          top: "-27.72%",
+          width: "156.24%",
+        }}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/home/sticker-16.png"
+        alt=""
+        className="absolute h-[58px] w-[65px] rotate-[30deg]"
+        style={{ left: 248, top: 278 }}
+      />
+    </div>
   );
 }
 

@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 type ProjectCardProps = {
   title: string;
@@ -27,6 +30,18 @@ export default function ProjectCard({
   href,
   comingSoon,
 }: ProjectCardProps) {
+  // For comingSoon cards: clicking the card on touch devices reveals the
+  // tag (mirroring the hover behavior on desktop) and blocks navigation
+  // to the unbuilt route.
+  const [tapShowing, setTapShowing] = useState(false);
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (!comingSoon) return;
+    e.preventDefault();
+    setTapShowing(true);
+    window.setTimeout(() => setTapShowing(false), 2000);
+  };
+
   const body = (
     <>
       <div className="relative w-full overflow-hidden rounded-[4px]">
@@ -38,7 +53,9 @@ export default function ProjectCard({
         </span>
         {comingSoon ? (
           <span
-            className="pointer-events-none absolute bottom-[29px] right-[37px] inline-flex items-center justify-center rounded-[4px] border px-4 py-2 text-[16px] font-medium italic leading-[1.35] whitespace-nowrap opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+            className={`pointer-events-none absolute bottom-[29px] right-[37px] inline-flex items-center justify-center rounded-[4px] border px-4 py-2 text-[16px] font-medium italic leading-[1.35] whitespace-nowrap transition-opacity duration-200 group-hover:opacity-100 ${
+              tapShowing ? "opacity-100" : "opacity-0"
+            }`}
             style={{
               backgroundColor: comingSoon.bg,
               borderColor: comingSoon.fg,
@@ -66,6 +83,7 @@ export default function ProjectCard({
     return (
       <Link
         href={href}
+        onClick={handleClick}
         aria-label={`${title} — ${tag}`}
         className="group flex w-full flex-col gap-[18px] transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
       >

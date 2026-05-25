@@ -132,7 +132,7 @@ function Overview() {
           reservations, housekeeping, guest services, and billing into one
           place—with AI automation to handle the repetitive work.
         </p>
-        <div className="flex w-full items-start gap-6">
+        <div className="flex w-full items-start gap-6 max-md:flex-col max-md:gap-8">
           <OverviewPoint number="[ 1 ]" title="Design">
             Designed web and mobile experiences focused on helping hotel staff
             manage tasks seamlessly
@@ -175,7 +175,7 @@ function OverviewPoint({
 
 function Problem() {
   return (
-    <section className="mt-[150px] flex w-full flex-col items-center gap-12 pb-6">
+    <section className="mt-[150px] flex w-full flex-col items-center gap-12 pb-6 max-md:mt-16">
       <div className="flex w-full flex-col items-start gap-4">
         <SectionHeading>The Problem</SectionHeading>
         <div className="flex w-full flex-col gap-2">
@@ -194,14 +194,45 @@ function Problem() {
       </div>
 
       <ToolsCluster />
+      <MobileToolsList />
     </section>
+  );
+}
+
+// On mobile, the tools "wheel" turns into a simple vertical list so the
+// content still reads. Hidden on desktop where <ToolsCluster /> renders.
+function MobileToolsList() {
+  const tools = [
+    { name: "Reservations", product: "BookingTool Pro" },
+    { name: "Billing", product: "PaymentFlow" },
+    { name: "Housekeeping", product: "CleanTrack" },
+    { name: "Guest Services", product: "GuestHub" },
+    { name: "Maintenance", product: "FixIt Manager" },
+    { name: "Food & Bev", product: "RestaurantOS" },
+  ];
+  return (
+    <div className="hidden w-full flex-col gap-3 max-md:flex">
+      {tools.map((t) => (
+        <div
+          key={t.name}
+          className="flex flex-col items-center gap-1 rounded-[4px] px-4 py-3"
+          style={{
+            backgroundColor: COLORS.mint,
+            border: `0.5px solid ${COLORS.emerald}`,
+          }}
+        >
+          <p className="text-body font-medium">{t.name}</p>
+          <p className="text-subtext">{t.product}</p>
+        </div>
+      ))}
+    </div>
   );
 }
 
 function ToolsCluster() {
   return (
     <div
-      className="relative h-[405px] w-[671px] overflow-hidden rounded-lg"
+      className="relative h-[405px] w-[671px] overflow-hidden rounded-lg max-md:hidden"
       style={{ backgroundColor: COLORS.toolsBg }}
     >
       <div className="absolute left-[270px] top-[137px] size-[132px]">
@@ -254,7 +285,7 @@ function CompetitiveAnalysis() {
     "Manual data entry required across platforms",
   ];
   return (
-    <section className="mt-[150px] flex w-full flex-col items-center gap-8 pt-6 pb-[80px]">
+    <section className="mt-[150px] flex w-full flex-col items-center gap-8 pt-6 pb-[80px] max-md:mt-16 max-md:pb-12">
       <div className="flex w-full flex-col items-start gap-4">
         <SectionHeading>Competitive Analysis</SectionHeading>
         <p className="text-body">
@@ -262,11 +293,11 @@ function CompetitiveAnalysis() {
           and identified key gaps:
         </p>
       </div>
-      <div className="flex h-[189px] w-[992px] items-start gap-4">
+      <div className="flex h-[189px] w-[992px] items-start gap-4 max-md:h-auto max-md:w-full max-md:flex-col">
         {issues.map((issue) => (
           <div
             key={issue}
-            className="flex h-full flex-1 items-end rounded-[4px] px-4 py-6"
+            className="flex h-full flex-1 items-end rounded-[4px] px-4 py-6 max-md:h-auto max-md:w-full"
             style={{
               backgroundColor: COLORS.mint,
               border: `1px solid ${COLORS.emerald}`,
@@ -282,8 +313,8 @@ function CompetitiveAnalysis() {
 
 function AIAdvantages() {
   return (
-    <section className="mt-[150px] flex items-center justify-center px-[10px] py-6">
-      <p className="font-medium text-[28px] leading-[1.35] whitespace-nowrap">
+    <section className="mt-[150px] flex items-center justify-center px-[10px] py-6 max-md:mt-16">
+      <p className="font-medium text-[28px] leading-[1.35] whitespace-nowrap max-md:text-[20px] max-md:whitespace-normal max-md:text-center">
         ✨ AI can turn manual busywork into automated workflows
       </p>
     </section>
@@ -292,8 +323,8 @@ function AIAdvantages() {
 
 function AIFlowchart() {
   return (
-    <section className="flex flex-col items-center gap-[120px] pb-16">
-      <div className="flex items-start justify-center gap-[140px]">
+    <section className="flex flex-col items-center gap-[120px] pb-16 max-md:gap-12">
+      <div className="flex items-start justify-center gap-[140px] max-md:flex-col max-md:items-center max-md:gap-12">
         <FlowchartColumn
           title="Before: Manual entry"
           variant="before"
@@ -388,13 +419,13 @@ function FlowchartArrow() {
 
 function Vision() {
   return (
-    <section className="mx-auto mt-[150px] flex w-[895px] flex-col gap-4 rounded-[4px] p-6"
+    <section className="mx-auto mt-[150px] flex w-[895px] flex-col gap-4 rounded-[4px] p-6 max-md:mt-16 max-md:w-full"
       style={{ backgroundColor: COLORS.mint }}
     >
       <div className="inline-flex items-center border-b border-gray-1 py-2 self-start">
         <p className="font-medium text-h3 whitespace-nowrap">OUR VISION</p>
       </div>
-      <p className="text-[20px] leading-[1.35]">
+      <p className="text-[20px] leading-[1.35] max-md:text-[16px]">
         A unified platform that instead of another tool hotels have to manage,
         SelfServe becomes the single source of truth—automatically updating
         reservations, triggering housekeeping tasks, and syncing billing in
@@ -430,7 +461,7 @@ function Solution() {
   ];
 
   return (
-    <section className="mt-[150px] flex w-full flex-col items-start gap-8">
+    <section className="mt-[150px] flex w-full flex-col items-start gap-8 max-md:mt-16">
       <SectionHeading>The Solution</SectionHeading>
       <div className="flex w-full flex-col gap-[310px] max-md:gap-16">
         {features.map((f) => (
@@ -508,7 +539,7 @@ function Lessons() {
   ];
 
   return (
-    <section className="mt-[150px] flex w-full flex-col items-start gap-6">
+    <section className="mt-[150px] flex w-full flex-col items-start gap-6 max-md:mt-16">
       <SectionHeading>What I Learned</SectionHeading>
       <div className="flex w-full flex-col gap-10 text-body">
         {lessons.map((l, i) => (
