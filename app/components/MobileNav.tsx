@@ -31,7 +31,7 @@ export default function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-[120px] left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full bg-[#f3f3f3]/95 px-2 py-1 backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.08)] md:hidden">
+    <nav className="fixed bottom-[60px] left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full bg-[#f3f3f3]/95 px-2 py-1 backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.08)] md:hidden">
       {ITEMS.map((item) => {
         const active = !item.external && isActive(pathname, item.href);
         const pillClass = `flex items-center gap-3 rounded-full px-3 py-2 transition-all ${
