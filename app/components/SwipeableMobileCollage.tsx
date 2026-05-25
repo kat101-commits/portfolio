@@ -161,7 +161,10 @@ const AXIS_CLAIM_PX = 5;
 const FLING_DISTANCE_PX = 70;
 const FLING_VELOCITY_PX_MS = 0.35;
 const OFFSCREEN_PX = 560;
-const ROTATE_FACTOR = 0.06;
+const ROTATE_FACTOR = 0.04;
+const FLING_MIN_MS = 420;
+const FLING_MAX_MS = 750;
+const SNAP_MS = 620;
 const SNAP_EASE = "cubic-bezier(0.22, 1.4, 0.5, 1)";
 const FLING_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 
@@ -273,7 +276,7 @@ export default function SwipeableMobileCollage() {
 
       if (!claimedX || !(flungByDistance || flungByVelocity)) {
         // Snap back home with a little overshoot.
-        top.style.transition = `transform 420ms ${SNAP_EASE}`;
+        top.style.transition = `transform ${SNAP_MS}ms ${SNAP_EASE}`;
         top.style.transform = "translate3d(0, 0, 0) rotate(0deg)";
         const cleanup = () => {
           top.style.willChange = "auto";
@@ -289,8 +292,14 @@ export default function SwipeableMobileCollage() {
           : Math.sign(dx) || 1;
       const target = direction * OFFSCREEN_PX;
       const remaining = Math.abs(target - dx);
-      const speed = Math.max(Math.abs(v), 0.6);
-      const duration = Math.min(420, Math.max(200, remaining / speed));
+      // Cap the velocity input so very fast flicks still get a perceivable
+      // animation; clamp the duration so the card always travels at a
+      // deliberate pace rather than blinking off-screen.
+      const speed = Math.min(Math.max(Math.abs(v), 0.3), 1.2);
+      const duration = Math.min(
+        FLING_MAX_MS,
+        Math.max(FLING_MIN_MS, remaining / speed),
+      );
 
       drag.flinging = true;
       top.style.transition = `transform ${duration}ms ${FLING_EASE}`;
@@ -381,10 +390,20 @@ export default function SwipeableMobileCollage() {
     };
   }, []);
 
+  // Two-layer container:
+  //   • Outer fills the viewport width (breaks out of the section's px-6 with
+  //     -mx-6 + w-screen) so the touch target spans the whole row and so the
+  //     inner box can be horizontally centered with mx-auto regardless of
+  //     device width.
+  //   • Inner is the fixed 393×340 design coordinate system the polaroid
+  //     positions were laid out in. mx-auto keeps that box in the middle of
+  //     the screen on iPhone 15 Pro Max as well as on iPhone SE; anything
+  //     that would otherwise leak past the viewport is clipped by the outer
+  //     overflow-hidden.
   return (
     <div
       ref={containerRef}
-      className="relative -mx-6 h-[340px] w-[393px] cursor-grab select-none self-center active:cursor-grabbing"
+      className="relative -mx-6 h-[340px] w-screen cursor-grab select-none self-center overflow-hidden active:cursor-grabbing"
       style={{
         touchAction: "pan-y",
         WebkitUserSelect: "none",
@@ -392,19 +411,21 @@ export default function SwipeableMobileCollage() {
         WebkitTapHighlightColor: "transparent",
       }}
     >
-      {order.map((groupIdx) => {
-        const { key, Render } = GROUPS[groupIdx];
-        return (
-          <div
-            key={key}
-            ref={refSetters[groupIdx]}
-            className="absolute inset-0"
-            style={{ touchAction: "pan-y" }}
-          >
-            <Render />
-          </div>
-        );
-      })}
+      <div className="relative mx-auto h-full w-[393px]">
+        {order.map((groupIdx) => {
+          const { key, Render } = GROUPS[groupIdx];
+          return (
+            <div
+              key={key}
+              ref={refSetters[groupIdx]}
+              className="absolute inset-0"
+              style={{ touchAction: "pan-y" }}
+            >
+              <Render />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
