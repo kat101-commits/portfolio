@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import PolaroidPhoto from "./PolaroidPhoto";
 
-// Polaroid + decorative-sticker positions inside the 393×340 container, lifted
-// from Figma "Mobile Home" (707:7682). Each group renders polaroid + its
-// stickers as one unit so a wrapper transform can move them together.
+// Polaroid + sticker positions inside the 393×340 container, lifted from
+// Figma "Mobile Home" (707:7682). Each group renders polaroid + its stickers
+// as one unit so a wrapper transform can move them together.
 function Polaroid0() {
   return (
     <PolaroidPhoto
@@ -42,6 +42,7 @@ function Polaroid5() {
       <img
         src="/images/home/sticker-near-5.png"
         alt=""
+        draggable={false}
         className="absolute h-[38px] w-[64px]"
         style={{ left: 252, top: 270 }}
       />
@@ -64,6 +65,7 @@ function Polaroid4() {
       <img
         src="/images/home/paperclip.png"
         alt=""
+        draggable={false}
         className="absolute h-[63px] w-[101px] rotate-[-13.62deg]"
         style={{ left: 108, top: 24 }}
       />
@@ -71,6 +73,7 @@ function Polaroid4() {
       <img
         src="/images/home/sticker-13.png"
         alt=""
+        draggable={false}
         className="absolute h-[80px] w-[81px] rounded-[3px]"
         style={{ left: 212, top: 201 }}
       />
@@ -93,6 +96,7 @@ function Polaroid1() {
       <img
         src="/images/home/sale-sticker.png"
         alt=""
+        draggable={false}
         className="absolute h-[50px] w-[68px]"
         style={{ left: 82, top: 265 }}
       />
@@ -100,6 +104,7 @@ function Polaroid1() {
       <img
         src="/images/home/sticker-17.png"
         alt=""
+        draggable={false}
         className="absolute h-[74px] w-[74px] rotate-[-16.55deg]"
         style={{ left: 110, top: 36 }}
       />
@@ -107,6 +112,7 @@ function Polaroid1() {
       <img
         src="/images/home/sticker-12.png"
         alt=""
+        draggable={false}
         className="absolute h-[62px] w-[56px]"
         style={{ left: 227, top: 45 }}
       />
@@ -135,6 +141,7 @@ function Polaroid3() {
       <img
         src="/images/home/sticker-16.png"
         alt=""
+        draggable={false}
         className="absolute h-[58px] w-[65px] rotate-[30deg]"
         style={{ left: 248, top: 278 }}
       />
@@ -150,217 +157,249 @@ const GROUPS: { key: string; Render: () => React.ReactNode }[] = [
   { key: "p3", Render: Polaroid3 },
 ];
 
-// Tuning constants.
-const AXIS_CLAIM_PX = 6;
-const FLING_DISTANCE_PX = 80;
-const FLING_VELOCITY_PX_MS = 0.45;
-const OFFSCREEN_TARGET_PX = 560;
+const AXIS_CLAIM_PX = 5;
+const FLING_DISTANCE_PX = 70;
+const FLING_VELOCITY_PX_MS = 0.35;
+const OFFSCREEN_PX = 560;
 const ROTATE_FACTOR = 0.06;
-const SNAP_DURATION_MS = 420;
-const SNAP_EASING = "cubic-bezier(0.22, 1.4, 0.5, 1)";
-const FLING_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
+const SNAP_EASE = "cubic-bezier(0.22, 1.4, 0.5, 1)";
+const FLING_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 
 export default function SwipeableMobileCollage() {
-  // `order` is rendered back-to-front, so the LAST entry is the top card.
   const [order, setOrder] = useState(() => GROUPS.map((_, i) => i));
-
-  // Per-key DOM refs so the gesture loop can mutate transforms imperatively
-  // (no React re-renders per pointermove).
-  const refsByKey = useRef<Record<string, HTMLDivElement | null>>({});
+  const containerRef = useRef<HTMLDivElement>(null);
+  // Index = group index (stable). Value = the wrapper DOM node for that group.
+  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
   const orderRef = useRef(order);
   useEffect(() => {
     orderRef.current = order;
   }, [order]);
 
-  // Mutable drag state — refs only, never causes a render.
-  const drag = useRef({
-    active: false,
-    pointerId: -1,
-    startX: 0,
-    startY: 0,
-    lastX: 0,
-    lastT: 0,
-    velocity: 0, // px/ms, smoothed
-    dx: 0,
-    axis: null as null | "x" | "y",
-    flinging: false,
-  });
+  // Stable ref callbacks per group so React doesn't detach/reattach on each
+  // render (which would otherwise leave the ref momentarily null during a
+  // re-render and break gestures that race with state updates).
+  const refSetters = useMemo(
+    () =>
+      GROUPS.map((_, i) => (node: HTMLDivElement | null) => {
+        cardsRef.current[i] = node;
+      }),
+    [],
+  );
 
-  const getTopNode = () => {
-    const ord = orderRef.current;
-    if (ord.length === 0) return null;
-    const topKey = GROUPS[ord[ord.length - 1]].key;
-    return refsByKey.current[topKey] ?? null;
-  };
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
-  const setTransform = (node: HTMLElement, dx: number, transition: string) => {
-    node.style.transition = transition;
-    node.style.transform = `translate3d(${dx}px, 0, 0) rotate(${dx * ROTATE_FACTOR}deg)`;
-  };
+    const drag = {
+      active: false,
+      startX: 0,
+      startY: 0,
+      lastX: 0,
+      lastT: 0,
+      velocity: 0,
+      dx: 0,
+      axis: null as null | "x" | "y",
+      flinging: false,
+      // Suppress emulated mouse events for a short window after a touch ends.
+      lastTouchEndAt: 0,
+    };
 
-  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (drag.current.flinging) return;
-    const top = getTopNode();
-    if (!top) return;
-    const s = drag.current;
-    s.active = true;
-    s.pointerId = e.pointerId;
-    s.startX = e.clientX;
-    s.startY = e.clientY;
-    s.lastX = e.clientX;
-    s.lastT = e.timeStamp || performance.now();
-    s.velocity = 0;
-    s.dx = 0;
-    s.axis = null;
-    top.style.transition = "none";
-    top.style.willChange = "transform";
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    } catch {
-      // ignore — capture failures are non-fatal
-    }
-  };
+    const getTopCard = (): HTMLDivElement | null => {
+      const ord = orderRef.current;
+      if (ord.length === 0) return null;
+      return cardsRef.current[ord[ord.length - 1]] ?? null;
+    };
 
-  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    const s = drag.current;
-    if (!s.active || e.pointerId !== s.pointerId) return;
-    const dx = e.clientX - s.startX;
-    const dy = e.clientY - s.startY;
+    const beginDrag = (clientX: number, clientY: number, ts: number) => {
+      if (drag.active || drag.flinging) return false;
+      const top = getTopCard();
+      if (!top) return false;
+      drag.active = true;
+      drag.startX = clientX;
+      drag.startY = clientY;
+      drag.lastX = clientX;
+      drag.lastT = ts;
+      drag.velocity = 0;
+      drag.dx = 0;
+      drag.axis = null;
+      top.style.transition = "none";
+      top.style.willChange = "transform";
+      return true;
+    };
 
-    // Claim an axis on the first meaningful motion so vertical scroll can
-    // win and we don't fight the browser.
-    if (s.axis === null) {
-      if (Math.abs(dx) > AXIS_CLAIM_PX && Math.abs(dx) > Math.abs(dy)) {
-        s.axis = "x";
-      } else if (Math.abs(dy) > AXIS_CLAIM_PX) {
-        s.axis = "y";
-        return;
-      } else {
+    /** Returns true once the gesture has been claimed for horizontal swipe. */
+    const updateDrag = (clientX: number, clientY: number, ts: number) => {
+      if (!drag.active) return false;
+      const dx = clientX - drag.startX;
+      const dy = clientY - drag.startY;
+      if (drag.axis === null) {
+        if (Math.abs(dx) > AXIS_CLAIM_PX && Math.abs(dx) > Math.abs(dy)) {
+          drag.axis = "x";
+        } else if (Math.abs(dy) > AXIS_CLAIM_PX) {
+          drag.axis = "y";
+          return false;
+        } else {
+          return false;
+        }
+      }
+      if (drag.axis !== "x") return false;
+      const dt = Math.max(1, ts - drag.lastT);
+      const instantV = (clientX - drag.lastX) / dt;
+      drag.velocity = drag.velocity * 0.7 + instantV * 0.3;
+      drag.lastX = clientX;
+      drag.lastT = ts;
+      drag.dx = dx;
+      const top = getTopCard();
+      if (top) {
+        top.style.transform = `translate3d(${dx}px, 0, 0) rotate(${dx * ROTATE_FACTOR}deg)`;
+      }
+      return true;
+    };
+
+    const endDrag = () => {
+      if (!drag.active) return;
+      const claimedX = drag.axis === "x";
+      const dx = drag.dx;
+      const v = drag.velocity;
+      drag.active = false;
+      drag.axis = null;
+      const top = getTopCard();
+      if (!top) return;
+
+      const flungByDistance = Math.abs(dx) > FLING_DISTANCE_PX;
+      const flungByVelocity =
+        Math.abs(v) > FLING_VELOCITY_PX_MS &&
+        (dx === 0 || Math.sign(v) === Math.sign(dx));
+
+      if (!claimedX || !(flungByDistance || flungByVelocity)) {
+        // Snap back home with a little overshoot.
+        top.style.transition = `transform 420ms ${SNAP_EASE}`;
+        top.style.transform = "translate3d(0, 0, 0) rotate(0deg)";
+        const cleanup = () => {
+          top.style.willChange = "auto";
+          top.removeEventListener("transitionend", cleanup);
+        };
+        top.addEventListener("transitionend", cleanup);
         return;
       }
-    }
-    if (s.axis !== "x") return;
 
-    const now = e.timeStamp || performance.now();
-    const dt = Math.max(1, now - s.lastT);
-    const instantV = (e.clientX - s.lastX) / dt;
-    // EMA smoothing — keeps velocity stable while still responsive.
-    s.velocity = s.velocity * 0.7 + instantV * 0.3;
-    s.lastX = e.clientX;
-    s.lastT = now;
-    s.dx = dx;
+      const direction =
+        Math.abs(v) > FLING_VELOCITY_PX_MS
+          ? Math.sign(v)
+          : Math.sign(dx) || 1;
+      const target = direction * OFFSCREEN_PX;
+      const remaining = Math.abs(target - dx);
+      const speed = Math.max(Math.abs(v), 0.6);
+      const duration = Math.min(420, Math.max(200, remaining / speed));
 
-    const top = getTopNode();
-    if (top) setTransform(top, dx, "none");
-  };
+      drag.flinging = true;
+      top.style.transition = `transform ${duration}ms ${FLING_EASE}`;
+      top.style.transform = `translate3d(${target}px, 0, 0) rotate(${target * ROTATE_FACTOR}deg)`;
 
-  const finishDrag = () => {
-    const s = drag.current;
-    s.active = false;
-    s.axis = null;
-    s.pointerId = -1;
-  };
-
-  const cycleOrderAndReset = (flownNode: HTMLDivElement) => {
-    // Hide the flown card visually BEFORE state update so there's no flash
-    // of it on screen at its old (off-screen) transform.
-    flownNode.style.transition = "none";
-    flownNode.style.opacity = "0";
-    setOrder((prev) => {
-      if (prev.length === 0) return prev;
-      const next = [...prev];
-      const top = next.pop();
-      if (top !== undefined) next.unshift(top);
-      return next;
-    });
-    // After React commits the new order (this node is now at the back of
-    // the z-stack and visually obscured by the new top), reset its
-    // transform/opacity in the next frame. Two rAFs to be safe across
-    // browsers that batch layout/paint.
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        flownNode.style.transform = "translate3d(0, 0, 0)";
-        flownNode.style.opacity = "1";
-        flownNode.style.willChange = "auto";
-        drag.current.flinging = false;
-      });
-    });
-  };
-
-  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    const s = drag.current;
-    if (!s.active) return;
-    if (e.pointerId !== s.pointerId) {
-      finishDrag();
-      return;
-    }
-    const top = getTopNode();
-    const dx = s.dx;
-    const v = s.velocity;
-    finishDrag();
-    if (!top) return;
-
-    // Decide: fling vs. snap back. Fling if dragged far OR thrown fast in
-    // the same direction as the drag.
-    const flungByDistance = Math.abs(dx) > FLING_DISTANCE_PX;
-    const flungByVelocity =
-      Math.abs(v) > FLING_VELOCITY_PX_MS &&
-      (dx === 0 || Math.sign(v) === Math.sign(dx));
-
-    if (s.axis !== "x" || !(flungByDistance || flungByVelocity)) {
-      // Snap home with a small overshoot so it feels alive.
-      setTransform(top, 0, `transform ${SNAP_DURATION_MS}ms ${SNAP_EASING}`);
-      const onEnd = () => {
-        top.style.willChange = "auto";
-        top.removeEventListener("transitionend", onEnd);
+      let done = false;
+      const finalize = () => {
+        if (done) return;
+        done = true;
+        top.removeEventListener("transitionend", finalize);
+        // Hide before reordering so we never flash the off-screen position.
+        top.style.transition = "none";
+        top.style.opacity = "0";
+        setOrder((prev) => {
+          if (prev.length === 0) return prev;
+          const next = [...prev];
+          const head = next.pop();
+          if (head !== undefined) next.unshift(head);
+          return next;
+        });
+        // Two rAFs: one for React commit, one for paint after reorder.
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            top.style.transform = "translate3d(0, 0, 0) rotate(0deg)";
+            top.style.opacity = "1";
+            top.style.willChange = "auto";
+            drag.flinging = false;
+          });
+        });
       };
-      top.addEventListener("transitionend", onEnd);
-      return;
-    }
-
-    // Fling. Pick direction by velocity if it dominates, else by drag.
-    const direction =
-      Math.abs(v) > FLING_VELOCITY_PX_MS ? Math.sign(v) : Math.sign(dx) || 1;
-    const target = direction * OFFSCREEN_TARGET_PX;
-    const remaining = Math.abs(target - dx);
-    // Higher velocity → shorter duration. Clamp so it always feels deliberate.
-    const speed = Math.max(Math.abs(v), 0.6);
-    const duration = Math.min(420, Math.max(200, remaining / speed));
-
-    s.flinging = true;
-    top.style.transition = `transform ${duration}ms ${FLING_EASING}`;
-    top.style.transform = `translate3d(${target}px, 0, 0) rotate(${target * ROTATE_FACTOR}deg)`;
-
-    let done = false;
-    const finalize = () => {
-      if (done) return;
-      done = true;
-      top.removeEventListener("transitionend", finalize);
-      cycleOrderAndReset(top);
+      top.addEventListener("transitionend", finalize);
+      window.setTimeout(finalize, duration + 100);
     };
-    top.addEventListener("transitionend", finalize);
-    // Belt-and-suspenders: if transitionend doesn't fire (e.g. element
-    // hidden, browser quirk), fall through after the expected duration.
-    window.setTimeout(finalize, duration + 60);
-  };
+
+    // ---- Touch handlers ----
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      const t = e.touches[0];
+      beginDrag(t.clientX, t.clientY, e.timeStamp);
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      const t = e.touches[0];
+      const claimed = updateDrag(t.clientX, t.clientY, e.timeStamp);
+      if (claimed && e.cancelable) {
+        // Once we've claimed the horizontal axis, prevent the browser from
+        // treating this as a scroll or edge-back-swipe.
+        e.preventDefault();
+      }
+    };
+
+    const onTouchEnd = () => {
+      drag.lastTouchEndAt = Date.now();
+      endDrag();
+    };
+
+    // ---- Mouse handlers (desktop/dev tools) ----
+    const onMouseDown = (e: MouseEvent) => {
+      // Suppress mouse events emulated after a touch.
+      if (Date.now() - drag.lastTouchEndAt < 500) return;
+      beginDrag(e.clientX, e.clientY, e.timeStamp);
+    };
+    const onMouseMove = (e: MouseEvent) => {
+      if (!drag.active) return;
+      updateDrag(e.clientX, e.clientY, e.timeStamp);
+    };
+    const onMouseUp = () => {
+      endDrag();
+    };
+
+    container.addEventListener("touchstart", onTouchStart, { passive: true });
+    container.addEventListener("touchmove", onTouchMove, { passive: false });
+    container.addEventListener("touchend", onTouchEnd);
+    container.addEventListener("touchcancel", onTouchEnd);
+    container.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+
+    return () => {
+      container.removeEventListener("touchstart", onTouchStart);
+      container.removeEventListener("touchmove", onTouchMove);
+      container.removeEventListener("touchend", onTouchEnd);
+      container.removeEventListener("touchcancel", onTouchEnd);
+      container.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, []);
 
   return (
     <div
-      className="relative -mx-6 h-[340px] w-[393px] self-center touch-pan-y select-none"
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
+      ref={containerRef}
+      className="relative -mx-6 h-[340px] w-[393px] cursor-grab select-none self-center active:cursor-grabbing"
+      style={{
+        touchAction: "pan-y",
+        WebkitUserSelect: "none",
+        WebkitTouchCallout: "none",
+        WebkitTapHighlightColor: "transparent",
+      }}
     >
       {order.map((groupIdx) => {
         const { key, Render } = GROUPS[groupIdx];
         return (
           <div
             key={key}
-            ref={(node) => {
-              refsByKey.current[key] = node;
-            }}
+            ref={refSetters[groupIdx]}
             className="absolute inset-0"
+            style={{ touchAction: "pan-y" }}
           >
             <Render />
           </div>
