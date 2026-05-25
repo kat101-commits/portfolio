@@ -8,7 +8,8 @@ type ProjectCardProps = {
   /** Visual content (video, image, etc). Should fill its container. */
   children: React.ReactNode;
   /** "light" = dark-tinted tag for light/gray backgrounds (default).
-   *  "dark"  = white-tinted tag for dark/saturated backgrounds. */
+   *  "dark"  = white-tinted tag for dark/saturated backgrounds.
+   *  Currently unused — tag bg is uniform black/40 — kept for back-compat with call sites. */
   tagVariant?: "light" | "dark";
   /** Optional href — when set, the entire card becomes a link. */
   href?: string;
@@ -23,7 +24,6 @@ export default function ProjectCard({
   dateRange,
   description,
   children,
-  tagVariant = "light",
   href,
   comingSoon,
 }: ProjectCardProps) {

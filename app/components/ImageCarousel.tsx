@@ -25,6 +25,7 @@ export default function ImageCarousel({
   const slides = Children.toArray(children);
   const [index, setIndex] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const dragStartX = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
@@ -41,6 +42,7 @@ export default function ImageCarousel({
 
   const onPointerDown = (e: React.PointerEvent) => {
     dragStartX.current = e.clientX;
+    setIsDragging(true);
     setDragOffset(0);
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
   };
@@ -52,6 +54,7 @@ export default function ImageCarousel({
     if (dragStartX.current === null) return;
     const delta = e.clientX - dragStartX.current;
     dragStartX.current = null;
+    setIsDragging(false);
     const threshold = Math.min(60, width * 0.15);
     if (delta < -threshold && index < slides.length - 1) {
       setIndex(index + 1);
@@ -78,10 +81,9 @@ export default function ImageCarousel({
           className="flex"
           style={{
             transform: `translate3d(${translate}px, 0, 0)`,
-            transition:
-              dragStartX.current === null
-                ? "transform 320ms cubic-bezier(0.22,1,0.36,1)"
-                : "none",
+            transition: isDragging
+              ? "none"
+              : "transform 320ms cubic-bezier(0.22,1,0.36,1)",
             width: `${slides.length * 100}%`,
           }}
         >
