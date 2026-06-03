@@ -1,5 +1,7 @@
 import Image from "next/image";
 
+import InfoColumn from "../components/InfoColumn";
+import SectionHeading from "../components/SectionHeading";
 import VideoPlaceholder from "../components/VideoPlaceholder";
 
 const COLORS = {
@@ -26,54 +28,39 @@ export default function SelfServe() {
 function TitleSection() {
   return (
     <section className="flex items-start justify-between gap-10 pb-[66px] max-md:flex-col max-md:gap-8 max-md:pb-10">
-      <div className="flex w-[526px] flex-col gap-6 max-md:w-full">
+      <div className="flex w-[526px] flex-col items-start gap-6 max-md:w-full">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/SelfServe_Logo.svg"
           alt="SelfServe"
-          className="h-[81px] w-auto max-md:h-[56px]"
+          className="h-[81px] w-auto self-start max-md:h-[56px]"
         />
-        <p className="font-sans text-[24px] leading-[1.35] max-md:text-[18px]">
+        <p className="font-sans text-left text-[24px] leading-[1.35] max-md:text-[18px]">
           Unify fragmented hotel operations into one intelligent, automated
           platform.
         </p>
       </div>
 
       <div className="flex shrink-0 items-start gap-4 pt-1 max-md:flex-wrap max-md:gap-4 max-md:pt-0">
-        <InfoColumn title="My Role">
+        <InfoColumn title="My Role" width={140}>
           <p>Design Lead</p>
         </InfoColumn>
-        <InfoColumn title="The Team">
+        <InfoColumn title="The Team" width={140}>
           <p>Generate</p>
           <p>(PM</p>
           <p>Engineers,</p>
           <p>Product Designers)</p>
         </InfoColumn>
-        <InfoColumn title="Duration">
+        <InfoColumn title="Duration" width={140}>
           <p>Jan 2026 - April 2026</p>
         </InfoColumn>
-        <InfoColumn title="Skills">
+        <InfoColumn title="Skills" width={140}>
           <p>AI Integration</p>
           <p>Systems Design</p>
           <p>Figma</p>
         </InfoColumn>
       </div>
     </section>
-  );
-}
-
-function InfoColumn({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex w-[140px] flex-col gap-2 text-subtext">
-      <p className="text-gray-2">{title}</p>
-      <div className="flex flex-col">{children}</div>
-    </div>
   );
 }
 
@@ -98,14 +85,6 @@ function Body() {
       <Vision />
       <Solution />
       <Lessons />
-    </div>
-  );
-}
-
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="inline-flex items-center border-b border-gray-1 py-2">
-      <p className="font-sans font-medium text-h3 whitespace-nowrap">{children}</p>
     </div>
   );
 }
@@ -449,8 +428,6 @@ function Solution() {
       videoOnRight: true,
       videoSrc: "/videos/selfserve-feature-3.mp4",
       videoFit: "contain" as const,
-      videoAspectRatio: "9/16",
-      videoWidthClass: "w-[395px]",
     },
   ];
 

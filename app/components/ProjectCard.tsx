@@ -10,10 +10,6 @@ type ProjectCardProps = {
   description: string;
   /** Visual content (video, image, etc). Should fill its container. */
   children: React.ReactNode;
-  /** "light" = dark-tinted tag for light/gray backgrounds (default).
-   *  "dark"  = white-tinted tag for dark/saturated backgrounds.
-   *  Currently unused — tag bg is uniform black/40 — kept for back-compat with call sites. */
-  tagVariant?: "light" | "dark";
   /** Optional href — when set, the entire card becomes a link. */
   href?: string;
   /** When set, renders a "Coming Soon" pill on hover, anchored to the bottom-right

@@ -432,7 +432,6 @@ function ProjectGrid() {
           tag="Internship 🏥"
           dateRange="May 2024 - July 2024"
           description="Created admin tools managing scholarship distribution across hospitals and aspiring healthcare workers."
-          tagVariant="dark"
           href="/apprenta"
           comingSoon={{ bg: "#f7efff", fg: "#592d90" }}
         >

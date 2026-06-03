@@ -1,5 +1,8 @@
 import Image from "next/image";
 
+import InfoColumn from "../components/InfoColumn";
+import SectionHeading from "../components/SectionHeading";
+
 import ImageGallery from "./ImageGallery";
 
 const TASKS = [
@@ -55,16 +58,6 @@ export default function BCG() {
   );
 }
 
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="inline-flex items-center border-b border-gray-1 pb-2">
-      <p className="font-sans font-medium text-h3 whitespace-nowrap">
-        {children}
-      </p>
-    </div>
-  );
-}
-
 function TitleAndHero() {
   return (
     <section className="flex flex-col gap-10">
@@ -106,26 +99,6 @@ function TitleAndHero() {
         />
       </div>
     </section>
-  );
-}
-
-function InfoColumn({
-  title,
-  width = 191,
-  children,
-}: {
-  title: string;
-  width?: number;
-  children: React.ReactNode;
-}) {
-  return (
-    <div
-      className="flex shrink-0 flex-col gap-2 text-subtext"
-      style={{ width }}
-    >
-      <p className="text-gray-2">{title}</p>
-      <p>{children}</p>
-    </div>
   );
 }
 
