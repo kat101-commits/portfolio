@@ -81,7 +81,7 @@ export default function ProjectCard({
         href={href}
         onClick={handleClick}
         aria-label={`${title} — ${tag}`}
-        className="group flex w-full flex-col gap-[18px] transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
+        className="group flex w-full flex-col gap-[18px] transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[0.975] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
       >
         {body}
       </Link>
