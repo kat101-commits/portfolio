@@ -34,7 +34,7 @@ function Hero() {
   return (
     <section className="relative mx-auto w-full max-w-frame overflow-hidden min-h-[720px] max-md:hidden">
       {/* Title + collage scaled down together, anchored to top so the layout math below is untouched */}
-      <div className="relative w-full origin-top scale-[0.95]">
+      <div className="relative w-full origin-top scale-[0.95] -mt-2">
         {/* Title — "Katherine" anchored left, "Zhang" anchored right inside 1170px row */}
         <h1 className="relative z-0 mx-auto flex w-full max-w-[1170px] justify-between pt-[50px] font-serif font-normal leading-normal text-black text-[clamp(72px,10.235vw,147.392px)]">
           <span>Katherine</span>
@@ -390,7 +390,7 @@ function Tooltip({
 
 function ProjectGrid() {
   return (
-    <section className="mx-auto w-full max-w-frame px-page pt-[90px] pb-[220px] max-md:px-6 max-md:pt-6 max-md:pb-12">
+    <section className="relative mx-auto w-full max-w-frame px-page pt-[40px] pb-[220px] -mt-[12px] max-md:px-6 max-md:pt-6 max-md:pb-12 max-md:mt-0">
       <div className="mx-auto grid w-full max-w-[1260px] grid-cols-1 gap-x-6 gap-y-[160px] max-md:gap-y-12 md:grid-cols-2">
         <ProjectCard
           title="BCG"
