@@ -33,17 +33,20 @@ function MobileHero() {
 function Hero() {
   return (
     <section className="relative mx-auto w-full max-w-frame overflow-hidden min-h-[720px] max-md:hidden">
-      {/* Title — "Katherine" anchored left, "Zhang" anchored right inside 1170px row */}
-      <h1 className="relative z-0 mx-auto flex w-full max-w-[1170px] justify-between pt-[50px] font-serif font-normal leading-normal text-black text-[clamp(72px,10.235vw,147.392px)]">
-        <span>Katherine</span>
-        <span>Zhang</span>
-      </h1>
+      {/* Title + collage scaled down together, anchored to top so the layout math below is untouched */}
+      <div className="relative w-full origin-top scale-[0.95]">
+        {/* Title — "Katherine" anchored left, "Zhang" anchored right inside 1170px row */}
+        <h1 className="relative z-0 mx-auto flex w-full max-w-[1170px] justify-between pt-[50px] font-serif font-normal leading-normal text-black text-[clamp(72px,10.235vw,147.392px)]">
+          <span>Katherine</span>
+          <span>Zhang</span>
+        </h1>
 
-      {/* Collage — full-width 1440 wrapper so calc(%) positions match Figma exactly */}
-      <Collage />
+        {/* Collage — full-width 1440 wrapper so calc(%) positions match Figma exactly */}
+        <Collage />
+      </div>
 
       {/* Subtitle */}
-      <p className="absolute inset-x-0 top-[627px] z-20 text-center font-sans font-medium text-[22px] text-black">
+      <p className="absolute inset-x-0 top-[603px] z-20 text-center font-sans font-medium text-[22px] text-black">
         Product designer obsessed with digging deeper and asking &ldquo;Why&rdquo;?
       </p>
     </section>
