@@ -68,7 +68,7 @@ export default function ProjectCard({
           <h3 className="font-sans font-medium text-[24px] leading-none">
             {title}
           </h3>
-          <span className="text-subtext whitespace-nowrap">{dateRange}</span>
+          <span className="text-subtext whitespace-nowrap text-[#565656]">{dateRange}</span>
         </div>
         <p className="text-body">{description}</p>
       </div>
