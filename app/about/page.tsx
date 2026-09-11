@@ -72,9 +72,9 @@ function BioRow() {
 
 const EXPERIENCE = [
   {
-    role: "Contracted Designer",
-    company: "Judgment Labs",
-    dates: "Jan 2026 - Feb 2026",
+    role: "Associate Product Designer",
+    company: "Solace",
+    dates: "July 2026 - Present",
   },
   {
     role: "UX Research & Design Co-op",
