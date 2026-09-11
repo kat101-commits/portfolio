@@ -23,7 +23,7 @@ function MobileHero() {
         <span className="block text-right">Zhang</span>
       </h1>
       <SwipeableMobileCollage />
-      <p className="text-center font-sans font-medium text-[16px] leading-[1.35] text-black">
+      <p className="text-center font-sans font-medium text-[14px] leading-[1.35] text-black">
         Product designer obsessed with digging deeper and asking &ldquo;Why&rdquo;?
       </p>
     </section>
@@ -43,7 +43,7 @@ function Hero() {
       <Collage />
 
       {/* Subtitle */}
-      <p className="absolute inset-x-0 top-[627px] z-20 text-center font-sans font-medium text-[24px] text-black">
+      <p className="absolute inset-x-0 top-[627px] z-20 text-center font-sans font-medium text-[22px] text-black">
         Product designer obsessed with digging deeper and asking &ldquo;Why&rdquo;?
       </p>
     </section>
