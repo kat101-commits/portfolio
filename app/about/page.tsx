@@ -111,7 +111,7 @@ function ExperienceRow() {
               <span aria-hidden className="inline-block size-2 rounded-full bg-black" />
               <span className="font-sans text-body">{e.company}</span>
             </div>
-            <span className="font-sans text-body text-black whitespace-nowrap">
+            <span className="font-sans text-body text-[#565656] whitespace-nowrap">
               {e.dates}
             </span>
           </li>
