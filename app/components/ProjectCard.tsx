@@ -70,7 +70,7 @@ export default function ProjectCard({
           </h3>
           <span className="text-subtext whitespace-nowrap text-[#565656]">{dateRange}</span>
         </div>
-        <p className="text-body">{description}</p>
+        <p className="text-body text-[#565656]">{description}</p>
       </div>
     </>
   );
