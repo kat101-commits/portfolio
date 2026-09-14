@@ -17,17 +17,40 @@ const COLORS = {
 
 export default function SelfServe() {
   return (
-    <div className="mx-auto w-full max-w-frame px-page pt-[60px] pb-[60px] text-black max-md:px-6 max-md:pt-10 max-md:pb-12">
-      <TitleSection />
-      <Hero />
-      <Body />
+    <div className="mx-auto w-full max-w-frame px-page pt-[60px] pb-[180px] text-black max-md:px-6 max-md:pt-10 max-md:pb-12">
+      <div className="mx-auto w-full max-w-[1076px]">
+        <Hero />
+      </div>
+      <div className="mx-auto mt-[89px] flex w-full max-w-[1076px] flex-col gap-[200px] max-md:mt-10 max-md:gap-16">
+        <div className="flex flex-col gap-[140px] max-md:gap-12">
+          <div className="flex flex-col gap-[80px] max-md:gap-8">
+            <TitleSection />
+            <Overview />
+          </div>
+          <Problem />
+          <CompetitiveAndAI />
+        </div>
+        <Vision />
+        <Solution />
+        <Lessons />
+      </div>
     </div>
+  );
+}
+
+function Hero() {
+  return (
+    <VideoPlaceholder
+      aspectRatio="1260/678"
+      className="rounded-[2px]"
+      src="/videos/selfserve-hero.mp4"
+    />
   );
 }
 
 function TitleSection() {
   return (
-    <section className="flex items-start justify-between gap-10 pb-[66px] max-md:flex-col max-md:gap-8 max-md:pb-10">
+    <section className="flex items-start justify-between gap-10 max-md:flex-col max-md:gap-8">
       <div className="flex w-[526px] flex-col items-start gap-6 max-md:w-full">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -64,45 +87,20 @@ function TitleSection() {
   );
 }
 
-function Hero() {
-  return (
-    <VideoPlaceholder
-      aspectRatio="1260/678"
-      className="rounded-[2px]"
-      src="/videos/selfserve-hero.mp4"
-    />
-  );
-}
-
-function Body() {
-  return (
-    <div className="mx-auto mt-[66px] w-full max-w-[1076px] flex flex-col max-md:mt-10">
-      <Overview />
-      <Problem />
-      <CompetitiveAnalysis />
-      <AIAdvantages />
-      <AIFlowchart />
-      <Vision />
-      <Solution />
-      <Lessons />
-    </div>
-  );
-}
-
 function Overview() {
   return (
     <section className="flex w-full flex-col items-end gap-4">
       <div className="flex w-full flex-col items-start">
         <SectionHeading>Overview</SectionHeading>
       </div>
-      <div className="flex w-full flex-col gap-[54px]">
+      <div className="flex w-full flex-col gap-[48px]">
         <p className="text-body">
           SelfServe is a property management system built for boutique hotels.
           Generate partnered with SelfServe to design a platform that brings
           reservations, housekeeping, guest services, and billing into one
           place—with AI automation to handle the repetitive work.
         </p>
-        <div className="flex w-full items-start gap-6 max-md:flex-col max-md:gap-8">
+        <div className="flex w-full items-start gap-[54px] max-md:flex-col max-md:gap-8">
           <OverviewPoint number="[ 1 ]" title="Design">
             Designed web and mobile experiences focused on helping hotel staff
             manage tasks seamlessly
@@ -133,27 +131,29 @@ function OverviewPoint({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-1 flex-col gap-3">
-      <div className="flex items-center gap-4 text-h3 font-medium whitespace-nowrap">
+    <div className="flex flex-1 flex-col gap-2">
+      <div className="flex items-center gap-4 text-body font-medium whitespace-nowrap">
         <span>{number}</span>
         <span>{title}</span>
       </div>
-      <p className="text-body">{children}</p>
+      <p className="text-body text-gray-2">{children}</p>
     </div>
   );
 }
 
 function Problem() {
   return (
-    <section className="mt-[150px] flex w-full flex-col items-center gap-12 pb-6 max-md:mt-16">
-      <div className="flex w-full flex-col items-start gap-4">
+    <section className="flex w-full flex-col items-center gap-4">
+      <div className="flex w-full flex-col items-start">
         <SectionHeading>The Problem</SectionHeading>
-        <div className="flex w-full flex-col gap-2">
-          <p className="text-body">
+      </div>
+      <div className="flex w-full items-center gap-[80px] max-md:flex-col max-md:gap-8">
+        <div className="flex flex-1 flex-col gap-[40px] text-body">
+          <p>
             The boutique hotel management landscape is{" "}
             <span className="font-semibold italic">fragmented</span>
           </p>
-          <p className="text-body">
+          <p>
             Boutique hotels juggle 5+ disconnected platforms. One for
             reservations, another for housekeeping, another for billing etc.
             etc. Staff waste hours switching between tools, manually entering
@@ -161,9 +161,8 @@ function Problem() {
             systems.
           </p>
         </div>
+        <ToolsCluster />
       </div>
-
-      <ToolsCluster />
       <MobileToolsList />
     </section>
   );
@@ -202,7 +201,7 @@ function MobileToolsList() {
 function ToolsCluster() {
   return (
     <div
-      className="relative h-[405px] w-[671px] overflow-hidden rounded-lg max-md:hidden"
+      className="relative h-[405px] w-[671px] shrink-0 overflow-hidden rounded-lg max-md:hidden"
       style={{ backgroundColor: COLORS.toolsBg }}
     >
       <div className="absolute left-[270px] top-[137px] size-[132px]">
@@ -247,6 +246,19 @@ function ToolBox({
   );
 }
 
+// Competitive analysis, the AI-advantage headline, and the before/after
+// flowchart all share one continuous 100px rhythm in the redesign, rather
+// than each being its own section with independent margins.
+function CompetitiveAndAI() {
+  return (
+    <section className="flex w-full flex-col items-center gap-[100px]">
+      <CompetitiveAnalysis />
+      <AIAdvantageHeadline />
+      <AIFlowchart />
+    </section>
+  );
+}
+
 function CompetitiveAnalysis() {
   const issues = [
     "No AI support for repetitive tasks",
@@ -255,7 +267,7 @@ function CompetitiveAnalysis() {
     "Manual data entry required across platforms",
   ];
   return (
-    <section className="mt-[150px] flex w-full flex-col items-center gap-8 pt-6 pb-[80px] max-md:mt-16 max-md:pb-12">
+    <>
       <div className="flex w-full flex-col items-start gap-4">
         <SectionHeading>Competitive Analysis</SectionHeading>
         <p className="text-body">
@@ -263,7 +275,7 @@ function CompetitiveAnalysis() {
           and identified key gaps:
         </p>
       </div>
-      <div className="flex h-[189px] w-[992px] items-start gap-4 max-md:h-auto max-md:w-full max-md:flex-col">
+      <div className="flex h-[189px] w-[992px] items-start gap-[40px] max-md:h-auto max-md:w-full max-md:flex-col">
         {issues.map((issue) => (
           <div
             key={issue}
@@ -277,23 +289,21 @@ function CompetitiveAnalysis() {
           </div>
         ))}
       </div>
-    </section>
+    </>
   );
 }
 
-function AIAdvantages() {
+function AIAdvantageHeadline() {
   return (
-    <section className="mt-[150px] flex items-center justify-center px-[10px] py-6 max-md:mt-16">
-      <p className="font-medium text-[28px] leading-[1.35] whitespace-nowrap max-md:text-[20px] max-md:whitespace-normal max-md:text-center">
-        ✨ AI can turn manual busywork into automated workflows
-      </p>
-    </section>
+    <p className="text-center font-medium text-[24px] leading-[1.35] whitespace-nowrap max-md:whitespace-normal max-md:text-[20px]">
+      ✨ AI can turn manual busywork into automated workflows
+    </p>
   );
 }
 
 function AIFlowchart() {
   return (
-    <section className="flex flex-col items-center gap-[120px] pb-16 max-md:gap-12">
+    <>
       <div className="flex items-start justify-center gap-[140px] max-md:flex-col max-md:items-center max-md:gap-12">
         <FlowchartColumn
           title="Before: Manual entry"
@@ -318,7 +328,7 @@ function AIFlowchart() {
           width={239}
         />
       </div>
-      <div className="flex w-full flex-col gap-[1.35rem] text-body">
+      <div className="flex w-[667px] max-w-full flex-col gap-[1.35rem] text-body">
         <p>
           Hotel staff spend 40% of their time on repetitive admin
           tasks—updating reservation statuses, logging housekeeping notes,
@@ -329,7 +339,7 @@ function AIFlowchart() {
           candidates for AI automation.
         </p>
       </div>
-    </section>
+    </>
   );
 }
 
@@ -351,7 +361,7 @@ function FlowchartColumn({
     variant === "before" ? COLORS.beigeBorder : COLORS.greenBorder;
   return (
     <div
-      className="flex flex-col items-center gap-[50px]"
+      className="flex flex-col items-center gap-[48px]"
       style={{ width }}
     >
       <p className="text-center font-medium text-body">{title}</p>
@@ -389,7 +399,8 @@ function FlowchartArrow() {
 
 function Vision() {
   return (
-    <section className="mx-auto mt-[150px] flex w-[895px] flex-col gap-4 rounded-[4px] p-6 max-md:mt-16 max-md:w-full"
+    <section
+      className="mx-auto flex w-[895px] flex-col gap-4 rounded-[4px] p-6 max-md:w-full"
       style={{ backgroundColor: COLORS.mint }}
     >
       <div className="inline-flex items-center border-b border-gray-1 py-2 self-start">
@@ -432,9 +443,9 @@ function Solution() {
   ];
 
   return (
-    <section className="mt-[150px] flex w-full flex-col items-start gap-8 max-md:mt-16">
+    <section className="flex w-full flex-col items-start gap-8">
       <SectionHeading>The Solution</SectionHeading>
-      <div className="flex w-full flex-col gap-[310px] max-md:gap-16">
+      <div className="flex w-full flex-col gap-[334px] max-md:gap-16">
         {features.map((f) => (
           <FeatureRow key={f.title} {...f} />
         ))}
@@ -470,7 +481,7 @@ function FeatureRow({
       className={`flex w-[343px] shrink-0 flex-col gap-3 text-body max-md:w-full ${textOrder}`}
     >
       <p className="font-medium">{title}</p>
-      <p>{description}</p>
+      <p className="text-gray-2">{description}</p>
     </div>
   );
   const video = (
@@ -520,29 +531,16 @@ function Lessons() {
   ];
 
   return (
-    <section className="mt-[150px] flex w-full flex-col items-start gap-6 max-md:mt-16">
+    <section className="mt-[24px] flex w-full flex-col items-start gap-6">
       <SectionHeading>What I Learned</SectionHeading>
-      <div className="flex w-full flex-col gap-10 text-body">
-        {lessons.map((l, i) => (
-          <div key={l.number} className="flex items-start gap-6">
-            {/* Dot + connecting line column */}
-            <div className="relative w-2 shrink-0 self-stretch pt-[7px]">
-              <div className="size-2 rounded-full bg-black" />
-              {i < lessons.length - 1 ? (
-                <div
-                  className="absolute left-1/2 w-px -translate-x-1/2 bg-black"
-                  style={{ top: 15, bottom: -47 }}
-                />
-              ) : null}
+      <div className="grid w-full grid-cols-2 gap-x-[40px] gap-y-[40px] max-md:grid-cols-1">
+        {lessons.map((l) => (
+          <div key={l.number} className="flex flex-col gap-2">
+            <div className="flex items-center gap-4 font-medium">
+              <span>{l.number}</span>
+              <span>{l.headline}</span>
             </div>
-            {/* Lesson content */}
-            <div className="flex flex-1 flex-col gap-4">
-              <div className="flex items-center gap-4 font-medium">
-                <span>{l.number}</span>
-                <span>{l.headline}</span>
-              </div>
-              <p>{l.detail}</p>
-            </div>
+            <p className="text-subtext text-gray-2">{l.detail}</p>
           </div>
         ))}
       </div>
