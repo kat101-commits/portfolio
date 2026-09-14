@@ -47,12 +47,14 @@ const TEAM_TESTIMONIALS = [
 
 export default function BCG() {
   return (
-    <div className="mx-auto w-full max-w-frame px-page pt-[60px] pb-[60px] text-black max-md:px-6 max-md:pt-10 max-md:pb-12">
-      <div className="mx-auto flex w-full max-w-[1250px] flex-col gap-[93px] max-md:gap-12">
+    <div className="mx-auto w-full max-w-frame px-page pt-[60px] pb-[180px] text-black max-md:px-6 max-md:pt-10 max-md:pb-12">
+      <div className="mx-auto flex w-full max-w-[1076px] flex-col gap-[93px] max-md:gap-12">
         <TitleAndHero />
         <OverviewAndGallery />
-        <Reflections />
-        <Testimonials />
+        <div className="flex flex-col gap-[96px] max-md:gap-12">
+          <Reflections />
+          <Testimonials />
+        </div>
       </div>
     </div>
   );
@@ -60,34 +62,7 @@ export default function BCG() {
 
 function TitleAndHero() {
   return (
-    <section className="flex flex-col gap-10">
-      <div className="flex w-full items-start justify-between gap-[92px] max-md:flex-col max-md:gap-6">
-        <div className="flex flex-col gap-[19px]">
-          <div className="relative h-[71px] w-[170px] overflow-hidden max-md:h-[35.5px] max-md:w-[85px]">
-            <Image
-              src="/images/bcg/logo.png"
-              alt="BCG"
-              width={329}
-              height={185}
-              priority
-              className="absolute left-0 top-[-57px] max-w-none max-md:top-[-28.5px]"
-              style={{ width: "193.53%", height: "260.65%" }}
-            />
-          </div>
-          <p className="w-[614px] font-medium text-[24px] leading-[1.35] max-md:w-full max-md:text-[20px]">
-            Build AI products that automate busywork, freeing consultants for
-            high-impact thinking.
-          </p>
-        </div>
-        <div className="flex shrink-0 gap-2 pt-1 max-md:flex-wrap max-md:gap-4 max-md:pt-0">
-          <InfoColumn title="My Role">UX Research &amp; Design</InfoColumn>
-          <InfoColumn title="The Team">UX COE GenAI</InfoColumn>
-          <InfoColumn title="Duration" width={141}>
-            June 2025 - Dec 2025
-          </InfoColumn>
-        </div>
-      </div>
-
+    <section className="flex flex-col gap-[80px] max-md:gap-6">
       <div className="relative h-[612px] w-full overflow-hidden rounded-[4px] max-md:h-[130px]">
         <Image
           src="/images/bcg/hero.png"
@@ -98,15 +73,46 @@ function TitleAndHero() {
           priority
         />
       </div>
+
+      <div className="flex w-full items-start justify-between gap-[79px] max-md:flex-col max-md:gap-6">
+        <div className="flex flex-col gap-[19px]">
+          <div className="relative h-[61px] w-[146px] overflow-hidden max-md:h-[35.5px] max-md:w-[85px]">
+            <Image
+              src="/images/bcg/logo.png"
+              alt="BCG"
+              width={329}
+              height={185}
+              priority
+              className="absolute left-0 top-[-49px] max-w-none max-md:top-[-28.5px]"
+              style={{ width: "193.53%", height: "260.65%" }}
+            />
+          </div>
+          <p className="w-[529px] font-medium text-[24px] leading-normal max-md:w-full max-md:text-[20px]">
+            Build AI products that automate busywork, freeing consultants for
+            high-impact thinking.
+          </p>
+        </div>
+        <div className="flex shrink-0 gap-2 pt-1 max-md:flex-wrap max-md:gap-4 max-md:pt-0">
+          <InfoColumn title="My Role" width={164}>
+            UX Research &amp; Design
+          </InfoColumn>
+          <InfoColumn title="The Team" width={159}>
+            UX COE GenAI
+          </InfoColumn>
+          <InfoColumn title="Duration" width={121}>
+            June 2025 - Dec 2025
+          </InfoColumn>
+        </div>
+      </div>
     </section>
   );
 }
 
 function OverviewAndGallery() {
   return (
-    <section className="flex w-full items-start gap-[41px] max-md:flex-col max-md:gap-10">
-      <div className="flex w-[707px] shrink-0 flex-col justify-between gap-[48px] self-stretch max-md:w-full">
-        <div className="flex flex-col gap-2">
+    <section className="flex w-full items-start gap-[34px] max-md:flex-col max-md:gap-10">
+      <div className="flex w-[609px] shrink-0 flex-col justify-between gap-[48px] self-stretch max-md:w-full">
+        <div className="flex flex-col gap-4">
           <SectionHeading>Overview</SectionHeading>
           <p className="text-body">
             I was the design co-op on BCG&rsquo;s GenAI Experience team, where
@@ -120,9 +126,9 @@ function OverviewAndGallery() {
           </p>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
           <SectionHeading>What I worked on</SectionHeading>
-          <div className="flex flex-col gap-6 pt-2">
+          <div className="flex flex-col gap-6">
             {TASKS.map((task, i) => (
               <div
                 key={i}
@@ -148,16 +154,15 @@ function Reflections() {
   return (
     <section className="flex flex-col gap-4">
       <SectionHeading>Reflections</SectionHeading>
-      <div className="flex flex-wrap items-start gap-x-5 gap-y-8 max-md:flex-col max-md:gap-8">
+      <div className="grid grid-cols-2 gap-x-[48px] gap-y-[54px] max-md:grid-cols-1 max-md:gap-8">
         {REFLECTIONS.map((r) => (
-          <div
-            key={r.headline}
-            className="flex w-[615px] flex-col gap-3 max-md:w-full"
-          >
+          <div key={r.headline} className="flex flex-col gap-2">
             <p className="font-medium text-h3">{r.headline}</p>
             <div className="flex items-start gap-3">
-              <p className="shrink-0 font-medium text-h3">{r.number}</p>
-              <p className="w-[558px] text-body max-md:w-full">{r.detail}</p>
+              <p className="shrink-0 font-medium text-body">{r.number}</p>
+              <p className="w-full text-body text-gray-2">
+                {r.detail}
+              </p>
             </div>
           </div>
         ))}
@@ -207,7 +212,7 @@ function TeamTestimonials() {
   return (
     <div className="flex flex-col gap-0">
       <p className="text-subtext">From the team:</p>
-      <div className="flex w-full items-start gap-6 pt-[19px] max-md:flex-col">
+      <div className="flex w-full items-start gap-[40px] pt-[19px] max-md:flex-col">
         {TEAM_TESTIMONIALS.map((t, i) => (
           <div key={i} className="flex flex-1 items-center gap-6 max-md:w-full">
             <div className="relative size-[120px] shrink-0 max-md:size-[60px]">

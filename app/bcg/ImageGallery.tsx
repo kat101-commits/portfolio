@@ -7,24 +7,18 @@ const IMAGES = [
   {
     src: "/images/bcg/badge.png",
     alt: "BCG work badge",
-    width: 436,
-    mobileWidth: 218,
     aspectRatio: "200/232",
     caption: "My work badge",
   },
   {
     src: "/images/bcg/team-1.png",
     alt: "BCG team",
-    width: 676,
-    mobileWidth: 338,
     aspectRatio: "2274/1706",
     caption: "Meet the team - TV tinted out for privacy reasons",
   },
   {
     src: "/images/bcg/team-2.png",
     alt: "Team dinner at Coquette",
-    width: 674,
-    mobileWidth: 337,
     aspectRatio: "1239/929",
     caption: "Team Dinner at Coquette!",
   },
@@ -61,7 +55,7 @@ export default function ImageGallery() {
   };
 
   return (
-    <div className="relative w-[501px] shrink-0 max-md:w-[250px]">
+    <div className="relative w-[431px] shrink-0 max-md:w-[250px]">
       <div
         ref={scrollRef}
         className="overflow-x-auto scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -70,13 +64,7 @@ export default function ImageGallery() {
           {IMAGES.map((img) => (
             <figure
               key={img.src}
-              className="flex shrink-0 snap-start flex-col gap-4 max-md:gap-2 max-md:!w-[var(--gallery-mobile-w)]"
-              style={
-                {
-                  width: img.width,
-                  "--gallery-mobile-w": `${img.mobileWidth}px`,
-                } as React.CSSProperties
-              }
+              className="flex w-[431px] shrink-0 snap-start flex-col gap-4 max-md:w-[250px] max-md:gap-2"
             >
               <div
                 className="relative w-full overflow-hidden rounded-[8px]"
@@ -86,7 +74,7 @@ export default function ImageGallery() {
                   src={img.src}
                   alt={img.alt}
                   fill
-                  sizes={`${img.width}px`}
+                  sizes="(min-width: 768px) 431px, 250px"
                   className="object-cover"
                 />
               </div>
@@ -127,7 +115,7 @@ function Arrow({
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
-      className={`absolute ${position} top-[253px] z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-black shadow-[0_2px_8px_rgba(0,0,0,0.15)] backdrop-blur-sm transition-all duration-200 hover:bg-white hover:scale-105 disabled:pointer-events-none disabled:opacity-0 max-md:top-[127px]`}
+      className={`absolute ${position} top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-black shadow-[0_2px_8px_rgba(0,0,0,0.15)] backdrop-blur-sm transition-all duration-200 hover:bg-white hover:scale-105 disabled:pointer-events-none disabled:opacity-0`}
     >
       <svg
         viewBox="0 0 24 24"
