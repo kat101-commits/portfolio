@@ -4,14 +4,14 @@
   --color-black: #000000;
   --color-white: #ffffff;
   --color-gray-1: #a8a8a8;
-  --color-gray-2: #6e6e6e;
+  --color-gray-2: #565656;
   --color-placeholder: #d9d9d9;
 
   --font-sans: var(--font-instrument-sans), system-ui, -apple-system, sans-serif;
   --font-serif: var(--font-instrument-serif), Georgia, serif;
   --font-display: var(--font-ma-shan-zheng), serif;
 
-  --text-h3: 22px;
+  --text-h3: 20px;
   --text-h3--line-height: 1.35;
   --text-body: 16px;
   --text-body--line-height: 1.35;
