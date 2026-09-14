@@ -54,10 +54,7 @@ function BioRow() {
             solutions.
           </p>
           <div>
-            <p>
-              When I&rsquo;m not designing, I&rsquo;m:{" "}
-              <span aria-hidden="true">🧚</span>
-            </p>
+            <p>When I&rsquo;m not designing, I&rsquo;m:</p>
             <ul className="list-disc list-inside">
               <li>Crafting</li>
               <li>Painting</li>
