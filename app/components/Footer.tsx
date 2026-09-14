@@ -14,36 +14,52 @@ const CONTACT_LINKS = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-dashed border-black pt-8 pb-15 flex items-start justify-between text-body">
-      <div className="flex flex-col gap-2 w-[273px] text-black">
-        <p>Made with ✨ by Katherine Zhang</p>
-        <p>2026</p>
-      </div>
+    <footer className="w-full border-t border-dashed border-black md:-mt-6">
+      <div className="flex flex-col gap-4 px-6 pb-10 pt-6 text-body md:mx-auto md:max-w-frame md:flex-row md:items-start md:justify-between md:gap-10 md:px-page md:pt-8 md:pb-15">
+        <div className="flex flex-col gap-2 text-black md:w-[273px]">
+          <p>Made with ✨ by Katherine Zhang</p>
+          <p>2026</p>
+        </div>
 
-      <div className="flex gap-10 items-start">
-        <FooterColumn heading="Navigation">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-subtext text-gray-2 hover:text-black"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </FooterColumn>
+        {/* Mobile: just "Let's Chat", right-aligned — Navigation already
+            lives in the mobile bottom nav, so it's omitted here. */}
+        <div className="flex flex-col items-end gap-4 text-black md:hidden">
+          <p>Let’s Chat</p>
+          <div className="flex flex-col items-end gap-2 text-subtext">
+            {CONTACT_LINKS.map((link) => (
+              <Link key={link.href} href={link.href}>
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
 
-        <FooterColumn heading="Let’s Chat">
-          {CONTACT_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-subtext text-black"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </FooterColumn>
+        {/* Desktop: Navigation + Let's Chat side by side. */}
+        <div className="hidden gap-10 md:flex md:items-start">
+          <FooterColumn heading="Navigation">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-subtext text-gray-2 hover:text-black"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </FooterColumn>
+
+          <FooterColumn heading="Let’s Chat">
+            {CONTACT_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-subtext text-black"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </FooterColumn>
+        </div>
       </div>
     </footer>
   );

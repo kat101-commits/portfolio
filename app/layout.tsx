@@ -10,7 +10,6 @@ import "./globals.css";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import MobileNav from "./components/MobileNav";
-import MobileFooter from "./components/MobileFooter";
 
 const instrumentSans = Instrument_Sans({
   variable: "--font-instrument-sans",
@@ -55,12 +54,7 @@ export default function RootLayout({
           <Nav />
         </header>
         <main className="flex-1 w-full max-md:pb-[200px]">{children}</main>
-        <div className="mx-auto w-full max-w-frame px-page max-md:hidden -mt-6">
-          <Footer />
-        </div>
-        <div className="md:hidden">
-          <MobileFooter />
-        </div>
+        <Footer />
         <MobileNav />
         <Analytics />
         <SpeedInsights />
