@@ -5,8 +5,8 @@ import SnapshotCard from "../components/SnapshotCard";
 
 export default function About() {
   return (
-    <div className="mx-auto w-full max-w-frame px-page pt-[60px] pb-[60px] max-md:px-6 max-md:pt-10 max-md:pb-12">
-      <div className="mx-auto flex w-full max-w-[1260px] flex-col gap-[130px] max-md:gap-12">
+    <div className="mx-auto w-full max-w-frame px-page pt-[60px] pb-[180px] max-md:px-6 max-md:pt-10 max-md:pb-12">
+      <div className="mx-auto flex w-full max-w-[1076px] flex-col gap-[154px] max-md:gap-12">
         <BioAndExperience />
         <SnapshotsSection />
       </div>
@@ -25,13 +25,13 @@ function BioAndExperience() {
 
 function BioRow() {
   return (
-    <section className="flex flex-col items-start gap-10 md:flex-row md:items-center md:gap-10">
-      <div className="relative w-full max-w-[496px] shrink-0 overflow-hidden rounded-[2px]" style={{ aspectRatio: "523/544" }}>
+    <section className="flex flex-col items-start gap-10 md:flex-row md:items-stretch md:gap-10">
+      <div className="relative w-full max-w-[488px] shrink-0 overflow-hidden rounded-[2px] max-md:aspect-[523/544]">
         <Image
           src="/images/about/profile.png"
           alt="Katherine speaking on stage"
           fill
-          sizes="(min-width: 768px) 496px, 100vw"
+          sizes="(min-width: 768px) 488px, 100vw"
           className="object-cover"
           priority
         />
@@ -43,25 +43,32 @@ function BioRow() {
           <span aria-hidden="true">🙈</span>
         </h1>
         <div className="flex flex-col gap-5 text-body">
+          <p>Welcome to my little corner of the internet!</p>
           <p>
-            I&rsquo;m a designer who loves the messy, early stage of building
-            products, where problem-solving meets creative solutions.
+            I&rsquo;m a designer, and as the definition of designer keeps
+            changing, I&rsquo;m learning how to align with it.
           </p>
           <p>
-            I came to design from an unusual place: business strategy meets
-            STEM meets creativity. Growing up with two STEM parents, I learned
-            to question everything and dig deeper into the scientific
-            explanation. But I also spent years painting and drawing. That
-            intersection, analytical and creative, strategic and
-            human-centered, is where I live as a designer.
+            I love meeting and interacting with all types of people,
+            understanding the why and the actions that follow behind their
+            solutions.
           </p>
+          <div>
+            <p>
+              When I&rsquo;m not designing, I&rsquo;m:{" "}
+              <span aria-hidden="true">🧚</span>
+            </p>
+            <ul className="list-disc list-inside">
+              <li>Crafting</li>
+              <li>Painting</li>
+              <li>Cafe hopping</li>
+              <li>Exploring SF</li>
+              <li>Looking for my next concert to attend</li>
+            </ul>
+          </div>
           <p>
-            At BCG, I turned research into product decisions for AI tools. At
-            Generate, I led 0→1 projects where there was no roadmap yet.
-          </p>
-          <p>
-            When I&rsquo;m not designing, I&rsquo;m cafe hopping, finding the
-            next it restaurant, oil painting, or attending concerts.{" "}
+            Feel free to connect with me on LinkedIn, always happy to chat
+            and meet new people!{" "}
             <span aria-hidden="true">🧚</span>
           </p>
         </div>
@@ -95,7 +102,7 @@ const EXPERIENCE = [
 
 function ExperienceRow() {
   return (
-    <section className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between md:gap-10">
+    <section className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between md:gap-[136px]">
       <h2 className="font-serif text-[36px] leading-none text-black shrink-0">
         Experience
       </h2>
@@ -111,13 +118,46 @@ function ExperienceRow() {
               <span aria-hidden className="inline-block size-2 rounded-full bg-black" />
               <span className="font-sans text-body">{e.company}</span>
             </div>
-            <span className="font-sans text-body text-[#565656] whitespace-nowrap">
+            <span className="font-sans text-subtext text-gray-2 whitespace-nowrap">
               {e.dates}
             </span>
           </li>
         ))}
       </ul>
     </section>
+  );
+}
+
+// Both collages below were hand-tuned at 1258px (matching the page's old
+// 1260px content width). Rather than recompute every absolute position,
+// they're rendered at native size and uniformly scaled down to fit the
+// current 1076px content width.
+const COLLAGE_SCALE = 1076 / 1260;
+
+function ScaledCollage({
+  width,
+  height,
+  children,
+}: {
+  width: number;
+  height: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      style={{ width: width * COLLAGE_SCALE, height: height * COLLAGE_SCALE }}
+    >
+      <div
+        style={{
+          width,
+          height,
+          transform: `scale(${COLLAGE_SCALE})`,
+          transformOrigin: "top left",
+        }}
+      >
+        {children}
+      </div>
+    </div>
   );
 }
 
@@ -133,7 +173,9 @@ function SnapshotsSection() {
           subtitle="Creating communities while designing"
         >
           <div className="max-md:hidden">
-            <GenerateSnapshots />
+            <ScaledCollage width={1258} height={261}>
+              <GenerateSnapshots />
+            </ScaledCollage>
           </div>
           <div className="md:hidden">
             <GenerateSnapshotsMobile />
@@ -144,7 +186,9 @@ function SnapshotsSection() {
           subtitle="Am always open to trying new places"
         >
           <div className="max-md:hidden">
-            <FoodSnapshots />
+            <ScaledCollage width={1258} height={277}>
+              <FoodSnapshots />
+            </ScaledCollage>
           </div>
           <div className="md:hidden">
             <FoodSnapshotsMobile />
