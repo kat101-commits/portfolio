@@ -15,7 +15,7 @@ const LINKS: NavLink[] = [
   { href: "/playground", label: "Playground" },
   { href: "/about", label: "About Me" },
   {
-    href: "https://drive.google.com/file/d/1umyV8uuN4-GCTKPkwx2jZ9MWmeC2iZ8s/view?usp=sharing",
+    href: "https://drive.google.com/file/d/1COw_L9ivcYvUVRYFrXvN7N5sBB4-KJBy/view?usp=sharing",
     label: "Resume",
     alwaysMuted: true,
     external: true,

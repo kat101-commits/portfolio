@@ -4,7 +4,11 @@ const NAV_LINKS = [
   { href: "/", label: "Work" },
   { href: "/playground", label: "Playground" },
   { href: "/about", label: "About Me" },
-  { href: "/resume", label: "Resume" },
+  {
+    href: "https://drive.google.com/file/d/1COw_L9ivcYvUVRYFrXvN7N5sBB4-KJBy/view?usp=sharing",
+    label: "Resume",
+    external: true,
+  },
 ];
 
 const CONTACT_LINKS = [
@@ -37,15 +41,27 @@ export default function Footer() {
         {/* Desktop: Navigation + Let's Chat side by side. */}
         <div className="hidden gap-10 md:flex md:items-start">
           <FooterColumn heading="Navigation">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-subtext text-gray-2 hover:text-black"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {NAV_LINKS.map((link) =>
+              link.external ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-subtext text-gray-2 hover:text-black"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-subtext text-gray-2 hover:text-black"
+                >
+                  {link.label}
+                </Link>
+              ),
+            )}
           </FooterColumn>
 
           <FooterColumn heading="Let’s Chat">
