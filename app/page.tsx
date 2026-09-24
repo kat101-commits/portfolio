@@ -33,10 +33,10 @@ function MobileHero() {
 
 function Hero() {
   return (
-    /* Figma's header band (node 983:2969), ported with the site's real
-       copy: no "Based in ..." line, since nothing here corresponds to it,
-       and the actual tagline kept as-is rather than swapped for Figma's
-       placeholder text. Tucks up under the real <header> (via
+    /* Figma's header band (node 983:2969), ported in full — the exact
+       copy from the design (including its "Based in San Fransico"
+       spelling), not a version trimmed down to only what the real site
+       already said. Tucks up under the real <header> (via
        -mt-header/pt-header, using the shared token in globals.css) so its
        wash and hairlines run seamlessly behind the transparent nav, the
        same trick app/preview/about already uses for its own band. */
@@ -52,6 +52,7 @@ function Hero() {
         <div className={styles.rule} style={{ right: "var(--gutter)" }} />
       </div>
 
+      {/* "Profile Icon" */}
       <Accent
         style={
           {
@@ -64,6 +65,7 @@ function Hero() {
           } as React.CSSProperties
         }
       />
+      {/* "Profile Picture" */}
       <Accent
         style={
           {
@@ -73,6 +75,22 @@ function Hero() {
             height: 270,
             "--from": 0.3,
             "--to": 0.1,
+          } as React.CSSProperties
+        }
+      />
+      {/* "Social Media Icon" — Figma's own top:298 was measured against
+          its 53px header; offset by the same +245px from this site's
+          taller (74px) one, via --spacing-header, so it tracks if that
+          value ever changes again. */}
+      <Accent
+        style={
+          {
+            left: "calc(57.14% + 29.14px)",
+            top: "calc(var(--spacing-header) + 245px)",
+            width: 156,
+            height: 213,
+            "--from": 0.18,
+            "--to": 0.06,
           } as React.CSSProperties
         }
       />
@@ -86,9 +104,14 @@ function Hero() {
         <h1>
           <NameTitle />
         </h1>
-        <p className="mt-4 max-w-[640px] font-sans font-medium text-[20px] leading-[1.35] text-black">
-          Product designer obsessed with digging deeper and asking &ldquo;Why&rdquo;?
-        </p>
+        <div className="mt-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+          <p className="font-sans text-[20px] leading-[1.35] text-black">
+            Product designer @ Solace
+          </p>
+          <p className="font-sans text-[16px] leading-[1.35] text-black">
+            Based in San Fransico
+          </p>
+        </div>
       </div>
 
       <div className={styles.blur} aria-hidden>
