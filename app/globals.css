@@ -23,6 +23,11 @@
   --spacing-page: 90px;
   --spacing-frame: 1440px;
   --spacing-content: 1260px;
+  /* Real rendered height of the site-wide <header> (Nav + its
+     hairlines), so any banded section can tuck its own background
+     under it the way app/preview/about does — as a single value
+     instead of a magic number copied into each page. */
+  --spacing-header: 74px;
 }
 
 body {
