@@ -19,7 +19,9 @@ export default function Nav() {
       <ul className="flex items-center gap-10 text-subtext">
         {LINKS.map((link) => {
           const active = !link.alwaysMuted && isActive(pathname, link.href);
-          const className = active ? "text-black font-medium" : "text-gray-2";
+          const className = active
+            ? "text-black font-medium italic"
+            : "text-gray-2";
           return (
             <li key={link.href}>
               {link.external ? (
