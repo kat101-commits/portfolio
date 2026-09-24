@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const NAV_LINKS = [
   { href: "/", label: "Work" },
@@ -17,6 +20,11 @@ const CONTACT_LINKS = [
 ];
 
 export default function Footer() {
+  // The /preview routes render their own Figma-matched footer, so skip the
+  // site-wide one there.
+  const pathname = usePathname();
+  if (pathname === "/preview" || pathname.startsWith("/preview/")) return null;
+
   return (
     <footer className="w-full border-t border-dashed border-black md:-mt-6">
       <div className="flex flex-col gap-4 px-6 pb-10 pt-6 text-body md:mx-auto md:max-w-frame md:flex-row md:items-start md:justify-between md:gap-10 md:px-page md:pt-8 md:pb-15">

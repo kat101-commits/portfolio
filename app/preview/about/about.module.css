@@ -1,0 +1,275 @@
+/* Scoped to the /preview/about route.
+   Tailwind covers the flow layout on this page; what lives here is the two
+   things it cannot express cleanly: the hairline grid the Figma frame is
+   built on, and the polaroid object that every photo on the page is an
+   instance of. */
+
+.page {
+  position: relative;
+  width: 100%;
+  /* Mirrors the Tailwind gutter (`px-page`, narrowing to `px-6` on mobile)
+     so the two outermost rules sit on the content edge at both sizes. */
+  --gutter: var(--spacing-page);
+}
+
+@media (max-width: 767px) {
+  .page {
+    --gutter: 24px;
+  }
+}
+
+/* ── Hairline grid ────────────────────────────────────────────────────
+   The frame strikes eleven verticals. Only the outer two carry past the
+   header, and those are the two that can be anchored to the page gutter
+   rather than to a fixed x — so they stay correct at every width while
+   the nine interior ones stay inside the band they belong to. */
+.rule {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #d5ddff;
+}
+
+.bandRules {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hRule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #d5ddff;
+}
+
+/* ── Header wash ──
+   One radial gradient, its centre parked just past the bottom edge of the
+   band so the blue only reads at the very top. Sampled again on the footer
+   from its top edge. */
+.wash {
+  background:
+    radial-gradient(
+      60.79% 94.79% at 50% 94.79%,
+      rgba(255, 250, 227, 0.06) 0%,
+      rgba(231, 247, 255, 0.6) 100%
+    ),
+    #fff;
+}
+
+.footerWash {
+  background:
+    radial-gradient(
+      60.79% 94.79% at 50% 5.21%,
+      rgba(255, 250, 227, 0.06) 0%,
+      rgba(231, 247, 255, 0.6) 100%
+    ),
+    #fff;
+}
+
+.accent {
+  position: absolute;
+  background: linear-gradient(
+    180deg,
+    rgba(243, 33, 117, var(--from, 0.18)) 7.212%,
+    rgba(255, 236, 244, var(--to, 0.06)) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Progressive blur ──
+   Four stacked backdrop-filter layers, each masked to start a quarter
+   lower than the last, so the blur ramps up toward the bottom edge
+   instead of switching on.
+
+   It sits under the band's content, not over it: the lower half of this
+   banner carries body copy and a photo, so only the wash, the rules and
+   the accents dissolve into the edge. */
+.blur {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(36px, 6.7vw, 96px);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.blur > span {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.blur > span:nth-child(1) {
+  -webkit-backdrop-filter: blur(0.5px);
+  backdrop-filter: blur(0.5px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
+}
+
+.blur > span:nth-child(2) {
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
+  mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
+}
+
+.blur > span:nth-child(3) {
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
+  mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
+}
+
+.blur > span:nth-child(4) {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
+}
+
+/* ── Polaroids ────────────────────────────────────────────────────────
+   Every photo on the page is the same three-part object: a `.snap`
+   bounding box, a rotated `.card` inside it, and a cropped `.photo`
+   inside that.
+
+   All of its numbers arrive as design-pixel scalars in custom properties
+   and resolve against `--u` — one container-query pixel of the `.stage`.
+   So a whole arrangement scales with its stage and the scatter never
+   drifts, which is what lets the two hand-tuned collages survive being
+   laid out at a different content width than they were built at. */
+.stage {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+}
+
+.snap {
+  --u: calc(100cqw / var(--base));
+  position: absolute;
+  left: calc(var(--l) * var(--u));
+  top: calc(var(--t) * var(--u));
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--h) * var(--u));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+/* `.snap` sets `display: flex`, which is the same specificity as Tailwind's
+   `hidden` and lands later in the cascade — so the breakpoint switch has to
+   live here rather than as a utility on the element. */
+.snap.desktopOnly {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .snap.desktopOnly {
+    display: flex;
+  }
+
+  .snap.mobileOnly {
+    display: none;
+  }
+}
+
+.card {
+  position: relative;
+  flex: none;
+  background: var(--card, #fff);
+  padding: calc(var(--p) * var(--u));
+  border-radius: calc(var(--r) * var(--u));
+  transform: rotate(var(--rot, 0deg));
+  filter: drop-shadow(
+    calc(var(--sx) * var(--u)) calc(var(--sy) * var(--u))
+      calc(var(--sb) * var(--u)) rgba(0, 0, 0, var(--sa, 0.25))
+  );
+}
+
+/* The inner bevel sits above the print, so it is its own layer. */
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset calc(var(--ix, 0) * var(--u)) calc(var(--ix, 0) * var(--u))
+    calc(var(--ib, 0) * var(--u)) rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+
+.photo {
+  position: relative;
+  overflow: hidden;
+  width: calc(var(--pw) * var(--u));
+  height: calc(var(--ph) * var(--u));
+  border-radius: calc(var(--pr, 2) * var(--u));
+}
+
+/* The crop is expressed the way Figma expresses it: the image is oversized
+   and offset in percentages of the frame it is cropped to, so the two stay
+   locked together as the stage scales. */
+.photo img {
+  position: absolute;
+  left: calc(var(--il, 0) * 1%);
+  top: calc(var(--it, 0) * 1%);
+  width: calc(var(--iw, 100) * 1%);
+  height: calc(var(--ih, 100) * 1%);
+  max-width: none;
+  display: block;
+}
+
+.cover img {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* One print was shot portrait and laid in on its side. */
+.turned {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.turn {
+  position: relative;
+  flex: none;
+  overflow: hidden;
+  width: calc(var(--tw) * var(--u));
+  height: calc(var(--th) * var(--u));
+  border-radius: calc(var(--pr, 2) * var(--u));
+  transform: rotate(-90deg);
+}
+
+/* ── Portrait ──
+   The print carries its own drop shadow here, where the scattered
+   snapshots instead carry an inner bevel. */
+.portrait {
+  position: relative;
+  container-type: inline-size;
+}
+
+.portrait .photo {
+  box-shadow: calc(1.8 * var(--u)) calc(1.8 * var(--u)) calc(3.6 * var(--u))
+    rgba(0, 0, 0, 0.1);
+}
+
+.portrait .card::after {
+  content: none;
+}
+
+@media (max-width: 767px) {
+  .portrait .photo {
+    box-shadow: calc(1.44 * var(--u)) calc(1.44 * var(--u))
+      calc(2.88 * var(--u)) rgba(0, 0, 0, 0.1);
+  }
+}

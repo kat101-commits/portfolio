@@ -3,29 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type NavLink = {
-  href: string;
-  label: string;
-  alwaysMuted?: boolean;
-  external?: boolean;
-};
-
-const LINKS: NavLink[] = [
-  { href: "/", label: "Work" },
-  { href: "/playground", label: "Playground" },
-  { href: "/about", label: "About Me" },
-  {
-    href: "https://drive.google.com/file/d/1COw_L9ivcYvUVRYFrXvN7N5sBB4-KJBy/view?usp=sharing",
-    label: "Resume",
-    alwaysMuted: true,
-    external: true,
-  },
-];
-
-function isActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
+import { LINKS, isActive } from "./navLinks";
 
 export default function Nav() {
   const pathname = usePathname();
