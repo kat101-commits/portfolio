@@ -41,14 +41,22 @@
   background: #d5ddff;
 }
 
+/* Verbatim from the design (index.html's .band--header): a warm glow at
+   the bottom centre, over a blue-to-white ramp — not the much fainter
+   wash this file previously had. */
 .wash {
   background:
     radial-gradient(
-      60.79% 94.79% at 50% 94.79%,
-      rgba(255, 250, 227, 0.06) 0%,
-      rgba(231, 247, 255, 0.6) 100%
+      ellipse 62vw 70% at 50% 94%,
+      rgba(255, 250, 227, 0.55) 0%,
+      rgba(255, 250, 227, 0) 62%
     ),
-    #fff;
+    linear-gradient(
+      0deg,
+      #ffffff 0%,
+      #f6fbff 44%,
+      #e0f1fd 100%
+    );
 }
 
 .accent {

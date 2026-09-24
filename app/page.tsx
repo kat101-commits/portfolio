@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useLayoutEffect, useRef, useState } from "react";
 
 import NameTitle from "./components/NameTitle";
 import ProjectCard from "./components/ProjectCard";
@@ -31,7 +34,37 @@ function MobileHero() {
   );
 }
 
+const NAV_ITEM_COUNT = 4; // Work, Playground, About Me, Resume — see navLinks.ts
+
 function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const subtaglineRef = useRef<HTMLParagraphElement>(null);
+  const [subtaglineX, setSubtaglineX] = useState<{ start: number; end: number } | null>(null);
+
+  // The 8 nav-item edges come from Nav.tsx via CSS custom properties (it
+  // measures its own real rendered labels, which this component has no
+  // access to). This effect only has to measure the one thing that's
+  // local to this component: the subtagline's own rendered edges, once
+  // it's absolutely positioned at its real spot.
+  useLayoutEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    function measure() {
+      const sub = subtaglineRef.current;
+      if (!section || !sub) return;
+      const frameLeft = section.getBoundingClientRect().left;
+      const r = sub.getBoundingClientRect();
+      setSubtaglineX({ start: r.left - frameLeft, end: r.right - frameLeft });
+    }
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(section);
+    document.fonts?.ready.then(measure);
+    return () => ro.disconnect();
+  }, []);
+
   return (
     /* Figma's header band (node 983:2969), ported in full — the exact
        copy from the design (including its "Based in San Fransico"
@@ -39,17 +72,49 @@ function Hero() {
        already said. Tucks up under the real <header> (via
        -mt-header/pt-header, using the shared token in globals.css) so its
        wash and hairlines run seamlessly behind the transparent nav, the
-       same trick app/preview/about already uses for its own band. */
+       same trick app/preview/about already uses for its own band.
+
+       Every hairline for the whole banner — including the ones that pass
+       behind the header above — is drawn from here, so there's exactly
+       one line at each position rather than this section and the header
+       each drawing a copy where they used to meet. */
     <section
+      ref={sectionRef}
       className={`relative mx-auto w-full max-w-frame overflow-hidden md:-mt-header md:pt-header max-md:hidden ${styles.band}`}
     >
       <div className={`${styles.wash} absolute inset-0`} />
 
       <div className={styles.bandRules} aria-hidden>
-        <div className={styles.hRule} style={{ top: "var(--spacing-header)" }} />
+        {/* Exactly one line at the very top and one at the very bottom of
+            the whole banner — not one for every internal row the way the
+            static prototype's version does, since this real nav's own
+            height doesn't share that prototype's row proportions. */}
+        <div className={styles.hRule} style={{ top: 0 }} />
         <div className={styles.hRule} style={{ bottom: 0 }} />
+
         <div className={styles.rule} style={{ left: "var(--gutter)" }} />
         <div className={styles.rule} style={{ right: "var(--gutter)" }} />
+
+        {/* Left + right of each real nav item, at its actual measured
+            position (published by Nav.tsx as CSS vars) — not Figma's
+            "Sandbox"-width lines, which would land somewhere this nav's
+            real "Playground" label doesn't reach. */}
+        {Array.from({ length: NAV_ITEM_COUNT }, (_, i) => (
+          <div key={i} className={styles.rule} style={{ left: `var(--gx-nav-${i}-start)` }} />
+        ))}
+        {Array.from({ length: NAV_ITEM_COUNT }, (_, i) => (
+          <div key={i} className={styles.rule} style={{ left: `var(--gx-nav-${i}-end)` }} />
+        ))}
+
+        {/* Left + right of the subtagline, at its own rendered edges —
+            only once they're known, so there's no line at x:0 for one
+            frame before the measurement runs. */}
+        {subtaglineX && (
+          <>
+            <div className={styles.rule} style={{ left: subtaglineX.start }} />
+            <div className={styles.rule} style={{ left: subtaglineX.end }} />
+          </>
+        )}
       </div>
 
       {/* "Profile Icon" */}
@@ -104,15 +169,24 @@ function Hero() {
         <h1>
           <NameTitle />
         </h1>
-        <div className="mt-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-          <p className="font-sans text-[20px] leading-[1.35] text-black">
-            Product designer @ Solace
-          </p>
-          <p className="font-sans text-[16px] leading-[1.35] text-black">
-            Based in San Fransico
-          </p>
-        </div>
+        <p className="mt-4 font-sans text-[20px] leading-[1.35] text-black">
+          Product designer @ Solace
+        </p>
       </div>
+
+      {/* Positioned independently of the tagline (not a flex sibling of
+          it) — Figma places it near the third accent block, well before
+          the nav column, not flush against the right gutter. */}
+      <p
+        ref={subtaglineRef}
+        className="absolute z-10 whitespace-nowrap font-sans text-[16px] leading-[1.35] text-black"
+        style={{
+          left: "calc(57.14% + 29.14px)",
+          top: "calc(var(--spacing-header) + 245px)",
+        }}
+      >
+        Based in San Fransico
+      </p>
 
       <div className={styles.blur} aria-hidden>
         <span />
