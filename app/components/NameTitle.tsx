@@ -26,7 +26,7 @@ export default function NameTitle() {
       onMouseLeave={() => setHovering(false)}
     >
       <span
-        className={`flex items-center whitespace-nowrap border border-solid font-serif font-normal leading-[1.3] text-black transition-colors duration-150 text-[clamp(48px,6.94vw,100px)] ${
+        className={`flex items-center whitespace-nowrap border border-solid font-serif font-normal leading-[1.3] text-black transition-colors duration-150 text-[length:var(--name-size,clamp(48px,6.94vw,100px))] ${
           hovering ? "border-[#6675ff]" : "border-transparent"
         }`}
       >
@@ -35,7 +35,7 @@ export default function NameTitle() {
             (border-box), so showing them shifts nothing. */}
         <span
           aria-hidden
-          className={`h-full w-[0.48em] border-x border-dashed transition-colors duration-150 ${
+          className={`self-stretch w-[0.48em] border-x border-dashed transition-colors duration-150 ${
             hovering ? "border-x-[#6675ff]" : "border-x-transparent"
           }`}
         />

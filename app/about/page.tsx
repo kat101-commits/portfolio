@@ -1,78 +1,283 @@
 import Image from "next/image";
+import Link from "next/link";
 
-import ImageCarousel from "../components/ImageCarousel";
-import SnapshotCard from "../components/SnapshotCard";
+import { LINKS, isActive } from "../components/navLinks";
+import styles from "./about.module.css";
+
+/* Figma: "About Me" — node 988:3562 (desktop) and 1109:551 (mobile).
+   Laid out against the 1440 frame, so at `max-w-frame` a design pixel is a
+   CSS pixel. The nav and the bottom dock come from the root layout; this
+   page supplies the band, the body and its own Figma-matched footer. */
+
+const CONTENT = 1260; // --spacing-content, i.e. the 1440 frame less both gutters
+const HALF = CONTENT / 2;
 
 export default function About() {
   return (
-    <div className="mx-auto w-full max-w-frame px-page pt-[60px] pb-[180px] max-md:px-6 max-md:pt-10 max-md:pb-12">
-      <div className="mx-auto flex w-full max-w-[1076px] flex-col gap-[154px] max-md:gap-12">
-        <BioAndExperience />
-        <SnapshotsSection />
-      </div>
+    <div className={styles.page}>
+      {/* The two outermost rules are the only ones that carry past the
+          header, and they are anchored to the gutter rather than to a
+          fixed x, so they stay on the content edge at every width. */}
+      <div className={styles.rule} style={{ left: "var(--gutter)" }} />
+      <div className={styles.rule} style={{ right: "var(--gutter)" }} />
+
+      <HeaderBand />
+      <Experience />
+      <Snapshots />
+      <PageFooter />
     </div>
   );
 }
 
-function BioAndExperience() {
-  return (
-    <div className="flex flex-col gap-[86px] max-md:gap-10">
-      <BioRow />
-      <ExperienceRow />
-    </div>
-  );
-}
+/* ── Header band ──────────────────────────────────────────────────────── */
 
-function BioRow() {
+function HeaderBand() {
   return (
-    <section className="flex flex-col items-start gap-10 md:flex-row md:items-stretch md:gap-10">
-      <div className="relative w-full max-w-[488px] shrink-0 overflow-hidden rounded-[2px] max-md:aspect-[523/544]">
-        <Image
-          src="/images/about/profile.png"
-          alt="Katherine speaking on stage"
-          fill
-          sizes="(min-width: 768px) 488px, 100vw"
-          className="object-cover"
-          priority
+    /* Pulled up under the layout's nav so the wash reaches the top of the
+       page the way the frame does. The nav sits at z-50, so it still paints
+       over this. */
+    <section
+      className={`relative overflow-hidden md:-mt-header md:pt-header ${styles.wash}`}
+    >
+      <div className={styles.bandRules} aria-hidden>
+        {/* The nav's own two rules, and the vertical struck by the wordmark
+            — which the live nav shares with the frame, both 16px Instrument
+            Sans at the page gutter. The frame's other verticals are struck
+            by its nav labels; the live nav's labels differ, so they are
+            left out rather than landed in the wrong places. */}
+        <div className={`${styles.hRule} max-md:hidden`} style={{ top: 33 }} />
+        <div className={`${styles.hRule} max-md:hidden`} style={{ top: 53 }} />
+        <div className={`${styles.hRule} max-md:hidden`} style={{ bottom: 7 }} />
+        <div
+          className={`${styles.rule} max-md:hidden`}
+          style={{ left: "calc(var(--gutter) + 69px)" }}
         />
       </div>
 
-      <div className="flex w-full flex-col gap-4 text-black">
-        <h1 className="font-serif text-[36px] leading-none">
-          Hello! I&rsquo;m Katherine{" "}
-          <span aria-hidden="true">🙈</span>
-        </h1>
-        <div className="flex flex-col gap-5 text-body">
-          <p>Welcome to my little corner of the internet!</p>
-          <p>
-            I&rsquo;m a designer, and as the definition of designer keeps
-            changing, I&rsquo;m learning how to align with it.
-          </p>
-          <p>
-            I love meeting and interacting with all types of people,
-            understanding the why and the actions that follow behind their
-            solutions.
-          </p>
-          <div>
-            <p>When I&rsquo;m not designing, I&rsquo;m:</p>
-            <ul className="list-disc list-inside">
-              <li>Crafting</li>
-              <li>Painting</li>
-              <li>Cafe hopping</li>
-              <li>Exploring SF</li>
-              <li>Looking for my next concert to attend</li>
-            </ul>
-          </div>
-          <p>
-            Feel free to connect with me on LinkedIn, always happy to chat
-            and meet new people!{" "}
-            <span aria-hidden="true">🧚</span>
-          </p>
+      <Accent
+        className="max-md:hidden"
+        style={{ left: "var(--gutter)", top: 54, width: 68, bottom: 7 }}
+      />
+      <Accent
+        className="max-md:hidden"
+        style={{ right: "calc(var(--gutter) + 2px)", top: 54, width: 154, height: 317 }}
+      />
+      {/* Mobile keeps a single block, sized to the frame's 341 × 41. */}
+      <Accent
+        className="md:hidden"
+        style={{ left: "var(--gutter)", top: 0, right: 65, height: 41 }}
+      />
+
+      <div className="relative z-10 mx-auto w-full max-w-frame px-page max-md:px-6">
+        {/* mt-[51px]: the gap from the frame top to the nav row (the
+            accent block behind it occupies 0-41 independently). The old
+            gap to the photo (29px) now lives on the nav itself instead of
+            on the grid below, since the nav's real height stands in for
+            Figma's fixed 36px. */}
+        <div className="mt-[51px] mb-[29px] md:hidden">
+          <MobileTopNav />
         </div>
+        <div className="grid min-h-[479px] grid-cols-2 items-start max-md:min-h-0 max-md:grid-cols-1 max-md:gap-[41px] max-md:pb-8">
+          <Portrait />
+          <Bio />
+        </div>
+      </div>
+
+      <div className={styles.blur} aria-hidden>
+        <span />
+        <span />
+        <span />
+        <span />
       </div>
     </section>
   );
 }
+
+// This route is always /about, so the active link never needs a
+// live pathname — just the string isActive() would otherwise read from
+// usePathname().
+const PATHNAME = "/about";
+
+function MobileTopNav() {
+  return (
+    <nav className="flex items-center justify-between py-[8px] md:hidden">
+      <Link href="/" className="text-body text-black">
+        <span className="font-sans">[ </span>
+        <span className="font-display">张舒皿</span>
+        <span className="font-sans"> ]</span>
+      </Link>
+      <ul className="flex items-center gap-5 text-subtext">
+        {LINKS.filter((link) => !link.alwaysMuted).map((link) => {
+          const active = isActive(PATHNAME, link.href);
+          return (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                className={active ? "text-black font-medium" : "text-gray-2"}
+              >
+                {link.label}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}
+
+function Accent({
+  className = "",
+  style,
+}: {
+  className?: string;
+  style: React.CSSProperties;
+}) {
+  return (
+    <div
+      aria-hidden
+      className={`${styles.accent} ${className}`}
+      style={style}
+    />
+  );
+}
+
+function Portrait() {
+  return (
+    <div className={`${styles.portrait} self-stretch max-md:self-auto`}>
+      {/* Tilted and loosely placed on desktop; flat and full-width on
+          mobile, where the frame also crops it tighter. */}
+      <figure
+        className={`${styles.snap} ${styles.desktopOnly}`}
+        style={
+          {
+            "--base": HALF,
+            "--l": 131,
+            "--t": 49,
+            "--w": 424.933,
+            "--h": 458.649,
+          } as React.CSSProperties
+        }
+      >
+        <div
+          className={styles.card}
+          style={
+            {
+              "--rot": "-7.99deg",
+              "--p": 12,
+              "--r": 3.6,
+              "--sx": -3.6,
+              "--sy": 3.6,
+              "--sb": 3.6,
+              "--sa": 0.2,
+              "--card": "#fffdf9",
+            } as React.CSSProperties
+          }
+        >
+          <PortraitPhoto
+            vars={{
+              "--pw": 347.392,
+              "--ph": 387,
+              "--pr": 3.6,
+              "--il": -7.13,
+              "--it": -10.02,
+              "--iw": 120.18,
+              "--ih": 110,
+            }}
+          />
+        </div>
+      </figure>
+
+      <div className="relative md:hidden" style={{ aspectRatio: "382 / 323.273" }}>
+        <figure
+          className={`${styles.snap} ${styles.mobileOnly}`}
+          style={
+            {
+              "--base": 382,
+              "--l": 0,
+              "--t": 0,
+              "--w": 382,
+              "--h": 323.273,
+            } as React.CSSProperties
+          }
+        >
+          <div
+            className={styles.card}
+            style={
+              {
+                "--rot": "0deg",
+                "--p": 9.6,
+                "--r": 2.88,
+                "--sx": -1,
+                "--sy": 1,
+                "--sb": 3,
+                "--sa": 0.1,
+                "--card": "#fffdf9",
+              } as React.CSSProperties
+            }
+          >
+            <PortraitPhoto
+              vars={{
+                "--pw": 362.8,
+                "--ph": 304.073,
+                "--pr": 2.88,
+                "--il": -3.38,
+                "--it": -14.93,
+                "--iw": 107.01,
+                "--ih": 130.19,
+              }}
+            />
+          </div>
+        </figure>
+      </div>
+    </div>
+  );
+}
+
+function PortraitPhoto({ vars }: { vars: Record<string, number> }) {
+  return (
+    <div className={styles.photo} style={vars as React.CSSProperties}>
+      <Image
+        src="/images/about/profile.png"
+        alt="Katherine speaking on stage at a Generate showcase"
+        width={1118}
+        height={1140}
+        sizes="(min-width: 768px) 360px, 100vw"
+        priority
+      />
+    </div>
+  );
+}
+
+function Bio() {
+  return (
+    <div className="flex max-w-[436px] flex-col gap-4 pt-[115px] text-black max-md:max-w-none max-md:pt-0">
+      <h1 className="font-serif text-[24px] leading-normal max-md:text-[20px]">
+        Welcome to my little corner of the internet!{" "}
+        <span aria-hidden="true">🙈</span>
+      </h1>
+      <div className="flex flex-col gap-[1.45em] text-body leading-[1.45]">
+        <p>
+          I&rsquo;m Katherine, a designer who likes to get close to the
+          problem. There&rsquo;s something satisfying about thinking in systems
+          it&rsquo;s like solving a puzzle where the pieces are scattered until
+          they start to click together.
+        </p>
+        <p>
+          As recent graduated from Northeastern with a degree in Finance and
+          Design. I enjoy thinking in both product and business strategy. On
+          the side, I dabble in all types of design, and I&rsquo;m currently on
+          a side quest to learn motion design.
+        </p>
+        <p>
+          Outside of design, I&rsquo;m a craft hobbyist, cafe-hopper, and
+          trying to staying up to date with politics
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ── Experience ───────────────────────────────────────────────────────── */
 
 const EXPERIENCE = [
   {
@@ -97,468 +302,300 @@ const EXPERIENCE = [
   },
 ];
 
-function ExperienceRow() {
+function Experience() {
   return (
-    <section className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between md:gap-[136px]">
-      <h2 className="font-serif text-[36px] leading-none text-black shrink-0">
-        Experience
-      </h2>
+    <>
+      <div className="h-[138px] border-b border-[#d5ddff] max-md:h-[39px] max-md:border-b-0" />
+      <section className="border-b border-[#d5ddff] max-md:border-b-0">
+        <div className="mx-auto w-full max-w-frame px-page max-md:px-6">
+          <div className="flex justify-between gap-10 max-lg:flex-col max-lg:gap-4">
+            <h2 className="shrink-0 font-serif text-[36px] leading-normal text-black">
+              Experience
+            </h2>
+            <ul className="flex w-full max-w-[895px] flex-col gap-4 max-md:gap-6">
+              {EXPERIENCE.map((e) => (
+                <li
+                  key={e.role}
+                  className="flex items-center justify-between gap-4 max-md:items-start"
+                >
+                  {/* The bullet separates role from company on one line;
+                      mobile stacks them, so it is no longer load bearing. */}
+                  <div className="flex min-w-0 items-center gap-4 text-black max-md:flex-col max-md:items-start max-md:gap-1">
+                    <span className="whitespace-nowrap text-body max-md:whitespace-normal max-md:font-sans max-md:font-medium">
+                      {e.role}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="inline-block size-2 shrink-0 rounded-full bg-[#1e00ff] max-md:hidden"
+                    />
+                    <span className="whitespace-nowrap text-body max-md:whitespace-normal">
+                      {e.company}
+                    </span>
+                  </div>
+                  {/* Not --text-subtext: the frame asks for 12px / #747474,
+                      which has no token yet. Worth adding one if this design
+                      graduates out of the preview scaffold. */}
+                  <span className="shrink-0 whitespace-nowrap font-sans text-[12px] text-[#747474]">
+                    {e.dates}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
 
-      <ul className="flex w-full max-w-[895px] flex-col gap-6">
-        {EXPERIENCE.map((e) => (
-          <li
-            key={e.role}
-            className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between md:gap-4"
-          >
-            <div className="flex flex-wrap items-center gap-4 text-black">
-              <span className="font-sans font-medium text-body">{e.role}</span>
-              <span aria-hidden className="inline-block size-2 rounded-full bg-black" />
-              <span className="font-sans text-body">{e.company}</span>
-            </div>
-            <span className="font-sans text-subtext text-gray-2 whitespace-nowrap">
-              {e.dates}
-            </span>
-          </li>
-        ))}
-      </ul>
+/* ── Snapshots ────────────────────────────────────────────────────────────
+   Two hand-tuned collages. Both were laid out against a 1260 canvas, so one
+   `--base` covers them and only the canvas height differs. Not part of the
+   mobile frame, which ends at Experience. */
+
+type Snap = {
+  src: string;
+  alt: string;
+  nat: [number, number];
+  box: { l: number; t: number; w: number; h: number; rot?: number };
+  card: { p: number; r: number; sx: number; sy: number; sb: number; ix: number; ib: number };
+  photo: Record<string, number>;
+  cover?: boolean;
+  turn?: { tw: number; th: number };
+};
+
+const GENERATE: Snap[] = [
+  {
+    src: "/images/about/snap-0.png",
+    alt: "A Generate showcase presentation on a lecture-hall screen",
+    nat: [3024, 1702],
+    box: { l: 0, t: 19.57, w: 332.984, h: 204.748, rot: 1.83 },
+    card: { p: 11.88, r: 4.752, sx: 2.2, sy: 4.752, sb: 2.376, ix: 2.2, ib: 4.4 },
+    photo: { "--pw": 303.178, "--ph": 170.63, "--pr": 4.752 },
+    cover: true,
+  },
+  {
+    src: "/images/about/snap-1.png",
+    alt: "A teammate working at a laptop during a studio session",
+    nat: [1376, 1834],
+    box: { l: 322.51, t: -17.51, w: 230.751, h: 231.319, rot: -12.25 },
+    card: { p: 11.88, r: 4.752, sx: 2.2, sy: 4.752, sb: 2.376, ix: 2.2, ib: 4.4 },
+    photo: { "--pw": 170.122, "--ph": 170.863, "--pr": 4.752, "--il": 0, "--it": -8.03, "--iw": 100, "--ih": 132.71 },
+  },
+  {
+    src: "/images/about/snap-2.png",
+    alt: "Sticky notes and sketches pinned up during a working session",
+    nat: [1376, 1834],
+    box: { l: 482, t: 8, w: 222.387, h: 236.738, rot: 17.03 },
+    card: { p: 11.88, r: 4.752, sx: 2.2, sy: 4.752, sb: 2.376, ix: 2.2, ib: 4.4 },
+    photo: { "--pw": 149.213, "--ph": 170.85, "--pr": 4.752, "--il": -35.85, "--it": -75.82, "--iw": 183.46, "--ih": 213.55 },
+  },
+  {
+    src: "/images/about/snap-3.png",
+    alt: "A Generate poster wall covered in printed design artefacts",
+    nat: [2446, 1834],
+    box: { l: 669, t: -11, w: 272.793, h: 222.743, rot: -6.68 },
+    card: { p: 11.88, r: 4.752, sx: 2.2, sy: 4.752, sb: 2.376, ix: 2.2, ib: 4.4 },
+    photo: { "--pw": 228.096, "--ph": 171.01, "--pr": 4.752 },
+    cover: true,
+  },
+  {
+    src: "/images/about/snap-4.png",
+    alt: "Friends sitting on coastal rocks on a clear day",
+    nat: [2730, 1536],
+    box: { l: 930, t: 29, w: 327.888, h: 194.874 },
+    card: { p: 11.88, r: 4.752, sx: 2.2, sy: 4.752, sb: 2.376, ix: 2.2, ib: 4.4 },
+    photo: { "--pw": 304.128, "--ph": 171.11, "--pr": 4.752 },
+    cover: true,
+  },
+];
+
+const FOOD: Snap[] = [
+  {
+    src: "/images/about/snap-5.png",
+    alt: "A wooden table laid with small tasting glasses",
+    nat: [1528, 2038],
+    box: { l: 0, t: 24, w: 342.686, h: 228.457 },
+    card: { p: 10.133, r: 3.685, sx: 2.027, sy: 4.378, sb: 2.189, ix: 2.027, ib: 4.053 },
+    photo: { "--pw": 322.42, "--ph": 208.191, "--pr": 2.764, "--il": -11.5, "--it": -0.11, "--iw": 116.37, "--ih": 100.22 },
+    turn: { tw: 208.191, th: 322.42 },
+  },
+  {
+    src: "/images/about/snap-7.png",
+    alt: "Two pizzas shared across a table",
+    nat: [1528, 2038],
+    box: { l: 306, t: 8, w: 228.817, h: 235.892, rot: 13.96 },
+    card: { p: 11, r: 4.4, sx: 2.2, sy: 4.752, sb: 2.376, ix: 2.2, ib: 4.4 },
+    photo: { "--pw": 164.915, "--ph": 174.616, "--il": 0, "--it": -19.75, "--iw": 99.87, "--ih": 125.8 },
+  },
+  {
+    src: "/images/about/snap-8.png",
+    alt: "A tray of sushi laid out in a row",
+    nat: [1528, 2038],
+    box: { l: 502, t: 39, w: 235.758, h: 232.355, rot: -8.01 },
+    card: { p: 12.1, r: 4.84, sx: 2.42, sy: 5.227, sb: 2.614, ix: 2.42, ib: 4.84 },
+    photo: { "--pw": 185, "--ph": 181, "--il": -0.07, "--it": -19.45, "--iw": 100.14, "--ih": 135.84 },
+  },
+  {
+    src: "/images/about/snap-9.png",
+    alt: "A plated dinner course beside a lit candle",
+    nat: [1528, 2038],
+    box: { l: 901, t: 24, w: 345.98, h: 246.713, rot: -5.78 },
+    card: { p: 10, r: 4, sx: 2, sy: 4.32, sb: 2.16, ix: 2, ib: 4 },
+    photo: { "--pw": 306, "--ph": 195, "--il": 0.07, "--it": -69.13, "--iw": 99.87, "--ih": 209.03 },
+  },
+  {
+    src: "/images/about/snap-10.png",
+    alt: "A steaming bowl of noodle soup on a restaurant table",
+    nat: [1528, 2038],
+    box: { l: 702, t: 3, w: 226.684, h: 270.476, rot: 13.34 },
+    card: { p: 11, r: 4.4, sx: 2.2, sy: 4.752, sb: 2.376, ix: 2.2, ib: 4.4 },
+    photo: { "--pw": 155, "--ph": 214, "--il": -29.79, "--it": -29.76, "--iw": 161.55, "--ih": 156.17 },
+  },
+];
+
+function Snapshots() {
+  return (
+    <section className="max-md:h-[67px]">
+      <div className="mx-auto w-full max-w-frame px-page max-md:px-6">
+        <div className="flex flex-col gap-6 pt-[74px] pb-[89px] max-md:hidden">
+          <h2 className="font-serif text-[32px] leading-normal tracking-[0.02em] text-black">
+            Snapshots of my life
+          </h2>
+          <div className="flex flex-col gap-[50px]">
+            <Collage
+              label="Generate"
+              caption="Creating communities while designing"
+              photos={GENERATE}
+              height={261}
+            />
+            <Collage
+              label="Food"
+              caption="Always open to trying new places"
+              photos={FOOD}
+              height={276.945}
+            />
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
 
-// Both collages below were hand-tuned at 1258px (matching the page's old
-// 1260px content width). Rather than recompute every absolute position,
-// they're rendered at native size and uniformly scaled down to fit the
-// current 1076px content width.
-const COLLAGE_SCALE = 1076 / 1260;
-
-function ScaledCollage({
-  width,
+function Collage({
+  label,
+  caption,
+  photos,
   height,
-  children,
 }: {
-  width: number;
+  label: string;
+  caption: string;
+  photos: Snap[];
   height: number;
-  children: React.ReactNode;
 }) {
   return (
-    <div
-      style={{ width: width * COLLAGE_SCALE, height: height * COLLAGE_SCALE }}
+    <div className="flex flex-col gap-6">
+      <p className="flex items-center gap-4 text-body">
+        <strong className="font-sans font-medium text-black">{label}</strong>
+        <span className="text-gray-2">{caption}</span>
+      </p>
+      <div
+        className={styles.stage}
+        style={{ aspectRatio: `${CONTENT} / ${height}` }}
+      >
+        {photos.map((s) => (
+          <Polaroid key={s.src} snap={s} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Polaroid({ snap }: { snap: Snap }) {
+  const { box, card, photo, nat, turn, cover } = snap;
+  const img = (
+    <Image
+      src={snap.src}
+      alt={snap.alt}
+      width={nat[0]}
+      height={nat[1]}
+      sizes="(min-width: 768px) 360px, 90vw"
+      loading="lazy"
+    />
+  );
+
+  return (
+    <figure
+      className={styles.snap}
+      style={
+        {
+          "--base": CONTENT,
+          "--l": box.l,
+          "--t": box.t,
+          "--w": box.w,
+          "--h": box.h,
+        } as React.CSSProperties
+      }
     >
       <div
-        style={{
-          width,
-          height,
-          transform: `scale(${COLLAGE_SCALE})`,
-          transformOrigin: "top left",
-        }}
-      >
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function SnapshotsSection() {
-  return (
-    <section className="flex flex-col gap-8">
-      <h2 className="font-serif text-[32px] leading-none text-black tracking-[0.64px] max-md:text-[28px]">
-        Snapshots of my life
-      </h2>
-      <div className="flex flex-col gap-20 max-md:gap-10">
-        <SnapshotSubsection
-          title="Generate"
-          subtitle="Creating communities while designing"
-        >
-          <div className="max-md:hidden">
-            <ScaledCollage width={1258} height={261}>
-              <GenerateSnapshots />
-            </ScaledCollage>
-          </div>
-          <div className="md:hidden">
-            <GenerateSnapshotsMobile />
-          </div>
-        </SnapshotSubsection>
-        <SnapshotSubsection
-          title="Food"
-          subtitle="Am always open to trying new places"
-        >
-          <div className="max-md:hidden">
-            <ScaledCollage width={1258} height={277}>
-              <FoodSnapshots />
-            </ScaledCollage>
-          </div>
-          <div className="md:hidden">
-            <FoodSnapshotsMobile />
-          </div>
-        </SnapshotSubsection>
-      </div>
-    </section>
-  );
-}
-
-const GENERATE_SNAPSHOTS: { src: string; rotation: number }[] = [
-  { src: "/images/about/snap-0.png", rotation: 1.83 },
-  { src: "/images/about/snap-1.png", rotation: -6 },
-  { src: "/images/about/snap-2.png", rotation: 4 },
-  { src: "/images/about/snap-3.png", rotation: -3 },
-  { src: "/images/about/snap-4.png", rotation: 0 },
-];
-
-const FOOD_SNAPSHOTS: { src: string; rotation: number }[] = [
-  { src: "/images/about/snap-5.png", rotation: 0 },
-  { src: "/images/about/snap-7.png", rotation: 5 },
-  { src: "/images/about/snap-8.png", rotation: -4 },
-  { src: "/images/about/snap-10.png", rotation: 6 },
-  { src: "/images/about/snap-9.png", rotation: -3 },
-];
-
-function GenerateSnapshotsMobile() {
-  return (
-    <ImageCarousel hint="Swipe to view">
-      {GENERATE_SNAPSHOTS.map((s, i) => (
-        <MobileSnapshot key={i} src={s.src} rotation={s.rotation} />
-      ))}
-    </ImageCarousel>
-  );
-}
-
-function FoodSnapshotsMobile() {
-  return (
-    <ImageCarousel hint="Swipe to view">
-      {FOOD_SNAPSHOTS.map((s, i) => (
-        <MobileSnapshot key={i} src={s.src} rotation={s.rotation} />
-      ))}
-    </ImageCarousel>
-  );
-}
-
-function MobileSnapshot({
-  src,
-  rotation,
-}: {
-  src: string;
-  rotation: number;
-}) {
-  return (
-    <div className="flex w-full justify-center py-6">
-      <SnapshotCard
-        width={260}
-        height={260}
-        rotation={rotation}
-        padding={12}
-        radius={4}
+        className={styles.card}
+        style={
+          {
+            "--rot": `${box.rot ?? 0}deg`,
+            "--p": card.p,
+            "--r": card.r,
+            "--sx": card.sx,
+            "--sy": card.sy,
+            "--sb": card.sb,
+            "--ix": card.ix,
+            "--ib": card.ib,
+          } as React.CSSProperties
+        }
       >
         <div
-          className="relative h-full w-full overflow-hidden"
-          style={{ borderRadius: 2 }}
+          className={`${styles.photo} ${cover ? styles.cover : ""} ${turn ? styles.turned : ""}`}
+          style={photo as React.CSSProperties}
         >
-          <Image src={src} alt="" fill sizes="260px" className="object-cover" />
+          {turn ? (
+            <div
+              className={styles.turn}
+              style={{ "--tw": turn.tw, "--th": turn.th } as React.CSSProperties}
+            >
+              {img}
+            </div>
+          ) : (
+            img
+          )}
         </div>
-      </SnapshotCard>
-    </div>
+      </div>
+    </figure>
   );
 }
 
-function SnapshotSubsection({
-  title,
-  subtitle,
-  children,
-}: {
-  title: string;
-  subtitle: string;
-  children: React.ReactNode;
-}) {
+/* ── Footer ───────────────────────────────────────────────────────────── */
+
+function PageFooter() {
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-wrap items-center gap-6 text-body">
-        <span className="font-sans font-medium text-black">{title}</span>
-        <span className="font-sans text-gray-2">{subtitle}</span>
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function GenerateSnapshots() {
-  return (
-    <div className="relative h-[261px] w-[1258px] overflow-visible">
-      {/* Card 1 — wide landscape with butterfly */}
-      <div
-        className="absolute flex items-center justify-center"
-        style={{ left: 0, top: 19.57, width: 332.984, height: 204.748 }}
-      >
-        <SnapshotCard width={326.938} height={194.385} rotation={1.83}>
-          <div
-            className="relative h-full w-full overflow-hidden"
-            style={{ borderRadius: 2 }}
-          >
-            <Image
-              src="/images/about/snap-0.png"
-              alt=""
-              fill
-              sizes="327px"
-              className="object-cover"
-            />
-          </div>
-        </SnapshotCard>
-        <Butterfly
-          className="absolute"
-          style={{ left: 96, top: -24, transform: "rotate(0deg)" }}
-          width={56}
-          height={106}
-        />
-      </div>
-
-      {/* Card 2 — small portrait, tilted left */}
-      <div
-        className="absolute flex items-center justify-center"
-        style={{ left: 322.51, top: -17.51, width: 230.751, height: 231.319 }}
-      >
-        <SnapshotCard width={193.882} height={194.623} rotation={-12.25}>
-          <div
-            className="relative h-full w-full overflow-hidden"
-            style={{ borderRadius: 2 }}
-          >
-            <Image
-              src="/images/about/snap-1.png"
-              alt=""
-              fill
-              sizes="194px"
-              className="object-cover"
-            />
-          </div>
-        </SnapshotCard>
-      </div>
-
-      {/* Card 3 — portrait, tilted right */}
-      <div
-        className="absolute flex items-center justify-center"
-        style={{ left: 486, top: 38, width: 222.387, height: 236.738 }}
-      >
-        <SnapshotCard width={172.973} height={194.61} rotation={17.03}>
-          <div
-            className="relative h-full w-full overflow-hidden"
-            style={{ borderRadius: 2 }}
-          >
-            <Image
-              src="/images/about/snap-2.png"
-              alt=""
-              fill
-              sizes="173px"
-              className="object-cover"
-            />
-          </div>
-        </SnapshotCard>
-      </div>
-
-      {/* Card 4 — landscape, tilted left */}
-      <div
-        className="absolute flex items-center justify-center"
-        style={{ left: 669, top: -29, width: 272.793, height: 222.743 }}
-      >
-        <SnapshotCard width={251.856} height={194.789} rotation={-6.68}>
-          <div
-            className="relative h-full w-full overflow-hidden"
-            style={{ borderRadius: 2 }}
-          >
-            <Image
-              src="/images/about/snap-3.png"
-              alt=""
-              fill
-              sizes="252px"
-              className="object-cover"
-            />
-          </div>
-        </SnapshotCard>
-      </div>
-
-      {/* Card 5 — wide landscape, no rotation, with flipped butterfly */}
-      <SnapshotCard
-        width={327.888}
-        height={194.87}
-        rotation={0}
-        className="absolute left-[930px] top-[29px]"
-      >
-        <div
-          className="relative h-full w-full overflow-hidden"
-          style={{ borderRadius: 2 }}
-        >
+    <footer
+      className={`relative z-10 w-full border-t border-solid border-[#d5ddff] ${styles.footerWash}`}
+    >
+      <div className="mx-auto flex w-full max-w-frame items-center justify-between px-page max-md:px-6 py-12 max-md:flex-col max-md:items-start max-md:gap-6 max-md:py-8">
+        <div className="flex items-center gap-2">
+          <p className="text-body text-black">Katherine Zhang</p>
           <Image
-            src="/images/about/snap-4.png"
+            src="/images/preview/dash-separator.svg"
             alt=""
-            fill
-            sizes="328px"
-            className="object-cover"
+            width={121}
+            height={8}
+            style={{ height: "auto" }}
           />
+          <p className="text-body text-black">2026</p>
         </div>
-      </SnapshotCard>
-      <Butterfly
-        className="absolute"
-        style={{ left: 1050, top: 1, transform: "scaleX(-1)" }}
-        width={63}
-        height={106}
-      />
-    </div>
-  );
-}
-
-function FoodSnapshots() {
-  return (
-    <div className="relative h-[277px] w-[1258px] overflow-visible">
-      {/* Card 1 — landscape with rotated photo + secondary photo overlap */}
-      <SnapshotCard
-        width={342.686}
-        height={228.457}
-        padding={10.133}
-        radius={3.685}
-        className="absolute left-[16px] top-[24px]"
-      >
-        <div
-          className="relative h-full w-full overflow-hidden"
-          style={{ borderRadius: 1 }}
-        >
-          <Image
-            src="/images/about/snap-5.png"
-            alt=""
-            fill
-            sizes="343px"
-            className="object-cover"
-          />
+        <div className="flex items-center gap-6 font-sans text-subtext text-black max-md:self-end">
+          <Link href="https://www.linkedin.com/">LinkedIn</Link>
+          <Link href="mailto:zhangskath@gmail.com">zhangskath@gmail.com</Link>
         </div>
-      </SnapshotCard>
-      {/* Secondary photo poking out top-left of Card 1 */}
-      <div
-        className="absolute overflow-hidden"
-        style={{
-          left: 16 - 38,
-          top: 24 - 38,
-          width: 127.187,
-          height: 83.548,
-        }}
-      >
-        <Image
-          src="/images/about/snap-6.png"
-          alt=""
-          fill
-          sizes="127px"
-          className="object-cover"
-        />
       </div>
-
-      {/* Card 2 — portrait, tilted right */}
-      <div
-        className="absolute flex items-center justify-center"
-        style={{ left: 338, top: -14, width: 228.817, height: 235.892 }}
-      >
-        <SnapshotCard width={186.915} height={196.616} radius={4.4} padding={11} rotation={13.96}>
-          <div
-            className="relative h-full w-full overflow-hidden"
-            style={{ borderRadius: 2 }}
-          >
-            <Image
-              src="/images/about/snap-7.png"
-              alt=""
-              fill
-              sizes="165px"
-              className="object-cover"
-            />
-          </div>
-        </SnapshotCard>
-      </div>
-
-      {/* Card 3 — square-ish, tilted left */}
-      <div
-        className="absolute flex items-center justify-center"
-        style={{ left: 525, top: 47, width: 235.758, height: 232.355 }}
-      >
-        <SnapshotCard width={209.2} height={205.2} radius={4.84} padding={12.1} rotation={-8.01}>
-          <div
-            className="relative h-full w-full overflow-hidden"
-            style={{ borderRadius: 2 }}
-          >
-            <Image
-              src="/images/about/snap-8.png"
-              alt=""
-              fill
-              sizes="185px"
-              className="object-cover"
-            />
-          </div>
-        </SnapshotCard>
-      </div>
-
-      {/* Card 4 — tall portrait, tilted right, with butterfly */}
-      <div
-        className="absolute flex items-center justify-center"
-        style={{ left: 728, top: -14, width: 226.684, height: 270.476 }}
-      >
-        <SnapshotCard width={177} height={236} radius={4.4} padding={11} rotation={13.34}>
-          <div
-            className="relative h-full w-full overflow-hidden"
-            style={{ borderRadius: 2 }}
-          >
-            <Image
-              src="/images/about/snap-10.png"
-              alt=""
-              fill
-              sizes="155px"
-              className="object-cover"
-            />
-          </div>
-        </SnapshotCard>
-        <Butterfly
-          className="absolute"
-          style={{ left: 100, top: -3, transform: "scaleX(-1) rotate(8deg)" }}
-          width={37}
-          height={63}
-        />
-      </div>
-
-      {/* Card 5 — wide landscape, slight tilt left */}
-      <div
-        className="absolute flex items-center justify-center"
-        style={{ left: 901, top: 24, width: 345.98, height: 246.713 }}
-      >
-        <SnapshotCard width={326} height={215} radius={4} padding={10} rotation={-5.78}>
-          <div
-            className="relative h-full w-full overflow-hidden"
-            style={{ borderRadius: 2 }}
-          >
-            <Image
-              src="/images/about/snap-9.png"
-              alt=""
-              fill
-              sizes="306px"
-              className="object-cover"
-            />
-          </div>
-        </SnapshotCard>
-      </div>
-    </div>
-  );
-}
-
-function Butterfly({
-  className,
-  style,
-  width,
-  height,
-}: {
-  className?: string;
-  style?: React.CSSProperties;
-  width: number;
-  height: number;
-}) {
-  return (
-    <div className={className} style={{ width, height, ...style }}>
-      <Image
-        src="/images/about/butterfly.png"
-        alt=""
-        width={width}
-        height={height}
-        sizes={`${width}px`}
-        className="h-full w-full object-contain"
-      />
-    </div>
+    </footer>
   );
 }

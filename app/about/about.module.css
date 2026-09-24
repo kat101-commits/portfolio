@@ -1,4 +1,4 @@
-/* Scoped to the /preview/about route.
+/* Scoped to the /about route.
    Tailwind covers the flow layout on this page; what lives here is the two
    things it cannot express cleanly: the hairline grid the Figma frame is
    built on, and the polaroid object that every photo on the page is an

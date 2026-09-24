@@ -28,10 +28,16 @@ function isActive(pathname: string, href: string) {
 }
 
 export default function MobileNav() {
-  // The /preview routes render their own Figma-matched mobile nav, so skip
-  // the site-wide dock there — same bypass as Footer.tsx.
+  // /about and the /preview routes render their own Figma-matched mobile
+  // nav, so skip the site-wide dock there — same bypass as Footer.tsx.
   const pathname = usePathname();
-  if (pathname === "/preview" || pathname.startsWith("/preview/")) return null;
+  if (
+    pathname === "/" ||
+    pathname === "/about" ||
+    pathname === "/preview" ||
+    pathname.startsWith("/preview/")
+  )
+    return null;
 
   return (
     <nav className="fixed bottom-[60px] left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full bg-[#f3f3f3]/95 px-2 py-1 backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.08)] md:hidden">

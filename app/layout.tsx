@@ -55,7 +55,7 @@ export default function RootLayout({
             that visually run past this header, so there is exactly one
             line at each position instead of this header and Hero each
             drawing their own copy where they used to meet. */}
-        <header className="relative z-50 mx-auto w-full max-w-frame px-page pt-8 pb-5 max-md:hidden">
+        <header className="relative z-50 mx-auto w-full max-w-frame px-page pt-[29px] pb-4 max-md:hidden">
           <Nav />
         </header>
         <main className="flex-1 w-full max-md:pb-[200px]">{children}</main>

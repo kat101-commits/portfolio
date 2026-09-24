@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLayoutEffect, useRef, useState } from "react";
 
 import NameTitle from "./components/NameTitle";
 import ProjectCard from "./components/ProjectCard";
-import SwipeableMobileCollage from "./components/SwipeableMobileCollage";
+import { LINKS } from "./components/navLinks";
 import VideoPlaceholder from "./components/VideoPlaceholder";
 import styles from "./home.module.css";
 
@@ -19,17 +20,168 @@ export default function Home() {
   );
 }
 
+type MobileMetrics = {
+  aboutLeft: number;
+  navTop: number;
+  navBottom: number;
+  nameTop: number;
+  taglineTop: number;
+  taglineBottom: number;
+};
+
+/* Figma node 1092:310 (iPhone 14/15 Pro Max, 430 wide). Same band system
+   as desktop, but the frame's mobile layout differs in kind, not just in
+   scale: the nav drops Resume, only two verticals are drawn (the content
+   edge and the "About Me" edge), and the two accents split on that same
+   "About Me" line. Rules land on the frame's 41 / 77 / 219 / 239 / 298. */
 function MobileHero() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const aboutRef = useRef<HTMLLIElement>(null);
+  const nameRef = useRef<HTMLHeadingElement>(null);
+  const taglineRef = useRef<HTMLParagraphElement>(null);
+  const [mm, setMm] = useState<MobileMetrics | null>(null);
+
+  useLayoutEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    function measure() {
+      const section = sectionRef.current;
+      const nav = navRef.current;
+      const about = aboutRef.current;
+      const name = nameRef.current;
+      const tagline = taglineRef.current;
+      if (!section || !nav || !about || !name || !tagline) return;
+
+      const s = section.getBoundingClientRect();
+      const n = nav.getBoundingClientRect();
+      const a = about.getBoundingClientRect();
+      const h = name.getBoundingClientRect();
+      const t = tagline.getBoundingClientRect();
+
+      const next: MobileMetrics = {
+        aboutLeft: a.left - s.left,
+        navTop: n.top - s.top,
+        navBottom: n.bottom - s.top,
+        nameTop: h.top - s.top,
+        taglineTop: t.top - s.top,
+        taglineBottom: t.bottom - s.top,
+      };
+      setMm((prev) =>
+        prev &&
+        prev.aboutLeft === next.aboutLeft &&
+        prev.navTop === next.navTop &&
+        prev.navBottom === next.navBottom &&
+        prev.nameTop === next.nameTop &&
+        prev.taglineTop === next.taglineTop &&
+        prev.taglineBottom === next.taglineBottom
+          ? prev
+          : next,
+      );
+    }
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(section);
+    document.fonts?.ready.then(measure);
+    return () => ro.disconnect();
+  }, []);
+
   return (
-    <section className="flex flex-col gap-6 px-6 pt-10 pb-6 md:hidden">
-      <h1 className="w-full font-serif font-normal leading-[0.95] text-black text-[clamp(48px,14.4vw,67px)]">
-        <span className="block text-left">Katherine</span>
-        <span className="block text-right">Zhang</span>
-      </h1>
-      <SwipeableMobileCollage />
-      <p className="text-center font-sans font-medium text-[14px] leading-[1.35] text-black">
-        Product designer obsessed with digging deeper and asking &ldquo;Why&rdquo;?
-      </p>
+    <section
+      ref={sectionRef}
+      className={`relative w-full overflow-hidden md:hidden ${styles.band}`}
+      style={{ "--name-size": "clamp(34px, 12.56vw, 54px)" } as React.CSSProperties}
+    >
+      <div className={`${styles.wash} absolute inset-0`} />
+
+      <div className={styles.bandRules} aria-hidden>
+        {mm && (
+          <>
+            <div className={styles.hRule} style={{ top: mm.navTop }} />
+            <div className={styles.hRule} style={{ top: mm.navBottom }} />
+            <div className={styles.hRule} style={{ top: mm.taglineTop }} />
+            <div className={styles.hRule} style={{ top: mm.taglineBottom }} />
+          </>
+        )}
+        <div className={styles.hRule} style={{ bottom: 0 }} />
+
+        <div className={styles.rule} style={{ left: "var(--gutter)" }} />
+        {mm && <div className={styles.rule} style={{ left: mm.aboutLeft }} />}
+
+        {mm && (
+          <>
+            {/* Right of the "About Me" edge, up behind the nav. */}
+            <Accent
+              style={
+                {
+                  left: mm.aboutLeft,
+                  right: 0,
+                  top: 0,
+                  height: mm.navBottom,
+                  "--from": 0.18,
+                  "--to": 0.06,
+                } as React.CSSProperties
+              }
+            />
+            {/* Left of it, filling the gap between the nav and the name. */}
+            <Accent
+              style={
+                {
+                  left: "var(--gutter)",
+                  width: mm.aboutLeft - 24,
+                  top: mm.navBottom,
+                  height: Math.max(0, mm.nameTop - mm.navBottom),
+                  "--from": 0.18,
+                  "--to": 0.06,
+                } as React.CSSProperties
+              }
+            />
+          </>
+        )}
+      </div>
+
+      <div className="relative z-10 px-6 pt-[41px]">
+        <nav ref={navRef} className="flex items-center justify-between py-2">
+          <Link href="/" className="text-body text-black">
+            <span className="font-sans">[ </span>
+            <span className="font-display">张舒皿</span>
+            <span className="font-sans"> ]</span>
+          </Link>
+          <ul className="flex items-center gap-5 text-subtext">
+            {LINKS.filter((link) => !link.alwaysMuted).map((link, i, arr) => (
+              <li key={link.href} ref={i === arr.length - 1 ? aboutRef : undefined}>
+                <Link href={link.href} className="text-gray-2">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <h1 ref={nameRef} className="pt-16">
+          <NameTitle />
+        </h1>
+
+        <p
+          ref={taglineRef}
+          className="pt-[9px] font-sans text-[16px] leading-[1.35] text-black"
+        >
+          Product designer @ Solace
+        </p>
+
+        <p className="pb-[41px] text-right font-sans text-[12px] leading-[1.35] text-black">
+          Based in San Fransico
+        </p>
+      </div>
+
+      <div className={styles.blur} aria-hidden>
+        <span />
+        <span />
+        <span />
+        <span />
+      </div>
     </section>
   );
 }

@@ -59,7 +59,14 @@ export default function Nav() {
   }, []);
 
   return (
-    <nav ref={navRef} className="flex items-center justify-between">
+    <nav
+      ref={navRef}
+      /* py-1 gives the two rules that hug this row a few px of
+         clearance, so the lower one reads as sitting below the nav
+         rather than resting on the descenders. The frame itself is
+         tighter than this (33/53 against text at 33-52). */
+      className="flex items-center justify-between py-1"
+    >
       <Link href="/" className="text-body text-black">
         <span className="font-sans">[ </span>
         <span className="font-display">张舒皿</span>

@@ -10,10 +10,15 @@ const CONTACT_LINKS = [
 ];
 
 export default function Footer() {
-  // The /preview routes render their own Figma-matched footer, so skip the
-  // site-wide one there.
+  // /about and the /preview routes carry their own Figma-matched footer,
+  // so the site-wide one would be a second copy there.
   const pathname = usePathname();
-  if (pathname === "/preview" || pathname.startsWith("/preview/")) return null;
+  if (
+    pathname === "/about" ||
+    pathname === "/preview" ||
+    pathname.startsWith("/preview/")
+  )
+    return null;
 
   return (
     <footer
