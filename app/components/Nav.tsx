@@ -50,6 +50,15 @@ export default function Nav() {
         const rowBox = row.getBoundingClientRect();
         root.setProperty("--gy-nav-top", `${rowBox.top - frameBox.top}px`);
         root.setProperty("--gy-nav-bottom", `${rowBox.bottom - frameBox.top}px`);
+
+        // The wordmark's own edges — About draws a rule on each side of
+        // it, and this is the only place its rendered width is known.
+        const wordmark = row.querySelector("a");
+        if (wordmark) {
+          const w = wordmark.getBoundingClientRect();
+          root.setProperty("--gx-wordmark-start", `${w.left - frameBox.left}px`);
+          root.setProperty("--gx-wordmark-end", `${w.right - frameBox.left}px`);
+        }
       }
     }
 
@@ -71,7 +80,7 @@ export default function Nav() {
          top of the row, while the lower one keeps a few px of clearance
          so it reads as below the nav rather than resting on the
          descenders. */
-      className="flex items-center justify-between pb-1"
+      className="flex items-center justify-between pb-1 max-md:hidden"
     >
       <Link href="/" className="text-body text-black">
         <span className="font-sans">[ </span>

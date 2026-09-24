@@ -107,29 +107,29 @@
 }
 
 .blur > span:nth-child(1) {
-  -webkit-backdrop-filter: blur(0.5px);
-  backdrop-filter: blur(0.5px);
+  -webkit-backdrop-filter: blur(0.7px);
+  backdrop-filter: blur(0.7px);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
   mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
 }
 
 .blur > span:nth-child(2) {
-  -webkit-backdrop-filter: blur(1px);
-  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1.4px);
+  backdrop-filter: blur(1.4px);
   -webkit-mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
   mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
 }
 
 .blur > span:nth-child(3) {
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2.8px);
+  backdrop-filter: blur(2.8px);
   -webkit-mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
   mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
 }
 
 .blur > span:nth-child(4) {
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(5.6px);
+  backdrop-filter: blur(5.6px);
   -webkit-mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
   mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
 }

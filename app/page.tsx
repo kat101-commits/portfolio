@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useLayoutEffect, useRef, useState } from "react";
 
-import MobileTopNav from "./components/MobileTopNav";
 import NameTitle from "./components/NameTitle";
 import ProjectCard from "./components/ProjectCard";
 import VideoPlaceholder from "./components/VideoPlaceholder";
@@ -47,8 +46,8 @@ function MobileHero() {
       const section = sectionRef.current;
       const name = nameRef.current;
       const tagline = taglineRef.current;
-      const nav = section?.querySelector("[data-mobile-nav]");
-      const about = section?.querySelector("[data-nav-last]");
+      const nav = document.querySelector("[data-mobile-nav]");
+      const about = document.querySelector("[data-nav-last]");
       if (!section || !nav || !about || !name || !tagline) return;
 
       const s = section.getBoundingClientRect();
@@ -88,7 +87,7 @@ function MobileHero() {
   return (
     <section
       ref={sectionRef}
-      className={`relative w-full overflow-hidden md:hidden ${styles.band}`}
+      className={`relative w-full overflow-hidden md:hidden tuck-under-header ${styles.band}`}
       style={{ "--name-size": "clamp(34px, 12.56vw, 54px)" } as React.CSSProperties}
     >
       <div className={`${styles.wash} absolute inset-0`} />
@@ -105,6 +104,7 @@ function MobileHero() {
         <div className={styles.hRule} style={{ bottom: 0 }} />
 
         <div className={styles.rule} style={{ left: "var(--gutter)" }} />
+        <div className={styles.rule} style={{ right: "var(--gutter)" }} />
         {mm && <div className={styles.rule} style={{ left: mm.aboutLeft }} />}
 
         {mm && (
@@ -139,9 +139,7 @@ function MobileHero() {
         )}
       </div>
 
-      <div className="relative z-10 px-6 pt-[41px]">
-        <MobileTopNav />
-
+      <div className="relative z-10 px-6">
         <h1 ref={nameRef} className="pt-16">
           <NameTitle />
         </h1>

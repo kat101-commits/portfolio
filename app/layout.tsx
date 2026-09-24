@@ -7,9 +7,9 @@ import {
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
+import MobileTopNav from "./components/MobileTopNav";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
-import MobileNav from "./components/MobileNav";
 
 const instrumentSans = Instrument_Sans({
   variable: "--font-instrument-sans",
@@ -55,12 +55,16 @@ export default function RootLayout({
             that visually run past this header, so there is exactly one
             line at each position instead of this header and Hero each
             drawing their own copy where they used to meet. */}
-        <header className="relative z-50 mx-auto w-full max-w-frame px-page pt-[29px] pb-4 max-md:hidden">
+        {/* Both navs live here so the row sits in the same place on every
+            page — including ones with no band of their own. The bands
+            tuck up under this via .tuck-under-header, so their wash and
+            rules still run behind it. */}
+        <header className="relative z-50 mx-auto w-full max-w-frame px-page pt-[29px] pb-4 max-md:px-6 max-md:pt-[41px] max-md:pb-0">
           <Nav />
+          <MobileTopNav />
         </header>
         <main className="flex-1 w-full max-md:pb-[200px]">{children}</main>
         <Footer />
-        <MobileNav />
         <Analytics />
         <SpeedInsights />
       </body>

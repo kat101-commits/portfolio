@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import MobileTopNav from "../components/MobileTopNav";
 import styles from "./about.module.css";
 
 /* Figma: "About Me" — node 988:3562 (desktop) and 1109:551 (mobile).
@@ -15,11 +14,14 @@ const HALF = CONTENT / 2;
 export default function About() {
   return (
     <div className={styles.page}>
-      {/* The two outermost rules are the only ones that carry past the
-          header, and they are anchored to the gutter rather than to a
-          fixed x, so they stay on the content edge at every width. */}
-      <div className={styles.rule} style={{ left: "var(--gutter)" }} />
-      <div className={styles.rule} style={{ right: "var(--gutter)" }} />
+      {/* The two outermost rules carry past the header. They sit in a
+          frame-centred wrapper because the gutter is measured from the
+          1440 frame, not the viewport — outside it they'd drift once the
+          window is wider than the frame. */}
+      <div className="pointer-events-none absolute inset-y-0 left-1/2 w-full max-w-frame -translate-x-1/2">
+        <div className={styles.rule} style={{ left: "var(--gutter)" }} />
+        <div className={styles.rule} style={{ right: "var(--gutter)" }} />
+      </div>
 
       <HeaderBand />
       <Experience />
@@ -37,7 +39,7 @@ function HeaderBand() {
        page the way the frame does. The nav sits at z-50, so it still paints
        over this. */
     <section
-      className={`relative overflow-hidden tuck-under-header ${styles.wash}`}
+      className={`relative tuck-under-header ${styles.wash}`}
     >
       <div className={styles.bandRules} aria-hidden>
         {/* The nav's rules and the vertical on each of its item edges,
@@ -55,22 +57,35 @@ function HeaderBand() {
           className={`${styles.hRule} max-md:hidden`}
           style={{ top: "var(--gy-nav-bottom)" }}
         />
-        <div className={`${styles.hRule} max-md:hidden`} style={{ bottom: 0 }} />
+        <div className={styles.hRule} style={{ bottom: 0 }} />
 
-        {[0, 1, 2, 3].map((i) => (
+        {/* Verticals share the frame's coordinate space with the nav. */}
+        <div className="absolute inset-y-0 left-1/2 w-full max-w-frame -translate-x-1/2">
+          {/* One on each side of the wordmark. */}
           <div
-            key={`s${i}`}
-            className={`${styles.rule} max-md:hidden`}
-            style={{ left: `var(--gx-nav-${i}-start)` }}
+            className={styles.rule}
+            style={{ left: "var(--gx-wordmark-start)" }}
           />
-        ))}
-        {[0, 1, 2, 3].map((i) => (
           <div
-            key={`e${i}`}
-            className={`${styles.rule} max-md:hidden`}
-            style={{ left: `var(--gx-nav-${i}-end)` }}
+            className={styles.rule}
+            style={{ left: "var(--gx-wordmark-end)" }}
           />
-        ))}
+
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              key={`s${i}`}
+              className={`${styles.rule} max-md:hidden`}
+              style={{ left: `var(--gx-nav-${i}-start)` }}
+            />
+          ))}
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              key={`e${i}`}
+              className={`${styles.rule} max-md:hidden`}
+              style={{ left: `var(--gx-nav-${i}-end)` }}
+            />
+          ))}
+        </div>
       </div>
 
       <Accent
@@ -93,9 +108,6 @@ function HeaderBand() {
             gap to the photo (29px) now lives on the nav itself instead of
             on the grid below, since the nav's real height stands in for
             Figma's fixed 36px. */}
-        <div className="mt-[41px] mb-[29px] md:hidden">
-          <MobileTopNav />
-        </div>
         <div className="grid min-h-[479px] grid-cols-2 items-start max-md:min-h-0 max-md:grid-cols-1 max-md:gap-[41px] max-md:pb-8">
           <Portrait />
           <Bio />
