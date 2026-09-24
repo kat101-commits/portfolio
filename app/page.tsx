@@ -1,12 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useLayoutEffect, useRef, useState } from "react";
 
+import MobileTopNav from "./components/MobileTopNav";
 import NameTitle from "./components/NameTitle";
 import ProjectCard from "./components/ProjectCard";
-import { LINKS } from "./components/navLinks";
 import VideoPlaceholder from "./components/VideoPlaceholder";
 import styles from "./home.module.css";
 
@@ -36,8 +35,6 @@ type MobileMetrics = {
    "About Me" line. Rules land on the frame's 41 / 77 / 219 / 239 / 298. */
 function MobileHero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const navRef = useRef<HTMLElement>(null);
-  const aboutRef = useRef<HTMLLIElement>(null);
   const nameRef = useRef<HTMLHeadingElement>(null);
   const taglineRef = useRef<HTMLParagraphElement>(null);
   const [mm, setMm] = useState<MobileMetrics | null>(null);
@@ -48,10 +45,10 @@ function MobileHero() {
 
     function measure() {
       const section = sectionRef.current;
-      const nav = navRef.current;
-      const about = aboutRef.current;
       const name = nameRef.current;
       const tagline = taglineRef.current;
+      const nav = section?.querySelector("[data-mobile-nav]");
+      const about = section?.querySelector("[data-nav-last]");
       if (!section || !nav || !about || !name || !tagline) return;
 
       const s = section.getBoundingClientRect();
@@ -143,22 +140,7 @@ function MobileHero() {
       </div>
 
       <div className="relative z-10 px-6 pt-[41px]">
-        <nav ref={navRef} className="flex items-center justify-between py-2">
-          <Link href="/" className="text-body text-black">
-            <span className="font-sans">[ </span>
-            <span className="font-display">张舒皿</span>
-            <span className="font-sans"> ]</span>
-          </Link>
-          <ul className="flex items-center gap-5 text-subtext">
-            {LINKS.filter((link) => !link.alwaysMuted).map((link, i, arr) => (
-              <li key={link.href} ref={i === arr.length - 1 ? aboutRef : undefined}>
-                <Link href={link.href} className="text-gray-2">
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <MobileTopNav />
 
         <h1 ref={nameRef} className="pt-16">
           <NameTitle />

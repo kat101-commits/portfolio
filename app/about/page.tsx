@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { LINKS, isActive } from "../components/navLinks";
+import MobileTopNav from "../components/MobileTopNav";
 import styles from "./about.module.css";
 
 /* Figma: "About Me" — node 988:3562 (desktop) and 1109:551 (mobile).
@@ -74,7 +74,7 @@ function HeaderBand() {
             gap to the photo (29px) now lives on the nav itself instead of
             on the grid below, since the nav's real height stands in for
             Figma's fixed 36px. */}
-        <div className="mt-[51px] mb-[29px] md:hidden">
+        <div className="mt-[41px] mb-[29px] md:hidden">
           <MobileTopNav />
         </div>
         <div className="grid min-h-[479px] grid-cols-2 items-start max-md:min-h-0 max-md:grid-cols-1 max-md:gap-[41px] max-md:pb-8">
@@ -90,38 +90,6 @@ function HeaderBand() {
         <span />
       </div>
     </section>
-  );
-}
-
-// This route is always /about, so the active link never needs a
-// live pathname — just the string isActive() would otherwise read from
-// usePathname().
-const PATHNAME = "/about";
-
-function MobileTopNav() {
-  return (
-    <nav className="flex items-center justify-between py-[8px] md:hidden">
-      <Link href="/" className="text-body text-black">
-        <span className="font-sans">[ </span>
-        <span className="font-display">张舒皿</span>
-        <span className="font-sans"> ]</span>
-      </Link>
-      <ul className="flex items-center gap-5 text-subtext">
-        {LINKS.filter((link) => !link.alwaysMuted).map((link) => {
-          const active = isActive(PATHNAME, link.href);
-          return (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                className={active ? "text-black font-medium" : "text-gray-2"}
-              >
-                {link.label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
   );
 }
 
