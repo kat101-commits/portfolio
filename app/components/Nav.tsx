@@ -25,14 +25,26 @@ export default function Nav() {
 
     function measure() {
       if (!frame) return;
-      const frameLeft = frame.getBoundingClientRect().left;
+      const frameBox = frame.getBoundingClientRect();
       const root = document.documentElement.style;
+
       itemRefs.current.forEach((el, i) => {
         if (!el) return;
         const r = el.getBoundingClientRect();
-        root.setProperty(`--gx-nav-${i}-start`, `${r.left - frameLeft}px`);
-        root.setProperty(`--gx-nav-${i}-end`, `${r.right - frameLeft}px`);
+        root.setProperty(`--gx-nav-${i}-start`, `${r.left - frameBox.left}px`);
+        root.setProperty(`--gx-nav-${i}-end`, `${r.right - frameBox.left}px`);
       });
+
+      // The nav row's own top and bottom, for the two horizontal rules
+      // that hug it. Measured off the row itself rather than the
+      // header's padding box, so they sit on the type, not on the
+      // padding — which is what the design shows.
+      const row = navRef.current;
+      if (row) {
+        const rowBox = row.getBoundingClientRect();
+        root.setProperty("--gy-nav-top", `${rowBox.top - frameBox.top}px`);
+        root.setProperty("--gy-nav-bottom", `${rowBox.bottom - frameBox.top}px`);
+      }
     }
 
     measure();

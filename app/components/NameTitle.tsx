@@ -1,46 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-export default function NameTitle() {
-  const [hovering, setHovering] = useState(false);
-  const [dragging, setDragging] = useState(false);
-
-  useEffect(() => {
-    if (!dragging) return;
-    const stop = () => setDragging(false);
-    window.addEventListener("mouseup", stop);
-    return () => window.removeEventListener("mouseup", stop);
-  }, [dragging]);
-
-  const showDivider = hovering && !dragging;
-
-  return (
-    <div
-      className="relative inline-block select-none"
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
-      onMouseDown={() => setDragging(true)}
-    >
-      <div
-        className={`flex items-center whitespace-nowrap border border-solid font-serif font-normal text-[100px] leading-none text-black ${
-          showDivider || dragging ? "border-[#6675ff]" : "border-transparent"
-        } ${dragging ? "p-1" : ""}`}
-      >
-        <span
-          className={`border-r border-dashed pr-6 ${
-            showDivider ? "border-[#6675ff]" : "border-transparent"
-          }`}
-        >
-          Katherine
-        </span>
-        <span className="pl-6">Zhang</span>
-      </div>
-
-      {dragging ? <CornerHandles /> : null}
-    </div>
-  );
-}
+/* Figma node 988:3454 — two variants of the name.
+   Default: just the type. Hover: the whole Figma selection chrome at
+   once — a solid outline, a dashed rule down each side of the word gap,
+   and the four corner handles. Everything is declared up front in a
+   transparent colour so hovering only changes colour/opacity and the
+   box never reflows. */
 
 const CORNERS = [
   { left: "0%", top: "0%" },
@@ -49,16 +16,42 @@ const CORNERS = [
   { left: "100%", top: "100%" },
 ];
 
-function CornerHandles() {
+export default function NameTitle() {
+  const [hovering, setHovering] = useState(false);
+
   return (
-    <>
+    <span
+      className="relative inline-block select-none"
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+    >
+      <span
+        className={`flex items-center whitespace-nowrap border border-solid font-serif font-normal leading-[1.3] text-black transition-colors duration-150 text-[clamp(48px,6.94vw,100px)] ${
+          hovering ? "border-[#6675ff]" : "border-transparent"
+        }`}
+      >
+        <span>Katherine</span>
+        {/* The gap itself carries both dashed rules, inside its own width
+            (border-box), so showing them shifts nothing. */}
+        <span
+          aria-hidden
+          className={`h-full w-[0.48em] border-x border-dashed transition-colors duration-150 ${
+            hovering ? "border-x-[#6675ff]" : "border-x-transparent"
+          }`}
+        />
+        <span>Zhang</span>
+      </span>
+
       {CORNERS.map(({ left, top }) => (
         <span
           key={`${left}-${top}`}
-          className="absolute size-2 -translate-x-1/2 -translate-y-1/2 border border-solid border-[#6675ff] bg-white"
+          aria-hidden
+          className={`pointer-events-none absolute size-2 -translate-x-1/2 -translate-y-1/2 border border-solid border-[#6675ff] bg-white transition-opacity duration-150 ${
+            hovering ? "opacity-100" : "opacity-0"
+          }`}
           style={{ left, top }}
         />
       ))}
-    </>
+    </span>
   );
 }

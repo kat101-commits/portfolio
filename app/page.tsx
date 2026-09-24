@@ -36,26 +36,71 @@ function MobileHero() {
 
 const NAV_ITEM_COUNT = 4; // Work, Playground, About Me, Resume — see navLinks.ts
 
+type Metrics = {
+  nameRight: number;
+  taglineRight: number;
+  subRight: number;
+  nameTop: number;
+  nameBottom: number;
+  taglineBottom: number;
+};
+
+function same(a: Metrics | null, b: Metrics) {
+  return (
+    a !== null &&
+    a.nameRight === b.nameRight &&
+    a.taglineRight === b.taglineRight &&
+    a.subRight === b.subRight &&
+    a.nameTop === b.nameTop &&
+    a.nameBottom === b.nameBottom &&
+    a.taglineBottom === b.taglineBottom
+  );
+}
+
 function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLHeadingElement>(null);
+  const taglineRef = useRef<HTMLParagraphElement>(null);
   const subtaglineRef = useRef<HTMLParagraphElement>(null);
-  const [subtaglineX, setSubtaglineX] = useState<{ start: number; end: number } | null>(null);
+  const [m, setM] = useState<Metrics | null>(null);
 
-  // The 8 nav-item edges come from Nav.tsx via CSS custom properties (it
-  // measures its own real rendered labels, which this component has no
-  // access to). This effect only has to measure the one thing that's
-  // local to this component: the subtagline's own rendered edges, once
-  // it's absolutely positioned at its real spot.
+  // Every rule position is read off real rendered boxes rather than
+  // hardcoded: x from the frame's left edge (verticals live in the
+  // frame), y from the section's top (horizontals are full-bleed). The
+  // 8 nav-item edges and the nav row's own top/bottom arrive separately
+  // as CSS custom properties from Nav.tsx, which is the only component
+  // that can see them.
   useLayoutEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
 
     function measure() {
+      const section = sectionRef.current;
+      const frame = frameRef.current;
+      const name = nameRef.current;
+      const tagline = taglineRef.current;
       const sub = subtaglineRef.current;
-      if (!section || !sub) return;
-      const frameLeft = section.getBoundingClientRect().left;
-      const r = sub.getBoundingClientRect();
-      setSubtaglineX({ start: r.left - frameLeft, end: r.right - frameLeft });
+      if (!section || !frame || !name || !tagline || !sub) return;
+
+      const sBox = section.getBoundingClientRect();
+      const fLeft = frame.getBoundingClientRect().left;
+      const n = name.getBoundingClientRect();
+      const t = tagline.getBoundingClientRect();
+      const b = sub.getBoundingClientRect();
+      // The tagline's own text box, not its stretched grid cell — the
+      // frame puts a rule at the end of the words themselves.
+      const tText = (tagline.firstElementChild ?? tagline).getBoundingClientRect();
+
+      const next: Metrics = {
+        nameRight: n.right - fLeft,
+        taglineRight: tText.right - fLeft,
+        subRight: b.right - fLeft,
+        nameTop: n.top - sBox.top,
+        nameBottom: n.bottom - sBox.top,
+        taglineBottom: t.bottom - sBox.top,
+      };
+      setM((prev) => (same(prev, next) ? prev : next));
     }
 
     measure();
@@ -66,127 +111,134 @@ function Hero() {
   }, []);
 
   return (
-    /* Figma's header band (node 983:2969), ported in full — the exact
-       copy from the design (including its "Based in San Fransico"
-       spelling), not a version trimmed down to only what the real site
-       already said. Tucks up under the real <header> (via
-       -mt-header/pt-header, using the shared token in globals.css) so its
-       wash and hairlines run seamlessly behind the transparent nav, the
-       same trick app/preview/about already uses for its own band.
-
-       Every hairline for the whole banner — including the ones that pass
-       behind the header above — is drawn from here, so there's exactly
-       one line at each position rather than this section and the header
-       each drawing a copy where they used to meet. */
+    /* Figma's header band (node 983:2969). Full-bleed: the wash and the
+       horizontal rules run the whole viewport width, while the content
+       and the vertical rules stay on the 1440 frame — otherwise on a
+       screen wider than the frame the band reads as a floating panel
+       with blank margins beside it. Tucks up under the real <header>
+       via -mt-header/pt-header so it runs behind the transparent nav. */
     <section
       ref={sectionRef}
-      className={`relative mx-auto w-full max-w-frame overflow-hidden md:-mt-header md:pt-header max-md:hidden ${styles.band}`}
+      className={`relative w-full overflow-hidden md:-mt-header md:pt-header max-md:hidden ${styles.band}`}
     >
       <div className={`${styles.wash} absolute inset-0`} />
 
       <div className={styles.bandRules} aria-hidden>
-        {/* Exactly one line at the very top and one at the very bottom of
-            the whole banner — not one for every internal row the way the
-            static prototype's version does, since this real nav's own
-            height doesn't share that prototype's row proportions. */}
-        <div className={styles.hRule} style={{ top: 0 }} />
-        <div className={styles.hRule} style={{ bottom: 0 }} />
-
-        <div className={styles.rule} style={{ left: "var(--gutter)" }} />
-        <div className={styles.rule} style={{ right: "var(--gutter)" }} />
-
-        {/* Left + right of each real nav item, at its actual measured
-            position (published by Nav.tsx as CSS vars) — not Figma's
-            "Sandbox"-width lines, which would land somewhere this nav's
-            real "Playground" label doesn't reach. */}
-        {Array.from({ length: NAV_ITEM_COUNT }, (_, i) => (
-          <div key={i} className={styles.rule} style={{ left: `var(--gx-nav-${i}-start)` }} />
-        ))}
-        {Array.from({ length: NAV_ITEM_COUNT }, (_, i) => (
-          <div key={i} className={styles.rule} style={{ left: `var(--gx-nav-${i}-end)` }} />
-        ))}
-
-        {/* Left + right of the subtagline, at its own rendered edges —
-            only once they're known, so there's no line at x:0 for one
-            frame before the measurement runs. */}
-        {subtaglineX && (
+        {/* Horizontals, full-bleed. The first two hug the nav row; the
+            next two hug the name; then the tagline's baseline row and
+            the bottom of the band. */}
+        <div className={styles.hRule} style={{ top: "var(--gy-nav-top)" }} />
+        <div className={styles.hRule} style={{ top: "var(--gy-nav-bottom)" }} />
+        {m && (
           <>
-            <div className={styles.rule} style={{ left: subtaglineX.start }} />
-            <div className={styles.rule} style={{ left: subtaglineX.end }} />
+            <div className={styles.hRule} style={{ top: m.nameTop }} />
+            <div className={styles.hRule} style={{ top: m.nameBottom }} />
+            <div className={styles.hRule} style={{ top: m.taglineBottom }} />
           </>
         )}
+        <div className={styles.hRule} style={{ bottom: 0 }} />
+
+        {/* Verticals + accents, held to the frame. */}
+        <div className="absolute inset-y-0 left-1/2 w-full max-w-frame -translate-x-1/2">
+          <div className={styles.rule} style={{ left: "var(--spacing-page)" }} />
+          <div className={styles.rule} style={{ right: "var(--spacing-page)" }} />
+
+          {/* Right of "Zhang", and the far side of the column that holds
+              "Based in San Fransico" — both are real column edges of the
+              content grid below, measured rather than guessed. */}
+          {m && (
+            <>
+              <div className={styles.rule} style={{ left: m.taglineRight }} />
+              <div className={styles.rule} style={{ left: m.nameRight }} />
+              <div className={styles.rule} style={{ left: m.subRight }} />
+            </>
+          )}
+
+          {Array.from({ length: NAV_ITEM_COUNT }, (_, i) => (
+            <div key={`s${i}`} className={styles.rule} style={{ left: `var(--gx-nav-${i}-start)` }} />
+          ))}
+          {Array.from({ length: NAV_ITEM_COUNT }, (_, i) => (
+            <div key={`e${i}`} className={styles.rule} style={{ left: `var(--gx-nav-${i}-end)` }} />
+          ))}
+
+          {/* The three accents fill whole columns of that same grid, the
+              way they do in the frame. */}
+          {m && (
+            <>
+              <Accent
+                style={
+                  {
+                    left: m.nameRight,
+                    width: m.subRight - m.nameRight,
+                    top: "var(--gy-nav-bottom)",
+                    height: Math.max(0, m.nameTop + 30 - 54),
+                    "--from": 0.24,
+                    "--to": 0.08,
+                  } as React.CSSProperties
+                }
+              />
+              <Accent
+                style={
+                  {
+                    left: m.subRight,
+                    right: `calc(100% - var(--gx-nav-0-start))`,
+                    top: m.nameBottom,
+                    bottom: 0,
+                    "--from": 0.18,
+                    "--to": 0.06,
+                  } as React.CSSProperties
+                }
+              />
+              <Accent
+                style={
+                  {
+                    left: `var(--gx-nav-0-start)`,
+                    right: "var(--spacing-page)",
+                    top: "var(--gy-nav-bottom)",
+                    height: m.taglineBottom - 54,
+                    "--from": 0.3,
+                    "--to": 0.1,
+                  } as React.CSSProperties
+                }
+              />
+            </>
+          )}
+        </div>
       </div>
 
-      {/* "Profile Icon" */}
-      <Accent
-        style={
-          {
-            left: "calc(42.86% + 72.86px)",
-            top: "var(--spacing-header)",
-            width: 162,
-            height: 145,
-            "--from": 0.24,
-            "--to": 0.08,
-          } as React.CSSProperties
-        }
-      />
-      {/* "Profile Picture" */}
-      <Accent
-        style={
-          {
-            left: "calc(71.43% - 20.57px)",
-            top: "var(--spacing-header)",
-            width: 343,
-            height: 270,
-            "--from": 0.3,
-            "--to": 0.1,
-          } as React.CSSProperties
-        }
-      />
-      {/* "Social Media Icon" — Figma's own top:298 was measured against
-          its 53px header; offset by the same +245px from this site's
-          taller (74px) one, via --spacing-header, so it tracks if that
-          value ever changes again. */}
-      <Accent
-        style={
-          {
-            left: "calc(57.14% + 29.14px)",
-            top: "calc(var(--spacing-header) + 245px)",
-            width: 156,
-            height: 213,
-            "--from": 0.18,
-            "--to": 0.06,
-          } as React.CSSProperties
-        }
-      />
-
+      {/* Content. Three columns: the name sizes the first, the
+          subtagline sizes the second, and the third takes the slack —
+          so the rule after "Zhang" and the one after "San Fransico" are
+          genuine column edges, and the subtagline sits in the section
+          those edges create, directly right of the name. */}
       <div
-        className="relative z-10 px-page pb-20"
+        ref={frameRef}
+        className="relative z-10 mx-auto grid w-full max-w-frame px-page"
         style={{
-          paddingTop: "calc(var(--spacing-header) + clamp(48px, 7.99vw, 115px))",
+          gridTemplateColumns: "auto auto minmax(0, 1fr)",
+          paddingTop: "clamp(56px, 6.53vw, 94px)",
         }}
       >
-        <h1>
+        <h1 ref={nameRef} className="col-start-1 row-start-1 pr-3">
           <NameTitle />
         </h1>
-        <p className="mt-4 font-sans text-[20px] leading-[1.35] text-black">
-          Product designer @ Solace
-        </p>
-      </div>
 
-      {/* Positioned independently of the tagline (not a flex sibling of
-          it) — Figma places it near the third accent block, well before
-          the nav column, not flush against the right gutter. */}
-      <p
-        ref={subtaglineRef}
-        className="absolute z-10 whitespace-nowrap font-sans text-[16px] leading-[1.35] text-black"
-        style={{
-          left: "calc(57.14% + 29.14px)",
-          top: "calc(var(--spacing-header) + 245px)",
-        }}
-      >
-        Based in San Fransico
-      </p>
+        <p
+          ref={taglineRef}
+          className="col-start-1 row-start-2 pr-3 font-sans text-[clamp(14px,1.39vw,20px)] leading-[1.35] text-black"
+        >
+          <span>Product designer @ Solace</span>
+        </p>
+
+        <p
+          ref={subtaglineRef}
+          className="col-start-2 row-start-3 whitespace-nowrap pl-3 font-sans text-[clamp(12px,1.11vw,16px)] leading-[1.35] text-black"
+        >
+          Based in San Fransico
+        </p>
+
+        <div className="col-span-full row-start-4 h-[clamp(60px,9.65vw,139px)]" />
+      </div>
 
       <div className={styles.blur} aria-hidden>
         <span />
