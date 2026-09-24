@@ -30,6 +30,17 @@
   --spacing-header: 74px;
 }
 
+/* Pulls a banded section up under the transparent header so its wash and
+   rules run behind the nav. Uses the measured --spacing-header rather
+   than Tailwind's -mt-header/pt-header, which compile the token to a
+   literal and so can't track the row's real height. */
+@media (min-width: 768px) {
+  .tuck-under-header {
+    margin-top: calc(var(--spacing-header) * -1);
+    padding-top: var(--spacing-header);
+  }
+}
+
 body {
   background: var(--color-white);
   color: var(--color-black);

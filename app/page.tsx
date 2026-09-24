@@ -253,7 +253,7 @@ function Hero() {
        via -mt-header/pt-header so it runs behind the transparent nav. */
     <section
       ref={sectionRef}
-      className={`relative w-full overflow-hidden md:-mt-header md:pt-header max-md:hidden ${styles.band}`}
+      className={`relative w-full overflow-hidden tuck-under-header max-md:hidden ${styles.band}`}
     >
       <div className={`${styles.wash} absolute inset-0`} />
 
@@ -353,20 +353,20 @@ function Hero() {
           paddingTop: "clamp(56px, 6.53vw, 94px)",
         }}
       >
-        <h1 ref={nameRef} className="col-start-1 row-start-1 pr-3">
+        <h1 ref={nameRef} className="col-start-1 row-start-1">
           <NameTitle />
         </h1>
 
         <p
           ref={taglineRef}
-          className="col-start-1 row-start-2 pr-3 font-sans text-[clamp(14px,1.39vw,20px)] leading-[1.35] text-black"
+          className="col-start-1 row-start-2 font-sans text-[clamp(14px,1.39vw,20px)] leading-[1.35] text-black"
         >
           <span>Product designer @ Solace</span>
         </p>
 
         <p
           ref={subtaglineRef}
-          className="col-start-2 row-start-3 whitespace-nowrap pl-3 font-sans text-[clamp(12px,1.11vw,16px)] leading-[1.35] text-black"
+          className="col-start-2 row-start-3 whitespace-nowrap font-sans text-[clamp(12px,1.11vw,16px)] leading-[1.35] text-black"
         >
           Based in San Fransico
         </p>

@@ -39,6 +39,12 @@ export default function Nav() {
       // that hug it. Measured off the row itself rather than the
       // header's padding box, so they sit on the type, not on the
       // padding — which is what the design shows.
+      // The header's real height. globals.css seeds --spacing-header at
+      // 74px for first paint; this corrects it to whatever the row
+      // actually renders, and everything keyed off the token — the
+      // bands' tuck, the accents, the content offset — follows.
+      root.setProperty("--spacing-header", `${frameBox.height}px`);
+
       const row = navRef.current;
       if (row) {
         const rowBox = row.getBoundingClientRect();
@@ -61,11 +67,11 @@ export default function Nav() {
   return (
     <nav
       ref={navRef}
-      /* py-1 gives the two rules that hug this row a few px of
-         clearance, so the lower one reads as sitting below the nav
-         rather than resting on the descenders. The frame itself is
-         tighter than this (33/53 against text at 33-52). */
-      className="flex items-center justify-between py-1"
+      /* Padding on the bottom only: the upper rule sits hard against the
+         top of the row, while the lower one keeps a few px of clearance
+         so it reads as below the nav rather than resting on the
+         descenders. */
+      className="flex items-center justify-between pb-1"
     >
       <Link href="/" className="text-body text-black">
         <span className="font-sans">[ </span>

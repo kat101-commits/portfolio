@@ -37,21 +37,40 @@ function HeaderBand() {
        page the way the frame does. The nav sits at z-50, so it still paints
        over this. */
     <section
-      className={`relative overflow-hidden md:-mt-header md:pt-header ${styles.wash}`}
+      className={`relative overflow-hidden tuck-under-header ${styles.wash}`}
     >
       <div className={styles.bandRules} aria-hidden>
-        {/* The nav's own two rules, and the vertical struck by the wordmark
-            — which the live nav shares with the frame, both 16px Instrument
-            Sans at the page gutter. The frame's other verticals are struck
-            by its nav labels; the live nav's labels differ, so they are
-            left out rather than landed in the wrong places. */}
-        <div className={`${styles.hRule} max-md:hidden`} style={{ top: 33 }} />
-        <div className={`${styles.hRule} max-md:hidden`} style={{ top: 53 }} />
-        <div className={`${styles.hRule} max-md:hidden`} style={{ bottom: 7 }} />
+        {/* The nav's rules and the vertical on each of its item edges,
+            read from the custom properties Nav.tsx publishes off its own
+            rendered row — the same source the home band uses, so the two
+            pages draw the identical chrome around the identical nav.
+            These replaced hardcoded 33/53/69px values, which were
+            measured against a 51px header and had been wrong since it
+            grew to 74. */}
         <div
-          className={`${styles.rule} max-md:hidden`}
-          style={{ left: "calc(var(--gutter) + 69px)" }}
+          className={`${styles.hRule} max-md:hidden`}
+          style={{ top: "var(--gy-nav-top)" }}
         />
+        <div
+          className={`${styles.hRule} max-md:hidden`}
+          style={{ top: "var(--gy-nav-bottom)" }}
+        />
+        <div className={`${styles.hRule} max-md:hidden`} style={{ bottom: 0 }} />
+
+        {[0, 1, 2, 3].map((i) => (
+          <div
+            key={`s${i}`}
+            className={`${styles.rule} max-md:hidden`}
+            style={{ left: `var(--gx-nav-${i}-start)` }}
+          />
+        ))}
+        {[0, 1, 2, 3].map((i) => (
+          <div
+            key={`e${i}`}
+            className={`${styles.rule} max-md:hidden`}
+            style={{ left: `var(--gx-nav-${i}-end)` }}
+          />
+        ))}
       </div>
 
       <Accent
