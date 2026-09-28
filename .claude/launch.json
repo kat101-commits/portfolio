@@ -10,16 +10,6 @@
         "exec python3 -m http.server \"$PORT\""
       ],
       "port": 4173
-    },
-    {
-      "name": "portfolio-next",
-      "autoPort": true,
-      "runtimeExecutable": "sh",
-      "runtimeArgs": [
-        "-c",
-        "cd \"$HOME/portfolio\" && exec npm run dev"
-      ],
-      "port": 3000
     }
   ]
 }
