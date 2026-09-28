@@ -99,14 +99,14 @@ export default function Playground() {
           className="border border-solid"
           style={{ borderColor: CANVAS_RULE }}
         >
-          {/* The frame's own placeholder text, kept verbatim — it reads as
-              an unfilled template field, which is the same design-tool
-              language the rest of the site uses. */}
+          {/* Placeholder-styled title, in the same design-tool language the
+              rest of the site uses. The frame reads "[insert title]";
+              this says "[work in progress]". */}
           <div
             className="flex items-center justify-between whitespace-nowrap bg-white/50 px-6 py-3 font-sans text-[16px] italic leading-[1.35] max-md:px-4"
             style={{ color: CANVAS_RULE }}
           >
-            <p>[insert title]</p>
+            <p>[work in progress]</p>
             <p>[[time]]</p>
           </div>
 
