@@ -1,0 +1,118 @@
+/* Scoped to the Hero band on the real home page (app/page.tsx). Mirrors the
+   hairline-grid / wash / accent / progressive-blur system already
+   established in app/preview/about/about.module.css — kept as a separate
+   copy rather than a shared import so this file and that page (owned by a
+   different, concurrent redesign pass) never need to touch each other. */
+
+.band {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  --gutter: var(--spacing-page);
+}
+
+@media (max-width: 767px) {
+  .band {
+    --gutter: 24px;
+  }
+}
+
+.rule {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #d5ddff;
+}
+
+.bandRules {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hRule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #d5ddff;
+}
+
+/* Verbatim from the design (index.html's .band--header): a warm glow at
+   the bottom centre, over a blue-to-white ramp — not the much fainter
+   wash this file previously had. */
+.wash {
+  background:
+    radial-gradient(
+      ellipse 62vw 70% at 50% 94%,
+      rgba(255, 250, 227, 0.55) 0%,
+      rgba(255, 250, 227, 0) 62%
+    ),
+    linear-gradient(
+      0deg,
+      #ffffff 0%,
+      #f6fbff 44%,
+      #e0f1fd 100%
+    );
+}
+
+.accent {
+  position: absolute;
+  background: linear-gradient(
+    180deg,
+    rgba(243, 33, 117, var(--from, 0.18)) 7.212%,
+    rgba(255, 236, 244, var(--to, 0.06)) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Four stacked backdrop-filter layers, each masked to start a quarter
+   lower than the last, so the blur ramps up toward the band's bottom edge
+   instead of switching on. */
+.blur {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(36px, 6.7vw, 96px);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.blur > span {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.blur > span:nth-child(1) {
+  -webkit-backdrop-filter: blur(0.55px);
+  backdrop-filter: blur(0.55px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
+}
+
+.blur > span:nth-child(2) {
+  -webkit-backdrop-filter: blur(1.1px);
+  backdrop-filter: blur(1.1px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
+  mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
+}
+
+.blur > span:nth-child(3) {
+  -webkit-backdrop-filter: blur(2.2px);
+  backdrop-filter: blur(2.2px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
+  mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
+}
+
+.blur > span:nth-child(4) {
+  -webkit-backdrop-filter: blur(4.4px);
+  backdrop-filter: blur(4.4px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
+}

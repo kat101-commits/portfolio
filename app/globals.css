@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-black: #000000;
+  --color-white: #ffffff;
+  --color-gray-1: #a8a8a8;
+  --color-gray-2: #565656;
+  --color-placeholder: #d9d9d9;
+
+  --font-sans: var(--font-instrument-sans), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-instrument-serif), Georgia, serif;
+  --font-display: var(--font-ma-shan-zheng), serif;
+
+  --text-h3: 20px;
+  --text-h3--line-height: 1.35;
+  --text-body: 16px;
+  --text-body--line-height: 1.35;
+  --text-body-medium: 18px;
+  --text-body-medium--line-height: 1.35;
+  --text-subtext: 14px;
+  --text-subtext--line-height: 1.35;
+
+  --spacing-page: 90px;
+  --spacing-frame: 1440px;
+  --spacing-content: 1260px;
+  /* Real rendered height of the site-wide <header> (Nav + its
+     hairlines), so any banded section can tuck its own background
+     under it the way app/preview/about does — as a single value
+     instead of a magic number copied into each page. */
+  --spacing-header: 74px;
+}
+
+/* Pulls a banded section up under the transparent header so its wash and
+   rules run behind the nav. Uses the measured --spacing-header rather
+   than Tailwind's -mt-header/pt-header, which compile the token to a
+   literal and so can't track the row's real height. */
+.tuck-under-header {
+  margin-top: calc(var(--spacing-header) * -1);
+  padding-top: var(--spacing-header);
+}
+
+body {
+  background: var(--color-white);
+  color: var(--color-black);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+}
