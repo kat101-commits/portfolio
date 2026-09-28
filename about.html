@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Katherine Zhang — About Me</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+      /* Hairline colour lifted from the Figma rules (#D5DDFF). */
+      --rule: rgba(213, 221, 255, 0.8);
+
+      --black: #000;
+      --gray1: #747474;
+      --gray2: #565656;
+      --dot: #1e00ff;
+
+      /* Same two spacing knobs the Work page rides on, so the two pages
+         share a gutter and a nav rhythm at every width. */
+      --pad: clamp(16px, 6.1vw, 88px);
+      --nav-gap: clamp(10px, 2.78vw, 40px);
+      --nav-size: clamp(11px, 0.98vw, 14px);
+      --wordmark-size: clamp(13px, 1.11vw, 16px);
+      --head-top: clamp(20px, 2.3vw, 33px);
+
+      --pink-strong: rgba(243, 33, 117, 0.18);
+      --pink-fade: rgba(255, 236, 244, 0.06);
+
+      /* The two tinted washes are one recipe sampled at two centres. */
+      --wash-core: rgba(255, 250, 227, 0.06);
+      --wash-edge: rgba(231, 247, 255, 0.6);
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      background: #fff;
+      color: var(--black);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       THE PAGE GRID
+       One grid container for the entire document, so a rule struck in
+       the header is the same rule that runs past the Experience list and
+       behind the snapshots — the lines never restart between sections.
+
+       The `auto` tracks are occupied by exactly one nav label each, so
+       each of those tracks measures itself against that label's rendered
+       text. The `fr` tracks swallow whatever is left over. Nothing here
+       is a fixed px column, so every boundary re-solves on every reflow.
+       ════════════════════════════════════════════════════════════════ */
+    .page {
+      display: grid;
+      grid-template-columns:
+        [bleed-start] var(--pad)
+        [content-start col-logo] auto      /* 2  — wordmark            */
+        [col-b] minmax(0, 2fr)             /* 3                        */
+        [col-c exp-list] minmax(0, 5fr)    /* 4                        */
+        [col-nav nav-work] auto            /* 5  — sized by "Work"     */
+        [work-end] var(--nav-gap)          /* 6                        */
+        [nav-sandbox] auto                 /* 7  — sized by "Sandbox"  */
+        [sandbox-end] var(--nav-gap)       /* 8                        */
+        [nav-about] auto                   /* 9  — sized by "About Me" */
+        [about-end] var(--nav-gap)         /* 10                       */
+        [nav-resume] auto                  /* 11 — sized by "Resume"   */
+        [content-end] var(--pad)           /* 12                       */
+        [bleed-end];
+    }
+
+    /* Bands and rows are pure pass-throughs: `subgrid` re-projects the
+       parent's 12 tracks (and its line names) down one level, so a cell
+       nested two deep still lands on the same column line as the nav. */
+    .band {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: subgrid;
+    }
+
+    .row {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-template-rows: auto;
+    }
+
+    .row > .r {
+      grid-row: 1 / -1;
+      border-right: 1px solid var(--rule);
+      pointer-events: none;
+    }
+
+    /* Pinned to a track each, so a rule cannot be pushed off a boundary by
+       auto-placement flowing around the nav labels. */
+    .row > .r:nth-child(1) { grid-column: 1; }
+    .row > .r:nth-child(2) { grid-column: 2; }
+    .row > .r:nth-child(3) { grid-column: 3; }
+    .row > .r:nth-child(4) { grid-column: 4; }
+    .row > .r:nth-child(5) { grid-column: 5; }
+    .row > .r:nth-child(6) { grid-column: 6; }
+    .row > .r:nth-child(7) { grid-column: 7; }
+    .row > .r:nth-child(8) { grid-column: 8; }
+    .row > .r:nth-child(9) { grid-column: 9; }
+    .row > .r:nth-child(10) { grid-column: 10; }
+    .row > .r:nth-child(11) { grid-column: 11; }
+    .row > .r:nth-child(12) { grid-column: 12; }
+
+    /* Every track boundary is a real content edge, so all of them get a
+       line except the right gutter. */
+    .row > .r:nth-child(12) { border-right: 0; }
+
+    .row--hrule > .r {
+      border-bottom: 1px solid var(--rule);
+    }
+
+    /* ── Header band ──────────────────────────────────────────────── */
+    .band--header {
+      position: relative;
+      grid-template-rows:
+        [h-top] var(--head-top)
+        [h-nav] auto
+        [h-main] minmax(clamp(300px, 32.8vw, 472px), auto)
+        [h-foot] 7px
+        [h-end];
+      /* One radial wash, its centre parked just past the bottom edge of
+         the band, so the blue only reads at the very top. */
+      background:
+        radial-gradient(
+          60.79% 94.79% at 50% 94.79%,
+          var(--wash-core) 0%,
+          var(--wash-edge) 100%
+        ),
+        #fff;
+    }
+
+    .row--bleed-top  { grid-row: h-top / h-nav; }
+    .row--nav        { grid-row: h-nav / h-main; }
+    .row--main       { grid-row: h-main / h-foot; }
+    .row--bleed-foot { grid-row: h-foot / h-end; }
+
+    /* Pink accent blocks are siblings of the rows so they can span rows,
+       but they still snap to the shared column lines. z-index 1 lifts
+       them over the hairlines; the content is lifted over them again. */
+    .accent {
+      background: linear-gradient(180deg, var(--pink-strong) 7.212%, var(--pink-fade) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* col-logo is an auto track holding only the wordmark, so the box is
+       exactly as wide as that text — and line-bounded — at every width. */
+    .accent--wordmark {
+      grid-column: col-logo;
+      grid-row: h-main / h-foot;
+    }
+
+    .accent--portrait {
+      grid-column: nav-about / content-end;
+      grid-row: h-main / h-foot;
+      align-self: start;
+      height: 67.16%;
+    }
+
+    /* ── Progressive blur ──
+       Four stacked backdrop-filter layers, each masked to start a little
+       lower than the last, so the blur ramps up toward the bottom edge
+       instead of switching on. Kept deliberately faint.
+
+       Unlike the Work page's, this one sits *under* the intro rather than
+       over it: this banner carries type and a photo in its lower half, so
+       only the band's own gradient, rules and accents dissolve into the
+       edge while the content over them stays sharp. */
+    .header-blur {
+      position: absolute;
+      inset-inline: 0;
+      bottom: 0;
+      height: clamp(36px, 6.7vw, 96px);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .header-blur > span {
+      position: absolute;
+      inset: 0;
+      display: block;
+    }
+
+    .header-blur > span:nth-child(1) {
+      -webkit-backdrop-filter: blur(0.5px);
+      backdrop-filter: blur(0.5px);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
+    }
+
+    .header-blur > span:nth-child(2) {
+      -webkit-backdrop-filter: blur(1px);
+      backdrop-filter: blur(1px);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
+      mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
+    }
+
+    .header-blur > span:nth-child(3) {
+      -webkit-backdrop-filter: blur(2px);
+      backdrop-filter: blur(2px);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
+      mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
+    }
+
+    .header-blur > span:nth-child(4) {
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
+      mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
+    }
+
+    /* ── Nav ── */
+    .wordmark {
+      grid-column: col-logo;
+      grid-row: 1;
+      align-self: center;
+      font-family: var(--sans);
+      font-size: var(--wordmark-size);
+      white-space: nowrap;
+      z-index: 3;
+    }
+
+    .wordmark .cjk {
+      font-family: 'Ma Shan Zheng', cursive;
+    }
+
+    /* `display: contents` keeps each link a direct grid item of the nav row
+       on desktop, so it can own a track; mobile turns the wrapper into a
+       real flex row instead. */
+    .nav-links {
+      display: contents;
+    }
+
+    .nav-item {
+      grid-row: 1;
+      align-self: center;
+      font-size: var(--nav-size);
+      color: var(--gray2);
+      text-decoration: none;
+      white-space: nowrap;   /* keeps each auto track a single-word measure */
+      font-family: var(--sans);
+      z-index: 3;
+    }
+
+    .nav-item--work    { grid-column: nav-work; }
+    .nav-item--sandbox { grid-column: nav-sandbox; }
+    .nav-item--about   { grid-column: nav-about; }
+    .nav-item--resume  { grid-column: nav-resume; }
+
+    .nav-item.is-active {
+      font-family: var(--sans);
+      font-weight: 500;
+      font-style: italic;
+      color: var(--black);
+    }
+
+    .nav-item:hover {
+      color: var(--black);
+    }
+
+    /* ── Intro ────────────────────────────────────────────────────────
+       The photo and the bio split the content span down the middle. The
+       split is an even 1fr 1fr inside that span rather than a column
+       line, because no content-derived line sits at the midpoint. ──── */
+    .intro {
+      grid-column: content-start / content-end;
+      grid-row: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      z-index: 3;
+    }
+
+    /* ── Polaroids ────────────────────────────────────────────────────
+       Every scattered photo on the page is the same three-part object:
+       a `.snap` bounding box, a rotated `.snap-card` inside it, and a
+       cropped `.snap-photo` inside that.
+
+       All of its numbers are design-pixel scalars in custom properties,
+       resolved against `--u` — one container-query pixel. So a whole
+       arrangement scales with its `.stage` and the scatter never drifts.
+       ─────────────────────────────────────────────────────────────── */
+    .stage {
+      container-type: inline-size;
+      position: relative;
+      width: 100%;
+    }
+
+    .snap {
+      --u: calc(100cqw / var(--base));
+      position: absolute;
+      left: calc(var(--l) * var(--u));
+      top: calc(var(--t) * var(--u));
+      width: calc(var(--w) * var(--u));
+      height: calc(var(--h) * var(--u));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .snap-card {
+      position: relative;
+      flex: none;
+      background: var(--card, #fff);
+      padding: calc(var(--p) * var(--u));
+      border-radius: calc(var(--r) * var(--u));
+      transform: rotate(var(--rot, 0deg));
+      filter: drop-shadow(
+        calc(var(--sx) * var(--u))
+        calc(var(--sy) * var(--u))
+        calc(var(--sb) * var(--u))
+        rgba(0, 0, 0, var(--sa, 0.25))
+      );
+    }
+
+    /* The inner bevel sits above the photo, so it is its own layer. */
+    .snap-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset
+        calc(var(--ix) * var(--u))
+        calc(var(--ix) * var(--u))
+        calc(var(--ib) * var(--u))
+        rgba(0, 0, 0, 0.1);
+      pointer-events: none;
+    }
+
+    .snap-photo {
+      position: relative;
+      overflow: hidden;
+      width: calc(var(--pw) * var(--u));
+      height: calc(var(--ph) * var(--u));
+      border-radius: calc(var(--pr, 2) * var(--u));
+    }
+
+    /* The crop is expressed the way Figma expresses it: the image is
+       oversized and offset in percentages of the frame it is cropped to,
+       so both stay locked together as the stage scales. */
+    .snap-photo img {
+      position: absolute;
+      left: calc(var(--il, 0) * 1%);
+      top: calc(var(--it, 0) * 1%);
+      width: calc(var(--iw, 100) * 1%);
+      height: calc(var(--ih, 100) * 1%);
+      max-width: none;
+      display: block;
+    }
+
+    .snap-photo--cover img {
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* One photo was shot portrait and laid in on its side. */
+    .snap-photo--turned {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .snap-turn {
+      position: relative;
+      flex: none;
+      overflow: hidden;
+      width: calc(var(--tw) * var(--u));
+      height: calc(var(--th) * var(--u));
+      border-radius: calc(var(--pr, 2) * var(--u));
+      transform: rotate(-90deg);
+    }
+
+    /* ── Portrait ── */
+    .intro-media {
+      position: relative;
+      container-type: inline-size;
+      align-self: stretch;
+    }
+
+    /* A one-off, so its scalars live here rather than inline — which is
+       also what lets the mobile layout restate every one of them. */
+    .intro-media .snap {
+      --base: 631;
+      --l: 131;
+      --t: 49;
+      --w: 424.933;
+      --h: 458.649;
+    }
+
+    .intro-media .snap-card {
+      --rot: -7.99deg;
+      --p: 12;
+      --r: 3.6;
+      --sx: -3.6;
+      --sy: 3.6;
+      --sb: 3.6;
+      --sa: 0.2;
+      --card: #fffdf9;
+    }
+
+    .intro-media .snap-photo {
+      --pw: 347.392;
+      --ph: 387;
+      --pr: 3.6;
+      --il: -7.13;
+      --it: -10.02;
+      --iw: 120.18;
+      --ih: 110;
+      /* The print carries its own drop shadow here, where the scattered
+         snapshots instead carry an inner bevel. */
+      box-shadow:
+        calc(1.8 * var(--u)) calc(1.8 * var(--u)) calc(3.6 * var(--u))
+        rgba(0, 0, 0, 0.1);
+    }
+
+    .intro-media .snap-card::after {
+      content: none;
+    }
+
+    /* ── Bio ── */
+    .intro-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-top: clamp(40px, 7.99vw, 115px);
+      max-width: 436px;
+      word-break: break-word;
+    }
+
+    .intro-copy h1 {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(20px, 1.67vw, 24px);
+      line-height: normal;
+    }
+
+    .intro-copy p {
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    .intro-copy p + p {
+      margin-top: 1.45em;
+    }
+
+    /* ── Body band ──────────────────────────────────────────────────
+       Past the header only the two outermost rules carry on. The ones
+       between them are struck by the nav labels, so they belong to the
+       header's own structure and stop with it — leaving the body framed
+       by content-start and content-end alone. */
+    .band--body .row > .r:nth-child(n + 2):nth-child(-n + 10) {
+      border-right: 0;
+    }
+
+    .row--approach { min-height: clamp(56px, 9.58vw, 138px); }
+
+    /* ── Experience ── */
+    /* Placed in the auto track rather than across it, so the track
+       measures itself against this label as well as the wordmark and the
+       heading gets its own cell — the way the design draws it. */
+    .exp-title {
+      grid-column: content-start / col-b;
+      grid-row: 1;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(26px, 2.5vw, 36px);
+      line-height: normal;
+      white-space: nowrap;
+    }
+
+    .exp-list {
+      grid-column: exp-list / content-end;
+      grid-row: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .exp-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .exp-role {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .exp-role span {
+      white-space: nowrap;
+    }
+
+    .exp-dot {
+      flex: none;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--dot);
+    }
+
+    .exp-date {
+      font-size: 12px;
+      color: var(--gray1);
+      white-space: nowrap;
+    }
+
+    /* ── Snapshots ── */
+    .snapshots {
+      /* This breathing room lives on the content, not on the row: padding
+         on a row would shrink its content box and cut its rules short of
+         the band above and below. */
+      padding-top: clamp(40px, 5.14vw, 74px);
+      padding-bottom: clamp(48px, 6.18vw, 89px);
+      grid-column: content-start / content-end;
+      grid-row: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      min-width: 0;
+    }
+
+    .snapshots > h2 {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(24px, 2.22vw, 32px);
+      line-height: normal;
+      letter-spacing: 0.02em;
+    }
+
+    .snap-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 50px;
+    }
+
+    .snap-section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .snap-head {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 16px;
+    }
+
+    .snap-head strong {
+      font-family: var(--sans);
+      font-weight: 500;
+    }
+
+    .snap-head span {
+      color: var(--gray2);
+    }
+
+    /* The two arrangements are laid out against the same 1260px canvas,
+       so one `--base` covers both; only the canvas height differs. */
+    .stage--snapshots {
+      --base: 1260;
+    }
+
+    .stage--generate { aspect-ratio: 1260 / 261; }
+    .stage--food     { aspect-ratio: 1260 / 276.945; }
+
+    .stage--snapshots .snap { --base: 1260; }
+
+    /* ── Footer ───────────────────────────────────────────────────── */
+    .band--footer {
+      padding: 48px 0;
+      border-top: 1px solid var(--rule);
+      /* Same wash as the header, centred on the top edge this time. */
+      background:
+        radial-gradient(
+          60.79% 94.79% at 50% 5.21%,
+          var(--wash-core) 0%,
+          var(--wash-edge) 100%
+        ),
+        #fff;
+    }
+
+    .footer-id {
+      grid-column: content-start / col-c;
+      grid-row: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .footer-id p {
+      white-space: nowrap;
+    }
+
+    .footer-id img {
+      max-width: 100%;
+      flex-shrink: 1;
+      min-width: 0;
+    }
+
+    .footer-links {
+      grid-column: content-start / content-end;
+      grid-row: 1;
+      justify-self: end;
+      display: flex;
+      gap: 24px;
+      font-family: var(--sans);
+      font-size: 14px;
+    }
+
+    .footer-links a {
+      color: var(--black);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Reflow ───────────────────────────────────────────────────────
+       Media queries only re-assign which column lines a cell spans. The
+       track lists themselves never change, so the hairlines stay tied to
+       the nav labels and to the Experience label at every width.
+       ─────────────────────────────────────────────────────────────── */
+
+    /* The Experience row splits before anything else does: a role, a
+       company and a date on one line need more room than the two-column
+       split leaves them well before the page itself feels narrow. */
+    @media (max-width: 1000px) {
+      .exp-title,
+      .exp-list {
+        grid-column: content-start / content-end;
+      }
+
+      .row--experience {
+        grid-template-rows: auto auto;
+        row-gap: 20px;
+      }
+
+      .exp-list {
+        grid-row: 2;
+        padding-bottom: 8px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .intro {
+        grid-template-columns: 1fr;
+        row-gap: clamp(24px, 4vw, 48px);
+      }
+
+      /* Stacked, the photo has no half-width column to sit in, so its
+         stage becomes the photo's own bounding box and the scatter
+         offsets that placed it inside that column fall away. */
+      .intro-media {
+        align-self: start;
+        width: 100%;
+        max-width: 425px;
+        aspect-ratio: 424.933 / 458.649;
+      }
+
+      .intro-media .snap {
+        --base: 424.933;
+        --l: 0;
+        --t: 0;
+      }
+
+      .intro-copy {
+        padding-top: 0;
+        max-width: none;
+      }
+
+      .band--header {
+        grid-template-rows:
+          [h-top] var(--head-top)
+          [h-nav] auto
+          [h-main] auto
+          [h-foot] 7px
+          [h-end];
+      }
+
+      .intro {
+        padding-block: clamp(24px, 5vw, 48px) clamp(32px, 7vw, 64px);
+      }
+    }
+
+    /* ── Mobile ───────────────────────────────────────────────────────
+       Below this the design is its own layout, not a squeeze of the wide
+       one: three verticals instead of eleven, a flat photo instead of a
+       tilted one, stacked job entries, and no snapshots.
+       ─────────────────────────────────────────────────────────────── */
+    @media (max-width: 760px) {
+      :root {
+        --pad: 24px;
+        --nav-gap: 20px;
+        --nav-size: 14px;
+        --wordmark-size: 16px;
+        --head-top: 51px;
+      }
+
+      /* Four tracks: the middle one carries everything, and the 41px
+         track holds the line the pink block ends on. */
+      .page {
+        grid-template-columns:
+          [bleed-start] var(--pad)
+          [content-start col-logo] minmax(0, 1fr)
+          [accent-end] 41px
+          [content-end] var(--pad)
+          [bleed-end];
+      }
+
+      /* Only three of the twelve rule cells have a track to sit in now,
+         so the rest are removed rather than left to invent columns. */
+      .row > .r:nth-child(n + 5) {
+        display: none;
+      }
+
+      .row > .r {
+        border-right: 0;
+        border-bottom: 0;
+      }
+
+      .row--bleed-top > .r,
+      .row--nav > .r {
+        border-right: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+      }
+
+      .row--bleed-top > .r:nth-child(4),
+      .row--nav > .r:nth-child(4) {
+        border-right: 0;
+      }
+
+      /* The verticals carry on past the nav rule and stop partway down
+         the photo, so that run is painted rather than bordered. */
+      .row--main > .r:nth-child(-n + 3) {
+        background-image: linear-gradient(var(--rule), var(--rule));
+        background-repeat: no-repeat;
+        background-position: 100% 0;
+        background-size: 1px 211px;
+      }
+
+      /* ── Nav ── */
+      .row--nav {
+        min-height: 36px;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: var(--nav-gap);
+        grid-column: content-start / content-end;
+        grid-row: 1;
+        justify-self: end;
+        align-self: center;
+      }
+
+      /* ── Header ── */
+      .accent--wordmark {
+        grid-column: col-logo;
+        grid-row: h-top / h-nav;
+        align-self: start;
+        height: 41px;
+      }
+
+      .accent--portrait {
+        display: none;
+      }
+
+      .intro {
+        padding-block: 29px 0;
+        row-gap: 41px;
+      }
+
+      /* Flat on the page at this size, cropped tighter, and sized to the
+         full content width. */
+      .intro-media {
+        max-width: none;
+        aspect-ratio: 382 / 323.273;
+      }
+
+      .intro-media .snap {
+        --base: 382;
+        --l: 0;
+        --t: 0;
+        --w: 382;
+        --h: 323.273;
+      }
+
+      .intro-media .snap-card {
+        --rot: 0deg;
+        --p: 9.6;
+        --r: 2.88;
+        --sx: -1;
+        --sy: 1;
+        --sb: 3;
+        --sa: 0.1;
+      }
+
+      .intro-media .snap-photo {
+        --pw: 362.8;
+        --ph: 304.073;
+        --pr: 2.88;
+        --il: -3.38;
+        --it: -14.93;
+        --iw: 107.01;
+        --ih: 130.19;
+        box-shadow:
+          calc(1.44 * var(--u)) calc(1.44 * var(--u)) calc(2.88 * var(--u))
+          rgba(0, 0, 0, 0.1);
+      }
+
+      .intro-copy h1 {
+        font-size: 20px;
+      }
+
+      /* ── Experience ──
+         The role stacks over the company and the date shrinks back to a
+         caption, so the bullet that separated them is no longer load
+         bearing. */
+      .row--approach {
+        min-height: 39px;
+      }
+
+      .row--experience {
+        row-gap: 16px;
+      }
+
+      .exp-title {
+        font-size: 36px;
+      }
+
+      .exp-list {
+        gap: 24px;
+        padding-bottom: 0;
+      }
+
+      .exp-entry {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .exp-role {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        min-width: 0;
+      }
+
+      /* Sized for 430; narrower phones wrap the role instead of pushing
+         the date off the gutter. */
+      .exp-role span {
+        white-space: normal;
+      }
+
+      .exp-role span:first-child {
+        font-family: var(--sans);
+        font-weight: 500;
+      }
+
+      .exp-dot {
+        display: none;
+      }
+
+      /* ── Snapshots ──
+         Not part of the mobile design; the row stays to hold the gap the
+         design leaves above the footer. */
+      .snapshots {
+        display: none;
+      }
+
+      .row--snapshots {
+        min-height: 67px;
+      }
+
+      /* ── Footer ── */
+      .band--footer {
+        padding: 32px 0;
+      }
+
+      .footer-id,
+      .footer-links {
+        grid-column: content-start / content-end;
+      }
+
+      .row--footer {
+        grid-template-rows: auto auto;
+        row-gap: 24px;
+      }
+
+      .footer-links {
+        grid-row: 2;
+        justify-self: end;
+      }
+    }
+
+    /* The nav is the one row with no slack left to give, so small phones
+       buy it back from the type and the gaps. */
+    @media (max-width: 400px) {
+      :root {
+        --nav-gap: 12px;
+        --nav-size: 13px;
+        --wordmark-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ══ Header ══════════════════════════════════════════════════ -->
+    <header class="band band--header">
+      <div class="accent accent--wordmark"></div>
+      <div class="accent accent--portrait"></div>
+
+      <div class="row row--bleed-top row--hrule">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+      </div>
+
+      <nav class="row row--nav row--hrule">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <p class="wordmark">[&nbsp;<span class="cjk">张舒皿</span>&nbsp;]</p>
+        <div class="nav-links">
+          <a class="nav-item nav-item--work" href="/">Work</a>
+          <a class="nav-item nav-item--sandbox" href="/sandbox">Sandbox</a>
+          <a class="nav-item nav-item--about is-active" href="/about" aria-current="page">About&nbsp;Me</a>
+          <a class="nav-item nav-item--resume" href="#">Resume</a>
+        </div>
+      </nav>
+
+      <div class="row row--main row--hrule">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+
+        <div class="intro">
+          <div class="intro-media stage">
+            <figure class="snap">
+              <div class="snap-card">
+                <div class="snap-photo">
+                  <img src="assets/about-portrait.jpg" alt="Katherine presenting on stage at a Generate showcase" />
+                </div>
+              </div>
+            </figure>
+          </div>
+
+          <div class="intro-copy">
+            <h1>Welcome to my little corner of the internet! &#128584;</h1>
+            <div>
+              <p>I&rsquo;m Katherine, a designer who likes to get close to the problem. There&rsquo;s something satisfying about thinking in systems it&rsquo;s like solving a puzzle where the pieces are scattered until they start to click together.</p>
+              <p>As recent graduated from Northeastern with a degree in Finance and Design. I enjoy thinking in both product and business strategy. On the side, I dabble in all types of design, and I&rsquo;m currently on a side quest to learn motion design.</p>
+              <p>Outside of design, I&rsquo;m a craft hobbyist, cafe-hopper, and trying to staying up to date with politics</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-blur" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="row row--bleed-foot">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+      </div>
+    </header>
+
+    <!-- ══ Body ════════════════════════════════════════════════════ -->
+    <main class="band band--body">
+
+      <!-- The photo above overhangs the header, so this row is the room
+           the design leaves it before the Experience rule. -->
+      <div class="row row--approach row--hrule">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+      </div>
+
+      <section class="row row--experience row--hrule" aria-labelledby="experience-title">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+
+        <h2 class="exp-title" id="experience-title">Experience</h2>
+
+        <div class="exp-list">
+          <div class="exp-entry">
+            <p class="exp-role"><span>Associate Product Designer</span><i class="exp-dot"></i><span>Solace</span></p>
+            <p class="exp-date">July 2026 - Present</p>
+          </div>
+          <div class="exp-entry">
+            <p class="exp-role"><span>UX Research &amp; Design Co-op</span><i class="exp-dot"></i><span>Boston Consulting Group</span></p>
+            <p class="exp-date">July 2025 - Dec 2025</p>
+          </div>
+          <div class="exp-entry">
+            <p class="exp-role"><span>Design Co-op</span><i class="exp-dot"></i><span>Goodwin Procter</span></p>
+            <p class="exp-date">July 2024 - Dec 2024</p>
+          </div>
+          <div class="exp-entry">
+            <p class="exp-role"><span>Product Design Intern</span><i class="exp-dot"></i><span>Apprenta</span></p>
+            <p class="exp-date">May 2024 - July 2024</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="row row--snapshots" aria-labelledby="snapshots-title">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+
+        <div class="snapshots">
+          <h2 id="snapshots-title">Snapshots of my life</h2>
+
+          <div class="snap-sections">
+
+            <div class="snap-section">
+              <p class="snap-head"><strong>Generate</strong><span>Creating communities while designing</span></p>
+              <div class="snap-rail">
+              <div class="stage stage--snapshots stage--generate">
+                <figure class="snap" style="--l:0; --t:19.57; --w:332.984; --h:204.748; --rot:1.83deg; --p:11.88; --r:4.752; --sx:2.2; --sy:4.752; --sb:2.376; --ix:2.2; --ib:4.4;">
+                  <div class="snap-card">
+                    <div class="snap-photo snap-photo--cover" style="--pw:303.178; --ph:170.63; --pr:4.752;">
+                      <img loading="lazy" src="assets/generate-1.jpg" alt="A Generate showcase presentation on a lecture-hall screen" />
+                    </div>
+                  </div>
+                </figure>
+                <figure class="snap" style="--l:322.51; --t:-17.51; --w:230.751; --h:231.319; --rot:-12.25deg; --p:11.88; --r:4.752; --sx:2.2; --sy:4.752; --sb:2.376; --ix:2.2; --ib:4.4;">
+                  <div class="snap-card">
+                    <div class="snap-photo" style="--pw:170.122; --ph:170.863; --pr:4.752; --il:0; --it:-8.03; --iw:100; --ih:132.71;">
+                      <img loading="lazy" src="assets/generate-2.jpg" alt="A teammate working at a laptop during a studio session" />
+                    </div>
+                  </div>
+                </figure>
+                <figure class="snap" style="--l:482; --t:8; --w:222.387; --h:236.738; --rot:17.03deg; --p:11.88; --r:4.752; --sx:2.2; --sy:4.752; --sb:2.376; --ix:2.2; --ib:4.4;">
+                  <div class="snap-card">
+                    <div class="snap-photo" style="--pw:149.213; --ph:170.85; --pr:4.752; --il:-35.85; --it:-75.82; --iw:183.46; --ih:213.55;">
+                      <img loading="lazy" src="assets/generate-3.jpg" alt="Sticky notes and sketches pinned up during a working session" />
+                    </div>
+                  </div>
+                </figure>
+                <figure class="snap" style="--l:669; --t:-11; --w:272.793; --h:222.743; --rot:-6.68deg; --p:11.88; --r:4.752; --sx:2.2; --sy:4.752; --sb:2.376; --ix:2.2; --ib:4.4;">
+                  <div class="snap-card">
+                    <div class="snap-photo snap-photo--cover" style="--pw:228.096; --ph:171.01; --pr:4.752;">
+                      <img loading="lazy" src="assets/generate-4.jpg" alt="A Generate poster wall covered in printed design artefacts" />
+                    </div>
+                  </div>
+                </figure>
+                <figure class="snap" style="--l:930; --t:29; --w:327.888; --h:194.874; --p:11.88; --r:4.752; --sx:2.2; --sy:4.752; --sb:2.376; --ix:2.2; --ib:4.4;">
+                  <div class="snap-card">
+                    <div class="snap-photo snap-photo--cover" style="--pw:304.128; --ph:171.11; --pr:4.752;">
+                      <img loading="lazy" src="assets/generate-5.jpg" alt="Friends sitting on coastal rocks on a clear day" />
+                    </div>
+                  </div>
+                </figure>
+              </div>
+              </div>
+            </div>
+
+            <div class="snap-section">
+              <p class="snap-head"><strong>Food</strong><span>Always open to trying new places</span></p>
+              <div class="snap-rail">
+              <div class="stage stage--snapshots stage--food">
+                <figure class="snap" style="--l:0; --t:24; --w:342.686; --h:228.457; --p:10.133; --r:3.685; --sx:2.027; --sy:4.378; --sb:2.189; --ix:2.027; --ib:4.053;">
+                  <div class="snap-card">
+                    <div class="snap-photo snap-photo--turned" style="--pw:322.42; --ph:208.191; --pr:2.764;">
+                      <div class="snap-turn" style="--tw:208.191; --th:322.42; --pr:2.764;">
+                        <img loading="lazy" src="assets/food-1.jpg" alt="A wooden table laid with small tasting glasses" style="--il:-11.5; --it:-0.11; --iw:116.37; --ih:100.22;" />
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+                <figure class="snap" style="--l:306; --t:8; --w:228.817; --h:235.892; --rot:13.96deg; --p:11; --r:4.4; --sx:2.2; --sy:4.752; --sb:2.376; --ix:2.2; --ib:4.4;">
+                  <div class="snap-card">
+                    <div class="snap-photo" style="--pw:164.915; --ph:174.616; --il:0; --it:-19.75; --iw:99.87; --ih:125.8;">
+                      <img loading="lazy" src="assets/food-2.jpg" alt="Two pizzas shared across a table" />
+                    </div>
+                  </div>
+                </figure>
+                <figure class="snap" style="--l:502; --t:39; --w:235.758; --h:232.355; --rot:-8.01deg; --p:12.1; --r:4.84; --sx:2.42; --sy:5.227; --sb:2.614; --ix:2.42; --ib:4.84;">
+                  <div class="snap-card">
+                    <div class="snap-photo" style="--pw:185; --ph:181; --il:-0.07; --it:-19.45; --iw:100.14; --ih:135.84;">
+                      <img loading="lazy" src="assets/food-3.jpg" alt="A tray of sushi laid out in a row" />
+                    </div>
+                  </div>
+                </figure>
+                <figure class="snap" style="--l:901; --t:24; --w:345.98; --h:246.713; --rot:-5.78deg; --p:10; --r:4; --sx:2; --sy:4.32; --sb:2.16; --ix:2; --ib:4;">
+                  <div class="snap-card">
+                    <div class="snap-photo" style="--pw:306; --ph:195; --il:0.07; --it:-69.13; --iw:99.87; --ih:209.03;">
+                      <img loading="lazy" src="assets/food-4.jpg" alt="A plated dinner course beside a lit candle" />
+                    </div>
+                  </div>
+                </figure>
+                <figure class="snap" style="--l:702; --t:3; --w:226.684; --h:270.476; --rot:13.34deg; --p:11; --r:4.4; --sx:2.2; --sy:4.752; --sb:2.376; --ix:2.2; --ib:4.4;">
+                  <div class="snap-card">
+                    <div class="snap-photo" style="--pw:155; --ph:214; --il:-29.79; --it:-29.76; --iw:161.55; --ih:156.17;">
+                      <img loading="lazy" src="assets/food-5.jpg" alt="A steaming bowl of noodle soup on a restaurant table" />
+                    </div>
+                  </div>
+                </figure>
+              </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ══ Footer ══════════════════════════════════════════════════ -->
+    <footer class="band band--footer">
+      <div class="row row--footer">
+        <div class="footer-id">
+          <p>Katherine Zhang</p>
+          <img src="assets/footer-rule.svg" alt="" />
+          <p>2026</p>
+        </div>
+        <div class="footer-links">
+          <a href="#">LinkedIn</a>
+          <a href="mailto:zhangskath@gmail.com">zhangskath@gmail.com</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>

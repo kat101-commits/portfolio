@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Katherine Zhang — Work</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* Hairline colour lifted from the Figma rules (#D5DDFF). */
+      --rule: rgba(213, 221, 255, 0.8);
+
+      --sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+      /* Figma's selection chrome, shown on hovering the name. */
+      --select: #6675ff;
+
+      --black: #000;
+      --gray1: #747474;
+      --gray2: #565656;
+      --placeholder: #d9d9d9;
+      --apprenta: #592d90;
+
+      /* The only two spacing knobs the whole skeleton depends on.
+         Both are fluid, so every column boundary is fluid with them. */
+      --pad: clamp(16px, 6.1vw, 88px);
+      --nav-gap: clamp(10px, 2.78vw, 40px);
+      --gap-last: var(--nav-gap);
+      --nav-size: clamp(11px, 0.98vw, 14px);
+
+      --pink-strong: rgba(243, 33, 117, 0.24);
+      --pink-fade: rgba(255, 236, 244, 0.08);
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      background: #fff;
+      color: var(--black);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       THE PAGE GRID
+       One grid container for the entire document. The `auto` tracks are
+       occupied by exactly one item each — a nav label — so each of those
+       tracks measures itself against that label's rendered text. The `fr`
+       tracks swallow whatever is left over. Nothing here is a fixed px
+       column, so every boundary re-solves on every reflow.
+       ════════════════════════════════════════════════════════════════ */
+    .page {
+      display: grid;
+      grid-template-columns:
+        [bleed-start] var(--pad)
+        [content-start col-logo] auto      /* 2  — wordmark + "…@ Solace" */
+        [col-b] minmax(0, 8fr)             /* 3  */
+        [col-c] auto                       /* 4  — "Based in San Fransico" */
+        [col-d] minmax(0, 3fr)             /* 5  */
+        [col-nav nav-work] auto            /* 6  — sized by "Work"     */
+        [work-end] var(--nav-gap)          /* 7  */
+        [nav-sandbox] auto                 /* 8  — sized by "Sandbox"  */
+        [sandbox-end] var(--nav-gap)       /* 9  */
+        [nav-about] auto                   /* 10 — sized by "About Me" */
+        [about-end] var(--gap-last)        /* 11 */
+        [nav-resume] auto                  /* 12 — sized by "Resume"   */
+        [content-end] var(--pad)
+        [bleed-end];
+    }
+
+    /* Bands and rows are pure pass-throughs: `subgrid` re-projects the
+       parent's 14 tracks (and its line names) down one level, so a cell
+       nested two deep still lands on the same column line as the nav. */
+    .band,
+    .row {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: subgrid;
+    }
+
+    .row {
+      grid-template-rows: auto;
+    }
+
+    /* ── Grid lines ──
+       14 empty cells per row, one per track. The visible rules are their
+       own border-right / border-bottom, so a line can only ever be drawn
+       exactly on a column boundary — there is no overlay to drift. */
+    .row > .r {
+      grid-row: 1 / -1;
+      border-right: 1px solid var(--rule);
+      pointer-events: none;
+      /* left at z-index auto: in-flow, so the accents' z-index 1 lifts the
+         pink over them while card and footer content still paints on top */
+    }
+
+    .row > .r:nth-child(1) { grid-column: 1; }
+    .row > .r:nth-child(2) { grid-column: 2; }
+    .row > .r:nth-child(3) { grid-column: 3; }
+    .row > .r:nth-child(4) { grid-column: 4; }
+    .row > .r:nth-child(5) { grid-column: 5; }
+    .row > .r:nth-child(6) { grid-column: 6; }
+    .row > .r:nth-child(7) { grid-column: 7; }
+    .row > .r:nth-child(8) { grid-column: 8; }
+    .row > .r:nth-child(9) { grid-column: 9; }
+    .row > .r:nth-child(10) { grid-column: 10; }
+    .row > .r:nth-child(11) { grid-column: 11; }
+    .row > .r:nth-child(12) { grid-column: 12; }
+    .row > .r:nth-child(13) { grid-column: 13; }
+
+    /* Every track boundary is a real content edge now, so all of them get a
+       line except the right gutter. */
+    .row > .r:nth-child(13) {
+      border-right: 0;
+    }
+
+    .row--hrule > .r {
+      border-bottom: 1px solid var(--rule);
+    }
+
+    /* ── Header band ──────────────────────────────────────────────── */
+    .band--header {
+      position: relative;
+      grid-template-rows:
+        [h-top] clamp(20px, 2.3vw, 33px)
+        [h-nav] auto
+        [h-space] clamp(48px, 7.99vw, 115px)
+        [h-name] auto
+        [h-tag] auto
+        [h-sub] clamp(64px, 11.4vw, 164px)
+        [h-foot] 7px
+        [h-end];
+      /* Rotated 180deg: blue at the top ramping down to white, with the warm
+         glow at the bottom centre. */
+      background:
+        radial-gradient(
+          ellipse 62vw 70% at 50% 94%,
+          rgba(255, 250, 227, 0.55) 0%,
+          rgba(255, 250, 227, 0) 62%
+        ),
+        linear-gradient(
+          0deg,
+          #ffffff 0%,
+          #f6fbff 44%,
+          #e0f1fd 100%
+        );
+    }
+
+    .row--bleed-top   { grid-row: h-top / h-nav; }
+    .row--nav         { grid-row: h-nav / h-space; }
+    .row--space       { grid-row: h-space / h-name; }
+    .row--name        { grid-row: h-name / h-tag; }
+    .row--tag         { grid-row: h-tag / h-sub; }
+    .row--sub         { grid-row: h-sub / h-foot; }
+    .row--bleed-foot  { grid-row: h-foot / h-end; }
+
+    /* Pink accent blocks are siblings of the rows so they can span rows,
+       but they still snap to the shared column lines. z-index 1 lifts them
+       over the hairlines; the type in the rows is lifted over them again. */
+    .accent {
+      background: linear-gradient(180deg, var(--pink-strong) 7.212%, var(--pink-fade) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .band--header .wordmark,
+    .band--header .nav-item,
+    .band--header .name,
+    .band--header .tagline,
+    .band--header .subtagline {
+      z-index: 2;
+    }
+
+    .accent--portrait {
+      grid-column: col-nav / content-end;
+      grid-row: h-space / h-sub;
+      --pink-strong: rgba(243, 33, 117, 0.3);
+      --pink-fade: rgba(255, 236, 244, 0.1);
+    }
+
+    /* col-c is an auto track holding only the subtagline, so the box is
+       exactly as wide as that text — and line-bounded — at every width. */
+    .accent--profile {
+      grid-column: col-c / col-d;
+      grid-row: h-space / h-name;
+    }
+
+    .accent--social {
+      grid-column: col-d / col-nav;
+      grid-row: h-tag / h-end;
+      --pink-strong: rgba(243, 33, 117, 0.18);
+      --pink-fade: rgba(255, 236, 244, 0.06);
+    }
+
+    /* ── Progressive blur ──
+       Four stacked backdrop-filter layers, each masked to start a little
+       lower than the last, so the blur ramps up toward the bottom edge
+       instead of switching on. Kept deliberately faint. */
+    .header-blur {
+      position: absolute;
+      inset-inline: 0;
+      bottom: 0;
+      height: clamp(36px, 6.7vw, 96px);
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .header-blur > span {
+      position: absolute;
+      inset: 0;
+      display: block;
+    }
+
+    .header-blur > span:nth-child(1) {
+      -webkit-backdrop-filter: blur(0.5px);
+      backdrop-filter: blur(0.5px);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
+    }
+
+    .header-blur > span:nth-child(2) {
+      -webkit-backdrop-filter: blur(1px);
+      backdrop-filter: blur(1px);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
+      mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
+    }
+
+    .header-blur > span:nth-child(3) {
+      -webkit-backdrop-filter: blur(2px);
+      backdrop-filter: blur(2px);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
+      mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
+    }
+
+    .header-blur > span:nth-child(4) {
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
+      mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
+    }
+
+    /* ── Nav ── */
+    .wordmark {
+      grid-column: col-logo;
+      grid-row: 1;
+      align-self: center;
+      font-family: var(--sans);
+      font-size: clamp(13px, 1.11vw, 16px);
+      white-space: nowrap;
+      padding-right: 0;
+    }
+
+    .wordmark .cjk {
+      font-family: 'Ma Shan Zheng', cursive;
+    }
+
+    .nav-item {
+      grid-row: 1;
+      align-self: center;
+      font-size: var(--nav-size);
+      color: var(--gray2);
+      text-decoration: none;
+      white-space: nowrap;   /* keeps each auto track a single-word measure */
+      font-family: var(--sans);
+    }
+
+    .nav-item--work    { grid-column: nav-work; }
+    .nav-item--sandbox { grid-column: nav-sandbox; }
+    .nav-item--about   { grid-column: nav-about; }
+    .nav-item--resume  { grid-column: nav-resume; }
+
+    .nav-item.is-active {
+      font-family: var(--sans);
+      font-weight: 500;
+      font-style: italic;
+      color: var(--black);
+    }
+
+    .nav-item:hover {
+      color: var(--black);
+    }
+
+    /* ── Name + taglines ── */
+    .name {
+      grid-column: content-start / col-c;
+      grid-row: 1;
+      justify-self: start;   /* hug the text so the selection box fits it */
+      position: relative;
+      display: flex;
+      align-items: center;
+      max-width: 100%;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
+      /* Tuned so the measured text always fits the tracks it spans —
+         the type scales with the grid instead of overflowing it. */
+      font-size: clamp(30px, 6.8vw, 98px);
+      line-height: 1.3;
+      white-space: nowrap;
+      min-width: 0;
+      /* Declared transparent up front so hovering changes only colour —
+         border-box keeps the dashed rules inside the gap's width, so
+         nothing reflows when the chrome appears. */
+      outline: 1px solid transparent;
+      transition: outline-color 120ms ease;
+    }
+
+    .name .gap {
+      align-self: stretch;
+      width: 0.48em;
+      border-left: 1px dashed transparent;
+      border-right: 1px dashed transparent;
+      transition: border-color 120ms ease;
+    }
+
+    .name-handle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border: 1px solid var(--select);
+      opacity: 0;
+      transition: opacity 120ms ease;
+      pointer-events: none;
+    }
+
+    .name-handle:nth-of-type(1) { left: 0;    top: 0; }
+    .name-handle:nth-of-type(2) { left: 100%; top: 0; }
+    .name-handle:nth-of-type(3) { left: 0;    top: 100%; }
+    .name-handle:nth-of-type(4) { left: 100%; top: 100%; }
+
+    .name-handle {
+      transform: translate(-50%, -50%);
+    }
+
+    /* Pointer devices only — on touch there is no hover to leave. */
+    @media (hover: hover) {
+      .name:hover {
+        outline-color: var(--select);
+      }
+
+      .name:hover .gap {
+        border-color: var(--select);
+      }
+
+      .name:hover .name-handle {
+        opacity: 1;
+      }
+    }
+
+    .tagline {
+      grid-column: content-start / col-b;   /* = track 2, which it sizes */
+      grid-row: 1;
+      align-self: start;
+      font-size: clamp(14px, 1.39vw, 20px);
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .subtagline {
+      grid-column: col-c / col-d;
+      grid-row: 1;
+      align-self: start;
+      font-family: var(--sans);
+      font-weight: 400;      /* matches .tagline */
+      font-size: clamp(12px, 1.11vw, 16px);
+      white-space: nowrap;
+    }
+
+    /* ── Work band ────────────────────────────────────────────────── */
+    .band--work {
+      padding: 40px 0 80px;
+      row-gap: 48px;
+    }
+
+    /* The pair spans content-start -> content-end, so the block still begins
+       and ends on shared grid lines. The split between the two is an even
+       1fr 1fr inside that span rather than a column line, because no
+       content-derived line can sit at the exact midpoint at every width. */
+    .cards {
+      grid-column: content-start / content-end;
+      grid-row: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 32px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .card-media {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 616 / 460;
+      background: var(--placeholder);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .card-media--apprenta {
+      background: var(--apprenta);
+    }
+
+    .apprenta-shot {
+      position: absolute;
+      left: 14.94%;
+      top: 20.65%;
+      width: 85.39%;
+      aspect-ratio: 526 / 394;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .badge {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      border-radius: 3px;
+      background: rgba(0, 0, 0, 0.1);
+      font-family: var(--sans);
+      font-size: 12px;
+      line-height: normal;
+      color: var(--black);
+      white-space: nowrap;
+    }
+
+    .badge--light {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .card-details {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .card-head h2 {
+      font-family: var(--sans);
+      font-weight: 500;
+      font-size: clamp(18px, 1.67vw, 24px);
+      line-height: normal;
+      white-space: nowrap;
+    }
+
+    .card-date {
+      font-family: var(--sans);
+      font-weight: 400;
+      font-size: 14px;
+      color: var(--gray1);
+      white-space: nowrap;
+    }
+
+    .card-blurb {
+      font-size: 16px;
+      color: var(--gray1);
+    }
+
+    /* ── Footer ───────────────────────────────────────────────────── */
+    .band--footer {
+      padding: 48px 0;
+      border-top: 1px solid var(--rule);
+      background:
+        linear-gradient(180deg, #ffffff 0%, #eef7fd 100%);
+    }
+
+    .footer-id {
+      grid-column: content-start / col-c;
+      grid-row: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .footer-id p {
+      white-space: nowrap;
+    }
+
+    .footer-id img {
+      max-width: 100%;
+      flex-shrink: 1;
+      min-width: 0;
+    }
+
+    .footer-links {
+      grid-column: col-c / content-end;
+      grid-row: 1;
+      justify-self: end;
+      display: flex;
+      gap: 24px;
+      font-family: var(--sans);
+      font-size: 14px;
+    }
+
+    .footer-links a {
+      color: var(--black);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Reflow ───────────────────────────────────────────────────────
+       Media queries only re-assign which column lines a cell spans. The
+       track list itself never changes, so the hairlines stay tied to the
+       nav labels at every width. No JS, no resize observers.
+       ─────────────────────────────────────────────────────────────── */
+    @media (max-width: 860px) {
+      .name {
+        grid-column: content-start / content-end;
+      }
+    }
+
+    /* ── Mobile (Figma iPhone 14/15 Pro Max, 430px) ──────────────────
+       Same 13 tracks, same nav-derived lines — but the design shows only
+       two of them (content-start and the "About Me" edge), drops Resume
+       from the nav, and re-hangs the pink blocks off that one line. */
+    @media (max-width: 760px) {
+      :root {
+        --pad: 24px;
+        --nav-gap: 20px;
+        --gap-last: 0px;      /* Resume is hidden; close the gap before it */
+        --nav-size: 14px;
+      }
+
+      .nav-item--resume {
+        display: none;
+      }
+
+      /* Only the content edge and the "About Me" line are drawn. */
+      .row > .r {
+        border-right: 0;
+      }
+
+      .row > .r:nth-child(1),
+      .row > .r:nth-child(9) {
+        border-right: 1px solid var(--rule);
+      }
+
+      /* No rule under the band between the nav and the name. */
+      .row--space > .r {
+        border-bottom: 0;
+      }
+
+      /* Rows pinned to the Figma y-positions: rules land on 41 / 77 / 219
+         / 239 / 298. minmax keeps them growable if the type ever wraps. */
+      .band--header {
+        grid-template-rows:
+          [h-top] 41px
+          [h-nav] minmax(36px, auto)
+          [h-space] 63px
+          [h-name] minmax(79px, auto)
+          [h-tag] minmax(20px, auto)
+          [h-sub] 59px
+          [h-foot] 0px
+          [h-end];
+      }
+
+      /* Two blocks, split on the "About Me" line. The mobile frame uses a
+         lighter pink than desktop for both. */
+      .accent {
+        --pink-strong: rgba(243, 33, 117, 0.18);
+        --pink-fade: rgba(255, 236, 244, 0.06);
+      }
+
+      .accent--portrait {
+        grid-column: nav-about / content-end;
+        grid-row: h-top / h-space;
+      }
+
+      .accent--profile {
+        grid-column: content-start / nav-about;
+        grid-row: h-space / h-name;
+      }
+
+      .accent--social {
+        display: none;
+      }
+
+      .name {
+        font-size: clamp(34px, 12.56vw, 54px);
+      }
+
+      .name .gap {
+        width: 0.3em;
+      }
+
+      /* Both taglines clear the "About Me" line, so they leave their auto
+         tracks and hang off that line instead — one left, one right. */
+      .tagline,
+      .subtagline {
+        grid-column: content-start / nav-about;
+        white-space: nowrap;
+      }
+
+      .tagline {
+        font-size: 16px;
+        line-height: normal;
+        justify-self: start;
+      }
+
+      .subtagline {
+        line-height: normal;
+        justify-self: end;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+        row-gap: 80px;
+      }
+
+      .card {
+        gap: 16px;
+      }
+
+      .card-media {
+        aspect-ratio: 1 / 1;
+      }
+
+      .card-details {
+        gap: 4px;
+      }
+
+      .badge {
+        top: 21px;
+      }
+
+      .band--footer {
+        padding: 32px 0;
+      }
+
+      .footer-id,
+      .footer-links {
+        grid-column: content-start / content-end;
+      }
+
+      .row--footer {
+        grid-template-rows: auto auto;
+        row-gap: 24px;
+      }
+
+      .footer-links {
+        grid-row: 2;
+        justify-self: end;
+      }
+    }
+
+    @media (max-width: 460px) {
+      .card-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ══ Header ══════════════════════════════════════════════════ -->
+    <header class="band band--header">
+      <div class="accent accent--portrait"></div>
+      <div class="accent accent--profile"></div>
+      <div class="accent accent--social"></div>
+
+      <div class="row row--bleed-top row--hrule">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+      </div>
+
+      <nav class="row row--nav row--hrule">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <p class="wordmark">[&nbsp;<span class="cjk">张舒皿</span>&nbsp;]</p>
+          <a class="nav-item nav-item--work is-active" href="/">Work</a>
+          <a class="nav-item nav-item--sandbox" href="/sandbox">Sandbox</a>
+          <a class="nav-item nav-item--about" href="/about">About&nbsp;Me</a>
+          <a class="nav-item nav-item--resume" href="#">Resume</a>
+      </nav>
+
+      <div class="row row--space row--hrule">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+      </div>
+
+      <div class="row row--name row--hrule">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <h1 class="name" aria-label="Katherine Zhang">Katherine<span class="gap" aria-hidden="true"></span>Zhang<i class="name-handle" aria-hidden="true"></i><i class="name-handle" aria-hidden="true"></i><i class="name-handle" aria-hidden="true"></i><i class="name-handle" aria-hidden="true"></i></h1>
+      </div>
+
+      <div class="row row--tag row--hrule">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <p class="tagline">Product designer @ Solace</p>
+      </div>
+
+      <div class="row row--sub row--hrule">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <p class="subtagline">Based in San Fransico</p>
+      </div>
+
+      <div class="header-blur" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="row row--bleed-foot">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+      </div>
+    </header>
+
+    <!-- ══ Work ════════════════════════════════════════════════════ -->
+    <main class="band band--work">
+      <div class="row row--cards">
+        <div class="cards">
+          <article class="card">
+            <div class="card-media ">
+              <span class="badge">Internship &#127795;</span>
+            </div>
+            <div class="card-details">
+              <div class="card-head">
+                <h2>BCG</h2>
+                <span class="card-date">July 2025 - December 2025</span>
+              </div>
+              <p class="card-blurb">Designed AI tools for 9,000+ consultants and led global research shaping BCG&rsquo;s GenAI product strategy.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media ">
+              <span class="badge">Product Design &#127795;</span>
+            </div>
+            <div class="card-details">
+              <div class="card-head">
+                <h2>SelfServe</h2>
+                <span class="card-date">Jan 2026 - April 2026</span>
+              </div>
+              <p class="card-blurb">Designed a PMS for boutique hotels, unifying fragmented operations with AI-powered automation.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+      <div class="row row--cards">
+        <div class="cards">
+          <article class="card">
+            <div class="card-media ">
+              <span class="badge">Product Design &#127795;</span>
+            </div>
+            <div class="card-details">
+              <div class="card-head">
+                <h2>CineCircle</h2>
+                <span class="card-date">Sept 2025 - Dec 2026</span>
+              </div>
+              <p class="card-blurb">Built a community app for South Asian cinema fans, managing end-to-end design across 4 designers</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media card-media--apprenta">
+              <span class="badge badge--light">Internship &#127795;</span>
+              <img class="apprenta-shot" src="assets/apprenta-dashboard.png" alt="Apprenta student dashboard" />
+            </div>
+            <div class="card-details">
+              <div class="card-head">
+                <h2>Apprenta</h2>
+                <span class="card-date">May 2024 - July 2024</span>
+              </div>
+              <p class="card-blurb">Created admin tools managing scholarship distribution across hospitals and aspiring healthcare workers.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </main>
+
+    <!-- ══ Footer ══════════════════════════════════════════════════ -->
+    <footer class="band band--footer">
+      <div class="row row--footer">
+        <div class="footer-id">
+          <p>Katherine Zhang</p>
+          <img src="assets/footer-rule.svg" alt="" />
+          <p>2026</p>
+        </div>
+        <div class="footer-links">
+          <a href="#">LinkedIn</a>
+          <a href="mailto:zhangskath@gmail.com">zhangskath@gmail.com</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>

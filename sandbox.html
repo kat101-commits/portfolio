@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Katherine Zhang — Sandbox</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* Hairline colour lifted from the Figma rules (#D5DDFF). */
+      --rule: rgba(213, 221, 255, 0.8);
+
+      --sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+      --black: #000;
+      --gray1: #747474;
+      --gray2: #565656;
+
+      /* The playground frame — a heavier blue than the page hairlines,
+         because it is a real container edge rather than a guide. */
+      --frame: #a2acdb;
+
+      /* The only two spacing knobs the whole skeleton depends on.
+         Both are fluid, so every column boundary is fluid with them. */
+      --pad: clamp(16px, 6.1vw, 88px);
+      --nav-gap: clamp(10px, 2.78vw, 40px);
+      --gap-last: var(--nav-gap);
+      --nav-size: clamp(11px, 0.98vw, 14px);
+
+      --pink-strong: rgba(243, 33, 117, 0.24);
+      --pink-fade: rgba(255, 236, 244, 0.08);
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      background: #fff;
+      color: var(--black);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       THE PAGE GRID
+       Identical track list to Work and About: the `auto` tracks are each
+       occupied by exactly one nav label, so every column boundary is
+       measured off rendered text rather than hardcoded.
+       ════════════════════════════════════════════════════════════════ */
+    .page {
+      display: grid;
+      grid-template-columns:
+        [bleed-start] var(--pad)
+        [content-start col-logo] auto      /* 2  — wordmark             */
+        [col-b] minmax(0, 8fr)             /* 3  */
+        [col-c] auto                       /* 4  — (unused on Sandbox)  */
+        [col-d] minmax(0, 3fr)             /* 5  */
+        [col-nav nav-work] auto            /* 6  — sized by "Work"      */
+        [work-end] var(--nav-gap)          /* 7  */
+        [nav-sandbox] auto                 /* 8  — sized by "Sandbox"   */
+        [sandbox-end] var(--nav-gap)       /* 9  */
+        [nav-about] auto                   /* 10 — sized by "About Me"  */
+        [about-end] var(--gap-last)        /* 11 */
+        [nav-resume] auto                  /* 12 — sized by "Resume"    */
+        [content-end] var(--pad)
+        [bleed-end];
+    }
+
+    .band,
+    .row {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: subgrid;
+    }
+
+    .row {
+      grid-template-rows: auto;
+    }
+
+    /* ── Grid lines ──
+       13 empty cells per row, one per track; the visible rules are their
+       own borders, so a line can only ever land on a column boundary. */
+    .row > .r {
+      grid-row: 1 / -1;
+      border-right: 1px solid var(--rule);
+      pointer-events: none;
+    }
+
+    .row > .r:nth-child(1)  { grid-column: 1; }
+    .row > .r:nth-child(2)  { grid-column: 2; }
+    .row > .r:nth-child(3)  { grid-column: 3; }
+    .row > .r:nth-child(4)  { grid-column: 4; }
+    .row > .r:nth-child(5)  { grid-column: 5; }
+    .row > .r:nth-child(6)  { grid-column: 6; }
+    .row > .r:nth-child(7)  { grid-column: 7; }
+    .row > .r:nth-child(8)  { grid-column: 8; }
+    .row > .r:nth-child(9)  { grid-column: 9; }
+    .row > .r:nth-child(10) { grid-column: 10; }
+    .row > .r:nth-child(11) { grid-column: 11; }
+    .row > .r:nth-child(12) { grid-column: 12; }
+    .row > .r:nth-child(13) { grid-column: 13; border-right: 0; }
+
+    .row--hrule > .r {
+      border-bottom: 1px solid var(--rule);
+    }
+
+    /* ── Header band ──────────────────────────────────────────────────
+       On Sandbox the header carries no name block: it is just the nav
+       strip plus the breathing room down to the playground frame, which
+       in the Figma opens at y=142 on a 1440 frame.
+
+       The blue wash itself runs 416px — deeper than the band — so it is
+       painted by an absolutely-positioned layer that is allowed to
+       overflow past the band's own box and sit behind the frame. Same
+       trick for the two pink accents, which are grid items (so they stay
+       locked to the nav-derived column lines) given an explicit height.
+       ───────────────────────────────────────────────────────────────── */
+    .band--header {
+      position: relative;
+      grid-template-rows:
+        [h-top]  clamp(20px, 2.3vw, 33px)
+        [h-nav]  auto
+        [h-open] clamp(40px, 6.18vw, 89px)   /* 142 - 53 */
+        [h-end];
+    }
+
+    .header-bg {
+      position: absolute;
+      inset-inline: 0;
+      top: 0;
+      height: clamp(228px, 28.9vw, 416px);
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(
+          ellipse 62vw 70% at 50% 94%,
+          rgba(255, 250, 227, 0.55) 0%,
+          rgba(255, 250, 227, 0) 62%
+        ),
+        linear-gradient(
+          0deg,
+          #ffffff 0%,
+          #f6fbff 44%,
+          #e0f1fd 100%
+        );
+    }
+
+    .row--bleed-top { grid-row: h-top / h-nav; }
+    .row--nav       { grid-row: h-nav / h-open; }
+    .row--open      { grid-row: h-open / h-end; }
+
+    /* Both accents hang off the line under the nav and run past the foot
+       of the band; `align-self: start` + an explicit height is what lets
+       them overflow instead of stretching the row. */
+    .accent {
+      grid-row: h-open / h-end;
+      align-self: start;
+      background: linear-gradient(180deg, var(--pink-strong) 7.212%, var(--pink-fade) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* col-logo is the auto track holding only the wordmark, so this block
+       is exactly as wide as "[ 张舒皿 ]" — line-bounded at every width. */
+    .accent--icon {
+      grid-column: content-start / col-b;
+      height: clamp(198px, 25.2vw, 363px);
+    }
+
+    .accent--portrait {
+      grid-column: col-nav / content-end;
+      height: clamp(148px, 18.75vw, 270px);
+      --pink-strong: rgba(243, 33, 117, 0.3);
+      --pink-fade: rgba(255, 236, 244, 0.1);
+    }
+
+    .band--header .wordmark,
+    .band--header .nav-item {
+      z-index: 2;
+    }
+
+    /* ── Nav ── */
+    .wordmark {
+      grid-column: col-logo;
+      grid-row: 1;
+      align-self: center;
+      font-family: var(--sans);
+      font-size: clamp(13px, 1.11vw, 16px);
+      white-space: nowrap;
+    }
+
+    .wordmark a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .wordmark .cjk {
+      font-family: 'Ma Shan Zheng', cursive;
+    }
+
+    .nav-item {
+      grid-row: 1;
+      align-self: center;
+      font-size: var(--nav-size);
+      color: var(--gray2);
+      text-decoration: none;
+      white-space: nowrap;   /* keeps each auto track a single-word measure */
+      font-family: var(--sans);
+    }
+
+    .nav-item--work    { grid-column: nav-work; }
+    .nav-item--sandbox { grid-column: nav-sandbox; }
+    .nav-item--about   { grid-column: nav-about; }
+    .nav-item--resume  { grid-column: nav-resume; }
+
+    .nav-item.is-active {
+      font-weight: 500;
+      font-style: italic;
+      color: var(--black);
+    }
+
+    .nav-item:hover {
+      color: var(--black);
+    }
+
+    /* ── Sandbox band ─────────────────────────────────────────────────
+       Lifted above the header's overflowing wash so the frame occludes
+       it — exactly as the opaque white canvas does in the Figma. */
+    .band--sandbox {
+      position: relative;
+      z-index: 2;
+      padding-bottom: clamp(56px, 8.2vw, 118px);
+    }
+
+    /* ── The playground frame ── */
+    .playground {
+      grid-column: content-start / content-end;
+      grid-row: 1;
+      border: 1px solid var(--frame);
+      min-width: 0;
+    }
+
+    /* Half-opaque, so the pink accent behind it still reads through the
+       title strip the way it does in the design. */
+    .playground-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.5);
+      font-family: var(--sans);
+      font-style: italic;
+      font-size: 16px;
+      line-height: 1.35;
+      color: var(--frame);
+      white-space: nowrap;
+    }
+
+    .playground-bar .clock {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* No min-height: the frame hugs the board. The Figma's 1463px canvas
+       was drawn empty, so honouring it would only bank dead white under
+       the shortest column. */
+    .playground-canvas {
+      border-top: 1px solid var(--frame);
+      background: #fff;
+      padding: 24px;
+    }
+
+    /* ── The board ────────────────────────────────────────────────────
+       Pinterest-style masonry with CSS columns: tiles keep their natural
+       height and fill top-to-bottom, column by column. No JS, no fixed
+       row grid, nothing to re-measure on resize.
+       ───────────────────────────────────────────────────────────────── */
+    .board {
+      column-count: 4;
+      column-gap: 24px;
+    }
+
+    .tile {
+      break-inside: avoid;
+      -webkit-column-break-inside: avoid;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Every element is an alpha-cut PNG that sat bare on white in the
+       original playground, so the box carries no fill and no visible
+       edge — the border is held at 1px transparent purely so revealing
+       it on hover costs no reflow. */
+    .tile-media {
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+      padding: 4px;
+      border: 1px solid transparent;
+      transition: border-color 160ms ease;
+    }
+
+    .tile:hover .tile-media {
+      border-color: var(--rule);
+    }
+
+    .tile-media img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* Elements 1 and 5 were two-image groups on the original canvas, so
+       they stay a pair inside one tile instead of splitting across two
+       columns. The fr weights are the art's own pixel widths, which
+       keeps each pair's relative scale. */
+    .tile-pair {
+      display: grid;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .tile-caption {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .tile-caption h2 {
+      font-family: var(--sans);
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .tile-caption span {
+      font-size: 12px;
+      color: var(--gray1);
+      white-space: nowrap;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────────── */
+    .band--footer {
+      padding: 48px 0;
+      border-top: 1px solid var(--rule);
+      background: linear-gradient(180deg, #ffffff 0%, #eef7fd 100%);
+    }
+
+    .footer-id {
+      grid-column: content-start / col-c;
+      grid-row: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .footer-id p {
+      white-space: nowrap;
+    }
+
+    .footer-id img {
+      max-width: 100%;
+      flex-shrink: 1;
+      min-width: 0;
+    }
+
+    .footer-links {
+      grid-column: col-c / content-end;
+      grid-row: 1;
+      justify-self: end;
+      display: flex;
+      gap: 24px;
+      font-family: var(--sans);
+      font-size: 14px;
+    }
+
+    .footer-links a {
+      color: var(--black);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Reflow ─────────────────────────────────────────────────────
+       The track list never changes; only the board's column count and
+       the nav's own knobs do. */
+    @media (max-width: 1180px) {
+      .board { column-count: 3; }
+    }
+
+    @media (max-width: 860px) {
+      .board { column-count: 2; }
+    }
+
+    @media (max-width: 760px) {
+      :root {
+        --pad: 24px;
+        --nav-gap: 20px;
+        --gap-last: 0px;      /* Resume is hidden; close the gap before it */
+        --nav-size: 14px;
+      }
+
+      .nav-item--resume {
+        display: none;
+      }
+
+      /* Only the content edge and the "About Me" line are drawn. */
+      .row > .r {
+        border-right: 0;
+      }
+
+      .row > .r:nth-child(1),
+      .row > .r:nth-child(9) {
+        border-right: 1px solid var(--rule);
+      }
+
+      .band--header {
+        grid-template-rows:
+          [h-top]  41px
+          [h-nav]  minmax(36px, auto)
+          [h-open] 40px
+          [h-end];
+      }
+
+      .accent {
+        --pink-strong: rgba(243, 33, 117, 0.18);
+        --pink-fade: rgba(255, 236, 244, 0.06);
+      }
+
+      /* Kept as two separate blocks rather than one continuous band:
+         the wordmark track on the left, the nav block on the right. */
+      .accent--icon {
+        grid-column: content-start / col-b;
+        height: 120px;
+      }
+
+      .accent--portrait {
+        grid-column: nav-about / content-end;
+        height: 90px;
+      }
+
+      .playground-bar {
+        padding: 10px 16px;
+        font-size: 14px;
+      }
+
+      .playground-canvas {
+        padding: 16px;
+      }
+
+      .board { column-gap: 16px; }
+      .tile  { margin-bottom: 16px; }
+
+      .band--footer {
+        padding: 32px 0;
+      }
+
+      .footer-id,
+      .footer-links {
+        grid-column: content-start / content-end;
+      }
+
+      .row--footer {
+        grid-template-rows: auto auto;
+        row-gap: 24px;
+      }
+
+      .footer-links {
+        grid-row: 2;
+        justify-self: end;
+      }
+    }
+
+    /* Phones keep two columns — one column is a feed, not a board, and
+       the masonry is the whole point. The caption stacks instead so the
+       title and the meta label never have to share 150px. */
+    @media (max-width: 460px) {
+      .tile-caption {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+      }
+
+      .tile-caption h2 { font-size: 13px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ══ Header ══════════════════════════════════════════════════ -->
+    <header class="band band--header">
+      <div class="header-bg" aria-hidden="true"></div>
+      <div class="accent accent--icon" aria-hidden="true"></div>
+      <div class="accent accent--portrait" aria-hidden="true"></div>
+
+      <div class="row row--bleed-top row--hrule">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+      </div>
+
+      <nav class="row row--nav row--hrule">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <p class="wordmark"><a href="/">[&nbsp;<span class="cjk">张舒皿</span>&nbsp;]</a></p>
+          <a class="nav-item nav-item--work" href="/">Work</a>
+          <a class="nav-item nav-item--sandbox is-active" href="/sandbox" aria-current="page">Sandbox</a>
+          <a class="nav-item nav-item--about" href="/about">About&nbsp;Me</a>
+          <a class="nav-item nav-item--resume" href="#">Resume</a>
+      </nav>
+
+      <div class="row row--open">
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+      </div>
+    </header>
+
+    <!-- ══ Playground ══════════════════════════════════════════════ -->
+    <main class="band band--sandbox">
+      <div class="row row--playground">
+        <section class="playground" aria-labelledby="playground-title">
+          <div class="playground-bar">
+            <p id="playground-title">[insert title]</p>
+            <p class="clock" id="clock">[[time]]</p>
+          </div>
+
+          <div class="playground-canvas">
+            <div class="board">
+
+              <article class="tile">
+                <div class="tile-media tile-pair" style="grid-template-columns: 168fr 219fr">
+                  <img loading="lazy" width="168" height="240" src="assets/playground/el-1a.png" alt="Generate merch mockups" />
+                  <img loading="lazy" width="219" height="227" src="assets/playground/el-1b.png" alt="" />
+                </div>
+                <div class="tile-caption"><h2>Generate Merch</h2><span>(&nbsp;1&nbsp;)</span></div>
+              </article>
+
+              <article class="tile">
+                <div class="tile-media">
+                  <img loading="lazy" width="167" height="189" src="assets/playground/el-2.png" alt="An oil painting" />
+                </div>
+                <div class="tile-caption"><h2>Oil Painting</h2><span>(&nbsp;2&nbsp;)</span></div>
+              </article>
+
+              <article class="tile">
+                <div class="tile-media">
+                  <img loading="lazy" width="306" height="160" src="assets/playground/el-3.png" alt="A painting" />
+                </div>
+                <div class="tile-caption"><h2>Painting</h2><span>(&nbsp;3&nbsp;)</span></div>
+              </article>
+
+              <article class="tile">
+                <div class="tile-media">
+                  <img loading="lazy" width="316" height="170" src="assets/playground/el-4.png" alt="A branding exploration" />
+                </div>
+                <div class="tile-caption"><h2>Branding Exploration</h2><span>(&nbsp;4&nbsp;)</span></div>
+              </article>
+
+              <article class="tile">
+                <div class="tile-media tile-pair" style="grid-template-columns: 167fr 139fr">
+                  <img loading="lazy" width="167" height="209" src="assets/playground/el-5a.png" alt="Two branding explorations" />
+                  <img loading="lazy" width="139" height="209" src="assets/playground/el-5b.png" alt="" />
+                </div>
+                <div class="tile-caption"><h2>Branding &mdash; Exploration</h2><span>(&nbsp;5&nbsp;)</span></div>
+              </article>
+
+              <article class="tile">
+                <div class="tile-media">
+                  <img loading="lazy" width="376" height="188" src="assets/playground/el-6.png" alt="An acrylic painting" />
+                </div>
+                <div class="tile-caption"><h2>Acrylic Painting</h2><span>(&nbsp;6&nbsp;)</span></div>
+              </article>
+
+              <article class="tile">
+                <div class="tile-media">
+                  <img loading="lazy" width="165" height="192" src="assets/playground/el-7.png" alt="A dating app concept" />
+                </div>
+                <div class="tile-caption"><h2>Dating App</h2><span>(&nbsp;7&nbsp;)</span></div>
+              </article>
+
+              <article class="tile">
+                <div class="tile-media">
+                  <img loading="lazy" width="451" height="230" src="assets/playground/el-8.png" alt="A hoodie design exploration" />
+                </div>
+                <div class="tile-caption"><h2>Hoodie Exploration</h2><span>(&nbsp;8&nbsp;)</span></div>
+              </article>
+
+              <article class="tile">
+                <div class="tile-media">
+                  <img loading="lazy" width="242" height="247" src="assets/playground/el-9.png" alt="A campus club social app concept" />
+                </div>
+                <div class="tile-caption"><h2>A Campus Club based Social Media App</h2><span>(&nbsp;9&nbsp;)</span></div>
+              </article>
+
+              <article class="tile">
+                <div class="tile-media">
+                  <img loading="lazy" width="155" height="235" src="assets/playground/el-10.png" alt="An oil painting" />
+                </div>
+                <div class="tile-caption"><h2>Oil Painting</h2><span>(&nbsp;10&nbsp;)</span></div>
+              </article>
+
+              <article class="tile">
+                <div class="tile-media">
+                  <img loading="lazy" width="191" height="191" src="assets/playground/el-11.png" alt="A Chinese New Year illustration" />
+                </div>
+                <div class="tile-caption"><h2>Chinese New Year Illustration</h2><span>(&nbsp;11&nbsp;)</span></div>
+              </article>
+
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ══ Footer ══════════════════════════════════════════════════ -->
+    <footer class="band band--footer">
+      <div class="row row--footer">
+        <div class="footer-id">
+          <p>Katherine Zhang</p>
+          <img src="assets/footer-rule.svg" alt="" />
+          <p>2026</p>
+        </div>
+        <div class="footer-links">
+          <a href="#">LinkedIn</a>
+          <a href="mailto:zhangskath@gmail.com">zhangskath@gmail.com</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    /* The Figma leaves the right-hand slot as a [[time]] placeholder —
+       the only live thing on the page, so it reads as a real workspace
+       chrome rather than a caption. Falls back to the literal text. */
+    (function () {
+      var el = document.getElementById('clock');
+      if (!el) return;
+
+      function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+      function tick() {
+        var d = new Date();
+        el.textContent = '[[' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + ']]';
+      }
+
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+</body>
+</html>
