@@ -5,82 +5,69 @@ import Image from "next/image";
    same CSS. */
 import styles from "../home.module.css";
 
-/* Figma node 1099:107 — "Sandbox".
+/* Figma node 1185:358 — "Sandbox" (band from node 1099:107).
 
    The frame's canvas is a bordered box starting at y=142, which is inside
    the 416px band, so its white fill covers the lower part of the wash.
-   The frame leaves that canvas empty; the content below is laid out in it
-   Pinterest-style, carried over unchanged from the previous scattered
-   version of this page. */
+   Inside it, the work is scattered as tilted polaroid cards (node
+   1185:358). */
 
 const BAND_HEIGHT = 416;
 const CANVAS_TOP = 142;
 const CANVAS_RULE = "#a2acdb";
 
-type Shot = { src: string; w: number; h: number };
-type Item = { number: string; caption: string; shots: Shot[] };
+/* The canvas body's size in the frame (node 1185:389). Card positions
+   below are in its coordinate space, so the collage scales with the
+   canvas as one piece. */
+const BODY_W = 1258;
+const BODY_H = 1463;
 
-const ITEMS: Item[] = [
+/* Each card is the frame's tilted polaroid exported at 2x with its tilt
+   and drop shadow baked in, so `w`/`h` include the shadow's spill and
+   x/y are the frame's card position less that spill. Listed bottom to
+   top, matching the frame's layer order where the cards overlap. */
+type Card = { src: string; alt: string; x: number; y: number; w: number; h: number };
+
+const CARDS: Card[] = [
   {
-    number: "( 1 )",
-    caption: "Generate Merch",
-    shots: [
-      { src: "/images/playground/el-1a.png", w: 168, h: 240 },
-      { src: "/images/playground/el-1b.png", w: 219, h: 227 },
-    ],
+    src: "/images/playground/sandbox/painting.png",
+    alt: "Oil painting of a still life: a dark bottle, a cut pumpkin, garlic and crumpled paper",
+    x: 748,
+    y: 471.15,
+    w: 483.5,
+    h: 545.5,
   },
   {
-    number: "( 2 )",
-    caption: "Oil Painting",
-    shots: [{ src: "/images/playground/el-2.png", w: 167, h: 189 }],
+    src: "/images/playground/sandbox/lantern.png",
+    alt: "Illustration of a glowing paper lantern with a flower drawn on it, beside a “Turn the lights on” toggle",
+    x: 11,
+    y: 81.9,
+    w: 532,
+    h: 548.5,
   },
   {
-    number: "( 3 )",
-    caption: "Painting",
-    shots: [{ src: "/images/playground/el-3.png", w: 306, h: 160 }],
+    src: "/images/playground/sandbox/hoodie.png",
+    alt: "Front and back of a white Generate hoodie with blue script graphics",
+    x: 549.24,
+    y: 17.5,
+    w: 690,
+    h: 464,
   },
   {
-    number: "( 4 )",
-    caption: "Branding Exploration",
-    shots: [{ src: "/images/playground/el-4.png", w: 316, h: 170 }],
+    src: "/images/playground/sandbox/summit.png",
+    alt: "Two green WISE Summit social posts, “(access)” and “(drive)”",
+    x: 302.39,
+    y: 450,
+    w: 569,
+    h: 413,
   },
   {
-    number: "( 5 )",
-    caption: "Branding - Exploration",
-    shots: [
-      { src: "/images/playground/el-5a.png", w: 167, h: 209 },
-      { src: "/images/playground/el-5b.png", w: 139, h: 209 },
-    ],
-  },
-  {
-    number: "( 6 )",
-    caption: "Acrylic Painting",
-    shots: [{ src: "/images/playground/el-6.png", w: 376, h: 188 }],
-  },
-  {
-    number: "( 7 )",
-    caption: "Dating App",
-    shots: [{ src: "/images/playground/el-7.png", w: 165, h: 192 }],
-  },
-  {
-    number: "( 8 )",
-    caption: "Hoodie Exploration",
-    shots: [{ src: "/images/playground/el-8.png", w: 451, h: 230 }],
-  },
-  {
-    number: "( 9 )",
-    caption: "A Campus Club based Social Media App",
-    shots: [{ src: "/images/playground/el-9.png", w: 242, h: 247 }],
-  },
-  {
-    number: "( 10 )",
-    caption: "Oil Painting",
-    shots: [{ src: "/images/playground/el-10.png", w: 155, h: 235 }],
-  },
-  {
-    number: "( 11 )",
-    caption: "Chinese New Year Illustration",
-    shots: [{ src: "/images/playground/el-11.png", w: 191, h: 191 }],
+    src: "/images/playground/sandbox/book.png",
+    alt: "Thread-bound book cover for the Classical Gardens of Suzhou",
+    x: 38.5,
+    y: 773.5,
+    w: 387,
+    h: 398.5,
   },
 ];
 
@@ -111,10 +98,10 @@ export default function Playground() {
           </div>
 
           <div
-            className="border-t border-solid bg-white p-6 max-md:p-4"
+            className="border-t border-solid bg-white"
             style={{ borderColor: CANVAS_RULE }}
           >
-            <Masonry />
+            <Collage />
           </div>
         </div>
       </div>
@@ -135,6 +122,9 @@ function Band() {
         // backdrop back into flow and pushed the canvas down by exactly
         // its height.
         position: "absolute",
+        // Its own stacking context, so the progressive blur's z-index stays
+        // inside the band instead of rising over the canvas and its cards.
+        zIndex: 0,
         top: "calc(var(--spacing-header) * -1)",
         height: BAND_HEIGHT,
       }}
@@ -217,41 +207,50 @@ function Band() {
   );
 }
 
-/* ── Masonry ──────────────────────────────────────────────────────────── */
+/* ── Collage ──────────────────────────────────────────────────────────── */
 
-function Masonry() {
+function Collage() {
   return (
-    <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 xl:columns-4">
-      {ITEMS.map((item) => (
-        <figure
-          key={item.number}
-          className="mb-6 break-inside-avoid-column last:mb-0"
-        >
-          <p className="font-sans text-subtext text-gray-2">{item.number}</p>
+    <>
+      {/* From md up the cards keep the frame's scatter, positioned as
+          fractions of the canvas body so they scale with it. */}
+      <div
+        className="relative w-full max-md:hidden"
+        style={{ aspectRatio: `${BODY_W} / ${BODY_H}` }}
+      >
+        {CARDS.map((card) => (
+          <Image
+            key={card.src}
+            src={card.src}
+            alt={card.alt}
+            width={card.w}
+            height={card.h}
+            sizes={`(min-width: 1440px) ${card.w}px, ${((card.w / BODY_W) * 100).toFixed(1)}vw`}
+            className="absolute h-auto max-w-none"
+            style={{
+              left: `${(card.x / BODY_W) * 100}%`,
+              top: `${(card.y / BODY_H) * 100}%`,
+              width: `${(card.w / BODY_W) * 100}%`,
+            }}
+          />
+        ))}
+      </div>
 
-          {/* Side-by-side shots share a row; flex-grow proportional to each
-              one's aspect ratio keeps their heights equal without
-              distorting either. */}
-          <div className="mt-2 flex items-start gap-2">
-            {item.shots.map((shot) => (
-              <Image
-                key={shot.src}
-                src={shot.src}
-                alt=""
-                width={shot.w}
-                height={shot.h}
-                sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 27vw, (min-width: 640px) 40vw, 90vw"
-                className="h-auto w-full min-w-0"
-                style={{ flex: `${shot.w / shot.h} 1 0%` }}
-              />
-            ))}
-          </div>
-
-          <figcaption className="mt-2 font-sans text-body text-black">
-            {item.caption}
-          </figcaption>
-        </figure>
-      ))}
-    </div>
+      {/* Too narrow to scatter: stack them, keeping each card's tilt. */}
+      <div className="flex flex-col items-center gap-4 p-4 md:hidden">
+        {CARDS.map((card) => (
+          <Image
+            key={card.src}
+            src={card.src}
+            alt={card.alt}
+            width={card.w}
+            height={card.h}
+            sizes="90vw"
+            className="h-auto w-full"
+            style={{ maxWidth: card.w }}
+          />
+        ))}
+      </div>
+    </>
   );
 }
