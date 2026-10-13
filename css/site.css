@@ -1,0 +1,287 @@
+/* ════════════════════════════════════════════════════════════════
+   SHARED CHROME
+   Everything the Work, Sandbox and About pages have in common: reset,
+   tokens, the subgrid skeleton, the hairline cells, the nav, the
+   progressive blur and the footer. Each page's own <style> block comes
+   after this file and holds its column track list plus whatever is
+   unique to it.
+
+   Lives outside /assets on purpose: vercel.json caches /assets as
+   immutable for a year, which is right for images but would pin a
+   stale stylesheet in returning visitors' browsers.
+   ════════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Hairline colour lifted from the Figma rules (#D5DDFF). */
+  --rule: rgba(213, 221, 255, 0.8);
+
+  --sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --serif: 'Instrument Serif', Georgia, serif;
+
+  --black: #000;
+  --gray1: #747474;
+  --gray2: #565656;
+
+  /* The only two spacing knobs the whole skeleton depends on.
+     Both are fluid, so every column boundary is fluid with them. */
+  --pad: clamp(16px, 6.1vw, 88px);
+  --nav-gap: clamp(10px, 2.78vw, 40px);
+  --gap-last: var(--nav-gap);
+  --nav-size: clamp(11px, 0.98vw, 14px);
+  --wordmark-size: clamp(13px, 1.11vw, 16px);
+  --head-top: clamp(20px, 2.3vw, 33px);
+
+  --pink-strong: rgba(243, 33, 117, 0.24);
+  --pink-fade: rgba(255, 236, 244, 0.08);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: #fff;
+  color: var(--black);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+/* ── Skeleton ─────────────────────────────────────────────────────
+   `.page` is the one grid container for the document; each page
+   defines its own track list. Bands and rows are pure pass-throughs:
+   `subgrid` re-projects the parent's tracks (and their line names)
+   down a level, so a cell nested two deep still lands on the same
+   column line as the nav. */
+.page {
+  display: grid;
+}
+
+.band,
+.row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+}
+
+.row {
+  grid-template-rows: auto;
+}
+
+/* ── Grid lines ──
+   One empty `.r` cell per track in every row. The visible rules are
+   their own border-right / border-bottom, so a line can only ever be
+   drawn exactly on a column boundary — there is no overlay to drift.
+   Left at z-index auto: the accents' z-index 1 lifts the pink over
+   them while content still paints on top. */
+.row > .r {
+  grid-row: 1 / -1;
+  border-right: 1px solid var(--rule);
+  pointer-events: none;
+}
+
+/* Pinned to a track each, so a rule cannot be pushed off a boundary by
+   auto-placement flowing around the nav labels. */
+.row > .r:nth-child(1)  { grid-column: 1; }
+.row > .r:nth-child(2)  { grid-column: 2; }
+.row > .r:nth-child(3)  { grid-column: 3; }
+.row > .r:nth-child(4)  { grid-column: 4; }
+.row > .r:nth-child(5)  { grid-column: 5; }
+.row > .r:nth-child(6)  { grid-column: 6; }
+.row > .r:nth-child(7)  { grid-column: 7; }
+.row > .r:nth-child(8)  { grid-column: 8; }
+.row > .r:nth-child(9)  { grid-column: 9; }
+.row > .r:nth-child(10) { grid-column: 10; }
+.row > .r:nth-child(11) { grid-column: 11; }
+.row > .r:nth-child(12) { grid-column: 12; }
+.row > .r:nth-child(13) { grid-column: 13; }
+
+.row--hrule > .r {
+  border-bottom: 1px solid var(--rule);
+}
+
+/* ── Header band ── */
+.band--header {
+  position: relative;
+}
+
+/* Pink accent blocks are siblings of the rows so they can span rows,
+   but they still snap to the shared column lines. */
+.accent {
+  background: linear-gradient(180deg, var(--pink-strong) 7.212%, var(--pink-fade) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Progressive blur ──
+   Four stacked backdrop-filter layers, each masked to start a little
+   lower than the last, so the blur ramps up toward the bottom edge
+   instead of switching on. Kept deliberately faint. */
+.header-blur {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: clamp(36px, 6.7vw, 96px);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.header-blur > span {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.header-blur > span:nth-child(1) {
+  -webkit-backdrop-filter: blur(0.5px);
+  backdrop-filter: blur(0.5px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
+}
+
+.header-blur > span:nth-child(2) {
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
+  mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
+}
+
+.header-blur > span:nth-child(3) {
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
+  mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
+}
+
+.header-blur > span:nth-child(4) {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
+}
+
+/* ── Nav ── */
+.wordmark {
+  grid-column: col-logo;
+  grid-row: 1;
+  align-self: center;
+  font-size: var(--wordmark-size);
+  white-space: nowrap;
+}
+
+.wordmark a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.wordmark .cjk {
+  font-family: 'Ma Shan Zheng', cursive;
+}
+
+.nav-item {
+  grid-row: 1;
+  align-self: center;
+  font-size: var(--nav-size);
+  color: var(--gray2);
+  text-decoration: none;
+  white-space: nowrap;   /* keeps each auto track a single-word measure */
+}
+
+.nav-item--work    { grid-column: nav-work; }
+.nav-item--sandbox { grid-column: nav-sandbox; }
+.nav-item--about   { grid-column: nav-about; }
+.nav-item--resume  { grid-column: nav-resume; }
+
+.nav-item[aria-current="page"] {
+  font-weight: 500;
+  font-style: italic;
+  color: var(--black);
+}
+
+.nav-item:hover {
+  color: var(--black);
+}
+
+/* ── Footer ───────────────────────────────────────────────────── */
+.band--footer {
+  padding: 48px 0;
+  border-top: 1px solid var(--rule);
+  background: linear-gradient(180deg, #ffffff 0%, #eef7fd 100%);
+}
+
+.footer-id {
+  grid-column: content-start / col-c;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.footer-id p {
+  white-space: nowrap;
+}
+
+.footer-id img {
+  max-width: 100%;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.footer-links {
+  grid-column: col-c / content-end;
+  grid-row: 1;
+  justify-self: end;
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+}
+
+.footer-links a {
+  color: var(--black);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+/* ── Mobile (Figma iPhone 14/15 Pro Max, 430px) ──────────────────
+   Pages only ever re-assign which column lines a cell spans; these are
+   the knobs and the footer stack every page shares below 760px. */
+@media (max-width: 760px) {
+  :root {
+    --pad: 24px;
+    --nav-gap: 20px;
+    --nav-size: 14px;
+  }
+
+  .band--footer {
+    padding: 32px 0;
+  }
+
+  .row--footer {
+    grid-template-rows: auto auto;
+    row-gap: 24px;
+  }
+
+  .footer-id,
+  .footer-links {
+    grid-column: content-start / content-end;
+  }
+
+  .footer-links {
+    grid-row: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

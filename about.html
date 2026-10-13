@@ -7,31 +7,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     :root {
-      --sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-
-      /* Hairline colour lifted from the Figma rules (#D5DDFF). */
-      --rule: rgba(213, 221, 255, 0.8);
-
-      --black: #000;
-      --gray1: #747474;
-      --gray2: #565656;
       --dot: #1e00ff;
-
-      /* Same two spacing knobs the Work page rides on, so the two pages
-         share a gutter and a nav rhythm at every width. */
-      --pad: clamp(16px, 6.1vw, 88px);
-      --nav-gap: clamp(10px, 2.78vw, 40px);
-      --nav-size: clamp(11px, 0.98vw, 14px);
-      --wordmark-size: clamp(13px, 1.11vw, 16px);
-      --head-top: clamp(20px, 2.3vw, 33px);
 
       --pink-strong: rgba(243, 33, 117, 0.18);
       --pink-fade: rgba(255, 236, 244, 0.06);
@@ -39,18 +18,6 @@
       /* The two tinted washes are one recipe sampled at two centres. */
       --wash-core: rgba(255, 250, 227, 0.06);
       --wash-edge: rgba(231, 247, 255, 0.6);
-    }
-
-    html {
-      -webkit-text-size-adjust: 100%;
-    }
-
-    body {
-      background: #fff;
-      color: var(--black);
-      font-family: var(--sans);
-      font-size: 16px;
-      line-height: 1.35;
     }
 
     /* ════════════════════════════════════════════════════════════════
@@ -65,7 +32,6 @@
        is a fixed px column, so every boundary re-solves on every reflow.
        ════════════════════════════════════════════════════════════════ */
     .page {
-      display: grid;
       grid-template-columns:
         [bleed-start] var(--pad)
         [content-start col-logo] auto      /* 2  — wordmark            */
@@ -82,54 +48,12 @@
         [bleed-end];
     }
 
-    /* Bands and rows are pure pass-throughs: `subgrid` re-projects the
-       parent's 12 tracks (and its line names) down one level, so a cell
-       nested two deep still lands on the same column line as the nav. */
-    .band {
-      grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: subgrid;
-    }
-
-    .row {
-      grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: subgrid;
-      grid-template-rows: auto;
-    }
-
-    .row > .r {
-      grid-row: 1 / -1;
-      border-right: 1px solid var(--rule);
-      pointer-events: none;
-    }
-
-    /* Pinned to a track each, so a rule cannot be pushed off a boundary by
-       auto-placement flowing around the nav labels. */
-    .row > .r:nth-child(1) { grid-column: 1; }
-    .row > .r:nth-child(2) { grid-column: 2; }
-    .row > .r:nth-child(3) { grid-column: 3; }
-    .row > .r:nth-child(4) { grid-column: 4; }
-    .row > .r:nth-child(5) { grid-column: 5; }
-    .row > .r:nth-child(6) { grid-column: 6; }
-    .row > .r:nth-child(7) { grid-column: 7; }
-    .row > .r:nth-child(8) { grid-column: 8; }
-    .row > .r:nth-child(9) { grid-column: 9; }
-    .row > .r:nth-child(10) { grid-column: 10; }
-    .row > .r:nth-child(11) { grid-column: 11; }
-    .row > .r:nth-child(12) { grid-column: 12; }
-
     /* Every track boundary is a real content edge, so all of them get a
        line except the right gutter. */
     .row > .r:nth-child(12) { border-right: 0; }
 
-    .row--hrule > .r {
-      border-bottom: 1px solid var(--rule);
-    }
-
     /* ── Header band ──────────────────────────────────────────────── */
     .band--header {
-      position: relative;
       grid-template-rows:
         [h-top] var(--head-top)
         [h-nav] auto
@@ -152,15 +76,6 @@
     .row--main       { grid-row: h-main / h-foot; }
     .row--bleed-foot { grid-row: h-foot / h-end; }
 
-    /* Pink accent blocks are siblings of the rows so they can span rows,
-       but they still snap to the shared column lines. z-index 1 lifts
-       them over the hairlines; the content is lifted over them again. */
-    .accent {
-      background: linear-gradient(180deg, var(--pink-strong) 7.212%, var(--pink-fade) 100%);
-      pointer-events: none;
-      z-index: 1;
-    }
-
     /* col-logo is an auto track holding only the wordmark, so the box is
        exactly as wide as that text — and line-bounded — at every width. */
     .accent--wordmark {
@@ -175,71 +90,18 @@
       height: 67.16%;
     }
 
-    /* ── Progressive blur ──
-       Four stacked backdrop-filter layers, each masked to start a little
-       lower than the last, so the blur ramps up toward the bottom edge
-       instead of switching on. Kept deliberately faint.
-
-       Unlike the Work page's, this one sits *under* the intro rather than
-       over it: this banner carries type and a photo in its lower half, so
-       only the band's own gradient, rules and accents dissolve into the
-       edge while the content over them stays sharp. */
+    /* Unlike the Work page's, this blur sits *under* the intro rather
+       than over it: this banner carries type and a photo in its lower
+       half, so only the band's own gradient, rules and accents dissolve
+       into the edge while the content over them stays sharp. */
     .header-blur {
-      position: absolute;
-      inset-inline: 0;
-      bottom: 0;
-      height: clamp(36px, 6.7vw, 96px);
       z-index: 2;
-      pointer-events: none;
-    }
-
-    .header-blur > span {
-      position: absolute;
-      inset: 0;
-      display: block;
-    }
-
-    .header-blur > span:nth-child(1) {
-      -webkit-backdrop-filter: blur(0.5px);
-      backdrop-filter: blur(0.5px);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
-      mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
-    }
-
-    .header-blur > span:nth-child(2) {
-      -webkit-backdrop-filter: blur(1px);
-      backdrop-filter: blur(1px);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
-      mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
-    }
-
-    .header-blur > span:nth-child(3) {
-      -webkit-backdrop-filter: blur(2px);
-      backdrop-filter: blur(2px);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
-      mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
-    }
-
-    .header-blur > span:nth-child(4) {
-      -webkit-backdrop-filter: blur(4px);
-      backdrop-filter: blur(4px);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
-      mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
     }
 
     /* ── Nav ── */
-    .wordmark {
-      grid-column: col-logo;
-      grid-row: 1;
-      align-self: center;
-      font-family: var(--sans);
-      font-size: var(--wordmark-size);
-      white-space: nowrap;
+    .wordmark,
+    .nav-item {
       z-index: 3;
-    }
-
-    .wordmark .cjk {
-      font-family: 'Ma Shan Zheng', cursive;
     }
 
     /* `display: contents` keeps each link a direct grid item of the nav row
@@ -247,33 +109,6 @@
        real flex row instead. */
     .nav-links {
       display: contents;
-    }
-
-    .nav-item {
-      grid-row: 1;
-      align-self: center;
-      font-size: var(--nav-size);
-      color: var(--gray2);
-      text-decoration: none;
-      white-space: nowrap;   /* keeps each auto track a single-word measure */
-      font-family: var(--sans);
-      z-index: 3;
-    }
-
-    .nav-item--work    { grid-column: nav-work; }
-    .nav-item--sandbox { grid-column: nav-sandbox; }
-    .nav-item--about   { grid-column: nav-about; }
-    .nav-item--resume  { grid-column: nav-resume; }
-
-    .nav-item.is-active {
-      font-family: var(--sans);
-      font-weight: 500;
-      font-style: italic;
-      color: var(--black);
-    }
-
-    .nav-item:hover {
-      color: var(--black);
     }
 
     /* ── Intro ────────────────────────────────────────────────────────
@@ -448,7 +283,7 @@
     }
 
     .intro-copy h1 {
-      font-family: 'Instrument Serif', Georgia, serif;
+      font-family: var(--serif);
       font-weight: 400;
       font-size: clamp(20px, 1.67vw, 24px);
       line-height: normal;
@@ -481,7 +316,7 @@
     .exp-title {
       grid-column: content-start / col-b;
       grid-row: 1;
-      font-family: 'Instrument Serif', Georgia, serif;
+      font-family: var(--serif);
       font-weight: 400;
       font-size: clamp(26px, 2.5vw, 36px);
       line-height: normal;
@@ -545,7 +380,7 @@
     }
 
     .snapshots > h2 {
-      font-family: 'Instrument Serif', Georgia, serif;
+      font-family: var(--serif);
       font-weight: 400;
       font-size: clamp(24px, 2.22vw, 32px);
       line-height: normal;
@@ -568,11 +403,9 @@
       display: flex;
       align-items: center;
       gap: 16px;
-      font-size: 16px;
     }
 
     .snap-head strong {
-      font-family: var(--sans);
       font-weight: 500;
     }
 
@@ -589,13 +422,22 @@
     .stage--generate { aspect-ratio: 1260 / 261; }
     .stage--food     { aspect-ratio: 1260 / 276.945; }
 
-    .stage--snapshots .snap { --base: 1260; }
+    /* Every Generate print shares one card recipe; only its placement,
+       tilt and crop differ, and those stay inline on each figure. */
+    .stage--generate .snap {
+      --p: 11.88;
+      --r: 4.752;
+      --pr: 4.752;
+      --sx: 2.2;
+      --sy: 4.752;
+      --sb: 2.376;
+      --ix: 2.2;
+      --ib: 4.4;
+    }
 
-    /* ── Footer ───────────────────────────────────────────────────── */
+    /* ── Footer ── */
+    /* Same wash as the header, centred on the top edge this time. */
     .band--footer {
-      padding: 48px 0;
-      border-top: 1px solid var(--rule);
-      /* Same wash as the header, centred on the top edge this time. */
       background:
         radial-gradient(
           60.79% 94.79% at 50% 5.21%,
@@ -603,45 +445,6 @@
           var(--wash-edge) 100%
         ),
         #fff;
-    }
-
-    .footer-id {
-      grid-column: content-start / col-c;
-      grid-row: 1;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .footer-id p {
-      white-space: nowrap;
-    }
-
-    .footer-id img {
-      max-width: 100%;
-      flex-shrink: 1;
-      min-width: 0;
-    }
-
-    .footer-links {
-      grid-column: content-start / content-end;
-      grid-row: 1;
-      justify-self: end;
-      display: flex;
-      gap: 24px;
-      font-family: var(--sans);
-      font-size: 14px;
-    }
-
-    .footer-links a {
-      color: var(--black);
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .footer-links a:hover {
-      text-decoration: underline;
     }
 
     /* ── Reflow ───────────────────────────────────────────────────────
@@ -718,9 +521,6 @@
        ─────────────────────────────────────────────────────────────── */
     @media (max-width: 760px) {
       :root {
-        --pad: 24px;
-        --nav-gap: 20px;
-        --nav-size: 14px;
         --wordmark-size: 16px;
         --head-top: 51px;
       }
@@ -863,16 +663,13 @@
       }
 
       .exp-entry {
-        flex-direction: row;
         align-items: flex-start;
-        gap: 16px;
       }
 
       .exp-role {
         flex-direction: column;
         align-items: flex-start;
         gap: 4px;
-        min-width: 0;
       }
 
       /* Sized for 430; narrower phones wrap the role instead of pushing
@@ -882,7 +679,6 @@
       }
 
       .exp-role span:first-child {
-        font-family: var(--sans);
         font-weight: 500;
       }
 
@@ -899,26 +695,6 @@
 
       .row--snapshots {
         min-height: 67px;
-      }
-
-      /* ── Footer ── */
-      .band--footer {
-        padding: 32px 0;
-      }
-
-      .footer-id,
-      .footer-links {
-        grid-column: content-start / content-end;
-      }
-
-      .row--footer {
-        grid-template-rows: auto auto;
-        row-gap: 24px;
-      }
-
-      .footer-links {
-        grid-row: 2;
-        justify-self: end;
       }
     }
 
@@ -938,29 +714,29 @@
 
     <!-- ══ Header ══════════════════════════════════════════════════ -->
     <header class="band band--header">
-      <div class="accent accent--wordmark"></div>
-      <div class="accent accent--portrait"></div>
+      <div class="accent accent--wordmark" aria-hidden="true"></div>
+      <div class="accent accent--portrait" aria-hidden="true"></div>
 
       <div class="row row--bleed-top row--hrule">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
       </div>
 
       <nav class="row row--nav row--hrule">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-        <p class="wordmark">[&nbsp;<span class="cjk">张舒皿</span>&nbsp;]</p>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <p class="wordmark"><a href="/">[&nbsp;<span class="cjk">张舒皿</span>&nbsp;]</a></p>
         <div class="nav-links">
           <a class="nav-item nav-item--work" href="/">Work</a>
           <a class="nav-item nav-item--sandbox" href="/sandbox">Sandbox</a>
-          <a class="nav-item nav-item--about is-active" href="/about" aria-current="page">About&nbsp;Me</a>
+          <a class="nav-item nav-item--about" href="/about" aria-current="page">About&nbsp;Me</a>
           <a class="nav-item nav-item--resume" href="#">Resume</a>
         </div>
       </nav>
 
       <div class="row row--main row--hrule">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
 
         <div class="intro">
           <div class="intro-media stage">
@@ -989,8 +765,8 @@
       </div>
 
       <div class="row row--bleed-foot">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
       </div>
     </header>
 
@@ -1000,13 +776,13 @@
       <!-- The photo above overhangs the header, so this row is the room
            the design leaves it before the Experience rule. -->
       <div class="row row--approach row--hrule">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
       </div>
 
       <section class="row row--experience row--hrule" aria-labelledby="experience-title">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
 
         <h2 class="exp-title" id="experience-title">Experience</h2>
 
@@ -1031,8 +807,8 @@
       </section>
 
       <section class="row row--snapshots" aria-labelledby="snapshots-title">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
 
         <div class="snapshots">
           <h2 id="snapshots-title">Snapshots of my life</h2>
@@ -1041,50 +817,47 @@
 
             <div class="snap-section">
               <p class="snap-head"><strong>Generate</strong><span>Creating communities while designing</span></p>
-              <div class="snap-rail">
               <div class="stage stage--snapshots stage--generate">
-                <figure class="snap" style="--l:0; --t:19.57; --w:332.984; --h:204.748; --rot:1.83deg; --p:11.88; --r:4.752; --sx:2.2; --sy:4.752; --sb:2.376; --ix:2.2; --ib:4.4;">
+                <figure class="snap" style="--l:0; --t:19.57; --w:332.984; --h:204.748; --rot:1.83deg;">
                   <div class="snap-card">
-                    <div class="snap-photo snap-photo--cover" style="--pw:303.178; --ph:170.63; --pr:4.752;">
+                    <div class="snap-photo snap-photo--cover" style="--pw:303.178; --ph:170.63;">
                       <img loading="lazy" src="assets/generate-1.jpg" alt="A Generate showcase presentation on a lecture-hall screen" />
                     </div>
                   </div>
                 </figure>
-                <figure class="snap" style="--l:322.51; --t:-17.51; --w:230.751; --h:231.319; --rot:-12.25deg; --p:11.88; --r:4.752; --sx:2.2; --sy:4.752; --sb:2.376; --ix:2.2; --ib:4.4;">
+                <figure class="snap" style="--l:322.51; --t:-17.51; --w:230.751; --h:231.319; --rot:-12.25deg;">
                   <div class="snap-card">
-                    <div class="snap-photo" style="--pw:170.122; --ph:170.863; --pr:4.752; --il:0; --it:-8.03; --iw:100; --ih:132.71;">
+                    <div class="snap-photo" style="--pw:170.122; --ph:170.863; --il:0; --it:-8.03; --iw:100; --ih:132.71;">
                       <img loading="lazy" src="assets/generate-2.jpg" alt="A teammate working at a laptop during a studio session" />
                     </div>
                   </div>
                 </figure>
-                <figure class="snap" style="--l:482; --t:8; --w:222.387; --h:236.738; --rot:17.03deg; --p:11.88; --r:4.752; --sx:2.2; --sy:4.752; --sb:2.376; --ix:2.2; --ib:4.4;">
+                <figure class="snap" style="--l:482; --t:8; --w:222.387; --h:236.738; --rot:17.03deg;">
                   <div class="snap-card">
-                    <div class="snap-photo" style="--pw:149.213; --ph:170.85; --pr:4.752; --il:-35.85; --it:-75.82; --iw:183.46; --ih:213.55;">
+                    <div class="snap-photo" style="--pw:149.213; --ph:170.85; --il:-35.85; --it:-75.82; --iw:183.46; --ih:213.55;">
                       <img loading="lazy" src="assets/generate-3.jpg" alt="Sticky notes and sketches pinned up during a working session" />
                     </div>
                   </div>
                 </figure>
-                <figure class="snap" style="--l:669; --t:-11; --w:272.793; --h:222.743; --rot:-6.68deg; --p:11.88; --r:4.752; --sx:2.2; --sy:4.752; --sb:2.376; --ix:2.2; --ib:4.4;">
+                <figure class="snap" style="--l:669; --t:-11; --w:272.793; --h:222.743; --rot:-6.68deg;">
                   <div class="snap-card">
-                    <div class="snap-photo snap-photo--cover" style="--pw:228.096; --ph:171.01; --pr:4.752;">
+                    <div class="snap-photo snap-photo--cover" style="--pw:228.096; --ph:171.01;">
                       <img loading="lazy" src="assets/generate-4.jpg" alt="A Generate poster wall covered in printed design artefacts" />
                     </div>
                   </div>
                 </figure>
-                <figure class="snap" style="--l:930; --t:29; --w:327.888; --h:194.874; --p:11.88; --r:4.752; --sx:2.2; --sy:4.752; --sb:2.376; --ix:2.2; --ib:4.4;">
+                <figure class="snap" style="--l:930; --t:29; --w:327.888; --h:194.874;">
                   <div class="snap-card">
-                    <div class="snap-photo snap-photo--cover" style="--pw:304.128; --ph:171.11; --pr:4.752;">
+                    <div class="snap-photo snap-photo--cover" style="--pw:304.128; --ph:171.11;">
                       <img loading="lazy" src="assets/generate-5.jpg" alt="Friends sitting on coastal rocks on a clear day" />
                     </div>
                   </div>
                 </figure>
               </div>
-              </div>
             </div>
 
             <div class="snap-section">
               <p class="snap-head"><strong>Food</strong><span>Always open to trying new places</span></p>
-              <div class="snap-rail">
               <div class="stage stage--snapshots stage--food">
                 <figure class="snap" style="--l:0; --t:24; --w:342.686; --h:228.457; --p:10.133; --r:3.685; --sx:2.027; --sy:4.378; --sb:2.189; --ix:2.027; --ib:4.053;">
                   <div class="snap-card">
@@ -1123,7 +896,6 @@
                     </div>
                   </div>
                 </figure>
-              </div>
               </div>
             </div>
 

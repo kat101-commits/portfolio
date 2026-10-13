@@ -7,58 +7,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     :root {
-      /* Hairline colour lifted from the Figma rules (#D5DDFF). */
-      --rule: rgba(213, 221, 255, 0.8);
-
-      --sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-
-      --black: #000;
-      --gray1: #747474;
-      --gray2: #565656;
-
       /* The playground frame — a heavier blue than the page hairlines,
          because it is a real container edge rather than a guide. */
       --frame: #a2acdb;
-
-      /* The only two spacing knobs the whole skeleton depends on.
-         Both are fluid, so every column boundary is fluid with them. */
-      --pad: clamp(16px, 6.1vw, 88px);
-      --nav-gap: clamp(10px, 2.78vw, 40px);
-      --gap-last: var(--nav-gap);
-      --nav-size: clamp(11px, 0.98vw, 14px);
-
-      --pink-strong: rgba(243, 33, 117, 0.24);
-      --pink-fade: rgba(255, 236, 244, 0.08);
-    }
-
-    html {
-      -webkit-text-size-adjust: 100%;
-    }
-
-    body {
-      background: #fff;
-      color: var(--black);
-      font-family: var(--sans);
-      font-size: 16px;
-      line-height: 1.35;
     }
 
     /* ════════════════════════════════════════════════════════════════
        THE PAGE GRID
-       Identical track list to Work and About: the `auto` tracks are each
-       occupied by exactly one nav label, so every column boundary is
-       measured off rendered text rather than hardcoded.
+       Identical track list to Work: the `auto` tracks are each occupied
+       by exactly one nav label, so every column boundary is measured off
+       rendered text rather than hardcoded.
        ════════════════════════════════════════════════════════════════ */
     .page {
-      display: grid;
       grid-template-columns:
         [bleed-start] var(--pad)
         [content-start col-logo] auto      /* 2  — wordmark             */
@@ -76,42 +39,8 @@
         [bleed-end];
     }
 
-    .band,
-    .row {
-      grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: subgrid;
-    }
-
-    .row {
-      grid-template-rows: auto;
-    }
-
-    /* ── Grid lines ──
-       13 empty cells per row, one per track; the visible rules are their
-       own borders, so a line can only ever land on a column boundary. */
-    .row > .r {
-      grid-row: 1 / -1;
-      border-right: 1px solid var(--rule);
-      pointer-events: none;
-    }
-
-    .row > .r:nth-child(1)  { grid-column: 1; }
-    .row > .r:nth-child(2)  { grid-column: 2; }
-    .row > .r:nth-child(3)  { grid-column: 3; }
-    .row > .r:nth-child(4)  { grid-column: 4; }
-    .row > .r:nth-child(5)  { grid-column: 5; }
-    .row > .r:nth-child(6)  { grid-column: 6; }
-    .row > .r:nth-child(7)  { grid-column: 7; }
-    .row > .r:nth-child(8)  { grid-column: 8; }
-    .row > .r:nth-child(9)  { grid-column: 9; }
-    .row > .r:nth-child(10) { grid-column: 10; }
-    .row > .r:nth-child(11) { grid-column: 11; }
-    .row > .r:nth-child(12) { grid-column: 12; }
-    .row > .r:nth-child(13) { grid-column: 13; border-right: 0; }
-
-    .row--hrule > .r {
-      border-bottom: 1px solid var(--rule);
+    .row > .r:nth-child(13) {
+      border-right: 0;
     }
 
     /* ── Header band ──────────────────────────────────────────────────
@@ -126,9 +55,8 @@
        locked to the nav-derived column lines) given an explicit height.
        ───────────────────────────────────────────────────────────────── */
     .band--header {
-      position: relative;
       grid-template-rows:
-        [h-top]  clamp(20px, 2.3vw, 33px)
+        [h-top]  var(--head-top)
         [h-nav]  auto
         [h-open] clamp(40px, 6.18vw, 89px)   /* 142 - 53 */
         [h-end];
@@ -165,9 +93,6 @@
     .accent {
       grid-row: h-open / h-end;
       align-self: start;
-      background: linear-gradient(180deg, var(--pink-strong) 7.212%, var(--pink-fade) 100%);
-      pointer-events: none;
-      z-index: 1;
     }
 
     /* col-logo is the auto track holding only the wordmark, so this block
@@ -187,50 +112,6 @@
     .band--header .wordmark,
     .band--header .nav-item {
       z-index: 2;
-    }
-
-    /* ── Nav ── */
-    .wordmark {
-      grid-column: col-logo;
-      grid-row: 1;
-      align-self: center;
-      font-family: var(--sans);
-      font-size: clamp(13px, 1.11vw, 16px);
-      white-space: nowrap;
-    }
-
-    .wordmark a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .wordmark .cjk {
-      font-family: 'Ma Shan Zheng', cursive;
-    }
-
-    .nav-item {
-      grid-row: 1;
-      align-self: center;
-      font-size: var(--nav-size);
-      color: var(--gray2);
-      text-decoration: none;
-      white-space: nowrap;   /* keeps each auto track a single-word measure */
-      font-family: var(--sans);
-    }
-
-    .nav-item--work    { grid-column: nav-work; }
-    .nav-item--sandbox { grid-column: nav-sandbox; }
-    .nav-item--about   { grid-column: nav-about; }
-    .nav-item--resume  { grid-column: nav-resume; }
-
-    .nav-item.is-active {
-      font-weight: 500;
-      font-style: italic;
-      color: var(--black);
-    }
-
-    .nav-item:hover {
-      color: var(--black);
     }
 
     /* ── Sandbox band ─────────────────────────────────────────────────
@@ -259,10 +140,7 @@
       gap: 16px;
       padding: 12px 24px;
       background: rgba(255, 255, 255, 0.5);
-      font-family: var(--sans);
       font-style: italic;
-      font-size: 16px;
-      line-height: 1.35;
       color: var(--frame);
       white-space: nowrap;
     }
@@ -292,7 +170,6 @@
 
     .tile {
       break-inside: avoid;
-      -webkit-column-break-inside: avoid;
       margin-bottom: 24px;
       display: flex;
       flex-direction: column;
@@ -340,62 +217,14 @@
     }
 
     .tile-caption h2 {
-      font-family: var(--sans);
       font-weight: 500;
       font-size: 14px;
-      line-height: 1.35;
     }
 
     .tile-caption span {
       font-size: 12px;
       color: var(--gray1);
       white-space: nowrap;
-    }
-
-    /* ── Footer ───────────────────────────────────────────────────── */
-    .band--footer {
-      padding: 48px 0;
-      border-top: 1px solid var(--rule);
-      background: linear-gradient(180deg, #ffffff 0%, #eef7fd 100%);
-    }
-
-    .footer-id {
-      grid-column: content-start / col-c;
-      grid-row: 1;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .footer-id p {
-      white-space: nowrap;
-    }
-
-    .footer-id img {
-      max-width: 100%;
-      flex-shrink: 1;
-      min-width: 0;
-    }
-
-    .footer-links {
-      grid-column: col-c / content-end;
-      grid-row: 1;
-      justify-self: end;
-      display: flex;
-      gap: 24px;
-      font-family: var(--sans);
-      font-size: 14px;
-    }
-
-    .footer-links a {
-      color: var(--black);
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .footer-links a:hover {
-      text-decoration: underline;
     }
 
     /* ── Reflow ─────────────────────────────────────────────────────
@@ -411,10 +240,7 @@
 
     @media (max-width: 760px) {
       :root {
-        --pad: 24px;
-        --nav-gap: 20px;
         --gap-last: 0px;      /* Resume is hidden; close the gap before it */
-        --nav-size: 14px;
       }
 
       .nav-item--resume {
@@ -447,7 +273,6 @@
       /* Kept as two separate blocks rather than one continuous band:
          the wordmark track on the left, the nav block on the right. */
       .accent--icon {
-        grid-column: content-start / col-b;
         height: 120px;
       }
 
@@ -467,25 +292,6 @@
 
       .board { column-gap: 16px; }
       .tile  { margin-bottom: 16px; }
-
-      .band--footer {
-        padding: 32px 0;
-      }
-
-      .footer-id,
-      .footer-links {
-        grid-column: content-start / content-end;
-      }
-
-      .row--footer {
-        grid-template-rows: auto auto;
-        row-gap: 24px;
-      }
-
-      .footer-links {
-        grid-row: 2;
-        justify-self: end;
-      }
     }
 
     /* Phones keep two columns — one column is a feed, not a board, and
@@ -500,10 +306,6 @@
 
       .tile-caption h2 { font-size: 13px; }
     }
-
-    @media (prefers-reduced-motion: reduce) {
-      * { transition: none !important; }
-    }
   </style>
 </head>
 <body>
@@ -516,23 +318,23 @@
       <div class="accent accent--portrait" aria-hidden="true"></div>
 
       <div class="row row--bleed-top row--hrule">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
       </div>
 
       <nav class="row row--nav row--hrule">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
         <p class="wordmark"><a href="/">[&nbsp;<span class="cjk">张舒皿</span>&nbsp;]</a></p>
-          <a class="nav-item nav-item--work" href="/">Work</a>
-          <a class="nav-item nav-item--sandbox is-active" href="/sandbox" aria-current="page">Sandbox</a>
-          <a class="nav-item nav-item--about" href="/about">About&nbsp;Me</a>
-          <a class="nav-item nav-item--resume" href="#">Resume</a>
+        <a class="nav-item nav-item--work" href="/">Work</a>
+        <a class="nav-item nav-item--sandbox" href="/sandbox" aria-current="page">Sandbox</a>
+        <a class="nav-item nav-item--about" href="/about">About&nbsp;Me</a>
+        <a class="nav-item nav-item--resume" href="#">Resume</a>
       </nav>
 
       <div class="row row--open">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
       </div>
     </header>
 
@@ -658,7 +460,7 @@
       var el = document.getElementById('clock');
       if (!el) return;
 
-      function pad(n) { return n < 10 ? '0' + n : '' + n; }
+      function pad(n) { return String(n).padStart(2, '0'); }
 
       function tick() {
         var d = new Date();

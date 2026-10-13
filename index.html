@@ -7,66 +7,30 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     :root {
-      /* Hairline colour lifted from the Figma rules (#D5DDFF). */
-      --rule: rgba(213, 221, 255, 0.8);
-
-      --sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-
       /* Figma's selection chrome, shown on hovering the name. */
       --select: #6675ff;
 
-      --black: #000;
-      --gray1: #747474;
-      --gray2: #565656;
       --placeholder: #d9d9d9;
       --apprenta: #592d90;
-
-      /* The only two spacing knobs the whole skeleton depends on.
-         Both are fluid, so every column boundary is fluid with them. */
-      --pad: clamp(16px, 6.1vw, 88px);
-      --nav-gap: clamp(10px, 2.78vw, 40px);
-      --gap-last: var(--nav-gap);
-      --nav-size: clamp(11px, 0.98vw, 14px);
-
-      --pink-strong: rgba(243, 33, 117, 0.24);
-      --pink-fade: rgba(255, 236, 244, 0.08);
-    }
-
-    html {
-      -webkit-text-size-adjust: 100%;
-    }
-
-    body {
-      background: #fff;
-      color: var(--black);
-      font-family: var(--sans);
-      font-size: 16px;
-      line-height: 1.35;
     }
 
     /* ════════════════════════════════════════════════════════════════
        THE PAGE GRID
-       One grid container for the entire document. The `auto` tracks are
-       occupied by exactly one item each — a nav label — so each of those
-       tracks measures itself against that label's rendered text. The `fr`
-       tracks swallow whatever is left over. Nothing here is a fixed px
-       column, so every boundary re-solves on every reflow.
+       The `auto` tracks are occupied by exactly one item each — a nav
+       label — so each of those tracks measures itself against that
+       label's rendered text. The `fr` tracks swallow whatever is left
+       over. Nothing here is a fixed px column, so every boundary
+       re-solves on every reflow.
        ════════════════════════════════════════════════════════════════ */
     .page {
-      display: grid;
       grid-template-columns:
         [bleed-start] var(--pad)
         [content-start col-logo] auto      /* 2  — wordmark + "…@ Solace" */
         [col-b] minmax(0, 8fr)             /* 3  */
-        [col-c] auto                       /* 4  — "Based in San Fransico" */
+        [col-c] auto                       /* 4  — "Based in San Francisco" */
         [col-d] minmax(0, 3fr)             /* 5  */
         [col-nav nav-work] auto            /* 6  — sized by "Work"     */
         [work-end] var(--nav-gap)          /* 7  */
@@ -79,61 +43,16 @@
         [bleed-end];
     }
 
-    /* Bands and rows are pure pass-throughs: `subgrid` re-projects the
-       parent's 14 tracks (and its line names) down one level, so a cell
-       nested two deep still lands on the same column line as the nav. */
-    .band,
-    .row {
-      grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: subgrid;
-    }
-
-    .row {
-      grid-template-rows: auto;
-    }
-
-    /* ── Grid lines ──
-       14 empty cells per row, one per track. The visible rules are their
-       own border-right / border-bottom, so a line can only ever be drawn
-       exactly on a column boundary — there is no overlay to drift. */
-    .row > .r {
-      grid-row: 1 / -1;
-      border-right: 1px solid var(--rule);
-      pointer-events: none;
-      /* left at z-index auto: in-flow, so the accents' z-index 1 lifts the
-         pink over them while card and footer content still paints on top */
-    }
-
-    .row > .r:nth-child(1) { grid-column: 1; }
-    .row > .r:nth-child(2) { grid-column: 2; }
-    .row > .r:nth-child(3) { grid-column: 3; }
-    .row > .r:nth-child(4) { grid-column: 4; }
-    .row > .r:nth-child(5) { grid-column: 5; }
-    .row > .r:nth-child(6) { grid-column: 6; }
-    .row > .r:nth-child(7) { grid-column: 7; }
-    .row > .r:nth-child(8) { grid-column: 8; }
-    .row > .r:nth-child(9) { grid-column: 9; }
-    .row > .r:nth-child(10) { grid-column: 10; }
-    .row > .r:nth-child(11) { grid-column: 11; }
-    .row > .r:nth-child(12) { grid-column: 12; }
-    .row > .r:nth-child(13) { grid-column: 13; }
-
-    /* Every track boundary is a real content edge now, so all of them get a
+    /* Every track boundary is a real content edge, so all of them get a
        line except the right gutter. */
     .row > .r:nth-child(13) {
       border-right: 0;
     }
 
-    .row--hrule > .r {
-      border-bottom: 1px solid var(--rule);
-    }
-
     /* ── Header band ──────────────────────────────────────────────── */
     .band--header {
-      position: relative;
       grid-template-rows:
-        [h-top] clamp(20px, 2.3vw, 33px)
+        [h-top] var(--head-top)
         [h-nav] auto
         [h-space] clamp(48px, 7.99vw, 115px)
         [h-name] auto
@@ -165,15 +84,7 @@
     .row--sub         { grid-row: h-sub / h-foot; }
     .row--bleed-foot  { grid-row: h-foot / h-end; }
 
-    /* Pink accent blocks are siblings of the rows so they can span rows,
-       but they still snap to the shared column lines. z-index 1 lifts them
-       over the hairlines; the type in the rows is lifted over them again. */
-    .accent {
-      background: linear-gradient(180deg, var(--pink-strong) 7.212%, var(--pink-fade) 100%);
-      pointer-events: none;
-      z-index: 1;
-    }
-
+    /* The type in the rows is lifted over the accents. */
     .band--header .wordmark,
     .band--header .nav-item,
     .band--header .name,
@@ -203,94 +114,6 @@
       --pink-fade: rgba(255, 236, 244, 0.06);
     }
 
-    /* ── Progressive blur ──
-       Four stacked backdrop-filter layers, each masked to start a little
-       lower than the last, so the blur ramps up toward the bottom edge
-       instead of switching on. Kept deliberately faint. */
-    .header-blur {
-      position: absolute;
-      inset-inline: 0;
-      bottom: 0;
-      height: clamp(36px, 6.7vw, 96px);
-      z-index: 3;
-      pointer-events: none;
-    }
-
-    .header-blur > span {
-      position: absolute;
-      inset: 0;
-      display: block;
-    }
-
-    .header-blur > span:nth-child(1) {
-      -webkit-backdrop-filter: blur(0.5px);
-      backdrop-filter: blur(0.5px);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
-      mask-image: linear-gradient(to bottom, transparent 0%, #000 25%);
-    }
-
-    .header-blur > span:nth-child(2) {
-      -webkit-backdrop-filter: blur(1px);
-      backdrop-filter: blur(1px);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
-      mask-image: linear-gradient(to bottom, transparent 25%, #000 50%);
-    }
-
-    .header-blur > span:nth-child(3) {
-      -webkit-backdrop-filter: blur(2px);
-      backdrop-filter: blur(2px);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
-      mask-image: linear-gradient(to bottom, transparent 50%, #000 75%);
-    }
-
-    .header-blur > span:nth-child(4) {
-      -webkit-backdrop-filter: blur(4px);
-      backdrop-filter: blur(4px);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
-      mask-image: linear-gradient(to bottom, transparent 75%, #000 100%);
-    }
-
-    /* ── Nav ── */
-    .wordmark {
-      grid-column: col-logo;
-      grid-row: 1;
-      align-self: center;
-      font-family: var(--sans);
-      font-size: clamp(13px, 1.11vw, 16px);
-      white-space: nowrap;
-      padding-right: 0;
-    }
-
-    .wordmark .cjk {
-      font-family: 'Ma Shan Zheng', cursive;
-    }
-
-    .nav-item {
-      grid-row: 1;
-      align-self: center;
-      font-size: var(--nav-size);
-      color: var(--gray2);
-      text-decoration: none;
-      white-space: nowrap;   /* keeps each auto track a single-word measure */
-      font-family: var(--sans);
-    }
-
-    .nav-item--work    { grid-column: nav-work; }
-    .nav-item--sandbox { grid-column: nav-sandbox; }
-    .nav-item--about   { grid-column: nav-about; }
-    .nav-item--resume  { grid-column: nav-resume; }
-
-    .nav-item.is-active {
-      font-family: var(--sans);
-      font-weight: 500;
-      font-style: italic;
-      color: var(--black);
-    }
-
-    .nav-item:hover {
-      color: var(--black);
-    }
-
     /* ── Name + taglines ── */
     .name {
       grid-column: content-start / col-c;
@@ -300,14 +123,14 @@
       display: flex;
       align-items: center;
       max-width: 100%;
-      font-family: 'Instrument Serif', Georgia, serif;
+      min-width: 0;
+      font-family: var(--serif);
       font-weight: 400;
       /* Tuned so the measured text always fits the tracks it spans —
          the type scales with the grid instead of overflowing it. */
       font-size: clamp(30px, 6.8vw, 98px);
       line-height: 1.3;
       white-space: nowrap;
-      min-width: 0;
       /* Declared transparent up front so hovering changes only colour —
          border-box keeps the dashed rules inside the gap's width, so
          nothing reflows when the chrome appears. */
@@ -330,6 +153,7 @@
       background: #fff;
       border: 1px solid var(--select);
       opacity: 0;
+      transform: translate(-50%, -50%);
       transition: opacity 120ms ease;
       pointer-events: none;
     }
@@ -338,10 +162,6 @@
     .name-handle:nth-of-type(2) { left: 100%; top: 0; }
     .name-handle:nth-of-type(3) { left: 0;    top: 100%; }
     .name-handle:nth-of-type(4) { left: 100%; top: 100%; }
-
-    .name-handle {
-      transform: translate(-50%, -50%);
-    }
 
     /* Pointer devices only — on touch there is no hover to leave. */
     @media (hover: hover) {
@@ -371,10 +191,36 @@
       grid-column: col-c / col-d;
       grid-row: 1;
       align-self: start;
-      font-family: var(--sans);
-      font-weight: 400;      /* matches .tagline */
       font-size: clamp(12px, 1.11vw, 16px);
       white-space: nowrap;
+      position: relative;
+    }
+
+    /* Golden Gate pops up over "Francisco" on hover, tilted and soft-edged
+       as in the Figma header. */
+    .subtagline .gg {
+      position: absolute;
+      right: -0.15em;
+      bottom: 0.7em;
+      width: 3.1em;
+      height: 3.1em;
+      filter: blur(1px);
+      opacity: 0;
+      transform: translateY(4px) rotate(14.42deg);
+      transform-origin: 50% 100%;
+      transition: opacity 160ms ease, transform 220ms cubic-bezier(.2, .8, .3, 1.2);
+      pointer-events: none;
+    }
+
+    @media (hover: hover) {
+      .subtagline:hover .gg {
+        opacity: 1;
+        transform: translateY(0) rotate(14.42deg);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .subtagline .gg { transition: opacity 160ms ease; }
     }
 
     /* ── Work band ────────────────────────────────────────────────── */
@@ -434,10 +280,8 @@
       padding: 8px 16px;
       border-radius: 3px;
       background: rgba(0, 0, 0, 0.1);
-      font-family: var(--sans);
       font-size: 12px;
       line-height: normal;
-      color: var(--black);
       white-space: nowrap;
     }
 
@@ -459,7 +303,6 @@
     }
 
     .card-head h2 {
-      font-family: var(--sans);
       font-weight: 500;
       font-size: clamp(18px, 1.67vw, 24px);
       line-height: normal;
@@ -467,63 +310,13 @@
     }
 
     .card-date {
-      font-family: var(--sans);
-      font-weight: 400;
       font-size: 14px;
       color: var(--gray1);
       white-space: nowrap;
     }
 
     .card-blurb {
-      font-size: 16px;
       color: var(--gray1);
-    }
-
-    /* ── Footer ───────────────────────────────────────────────────── */
-    .band--footer {
-      padding: 48px 0;
-      border-top: 1px solid var(--rule);
-      background:
-        linear-gradient(180deg, #ffffff 0%, #eef7fd 100%);
-    }
-
-    .footer-id {
-      grid-column: content-start / col-c;
-      grid-row: 1;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .footer-id p {
-      white-space: nowrap;
-    }
-
-    .footer-id img {
-      max-width: 100%;
-      flex-shrink: 1;
-      min-width: 0;
-    }
-
-    .footer-links {
-      grid-column: col-c / content-end;
-      grid-row: 1;
-      justify-self: end;
-      display: flex;
-      gap: 24px;
-      font-family: var(--sans);
-      font-size: 14px;
-    }
-
-    .footer-links a {
-      color: var(--black);
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .footer-links a:hover {
-      text-decoration: underline;
     }
 
     /* ── Reflow ───────────────────────────────────────────────────────
@@ -537,16 +330,13 @@
       }
     }
 
-    /* ── Mobile (Figma iPhone 14/15 Pro Max, 430px) ──────────────────
+    /* ── Mobile ──────────────────────────────────────────────────────
        Same 13 tracks, same nav-derived lines — but the design shows only
        two of them (content-start and the "About Me" edge), drops Resume
        from the nav, and re-hangs the pink blocks off that one line. */
     @media (max-width: 760px) {
       :root {
-        --pad: 24px;
-        --nav-gap: 20px;
         --gap-last: 0px;      /* Resume is hidden; close the gap before it */
-        --nav-size: 14px;
       }
 
       .nav-item--resume {
@@ -616,17 +406,15 @@
       .tagline,
       .subtagline {
         grid-column: content-start / nav-about;
-        white-space: nowrap;
+        line-height: normal;
       }
 
       .tagline {
         font-size: 16px;
-        line-height: normal;
         justify-self: start;
       }
 
       .subtagline {
-        line-height: normal;
         justify-self: end;
       }
 
@@ -650,25 +438,6 @@
       .badge {
         top: 21px;
       }
-
-      .band--footer {
-        padding: 32px 0;
-      }
-
-      .footer-id,
-      .footer-links {
-        grid-column: content-start / content-end;
-      }
-
-      .row--footer {
-        grid-template-rows: auto auto;
-        row-gap: 24px;
-      }
-
-      .footer-links {
-        grid-row: 2;
-        justify-self: end;
-      }
     }
 
     @media (max-width: 460px) {
@@ -685,46 +454,46 @@
 
     <!-- ══ Header ══════════════════════════════════════════════════ -->
     <header class="band band--header">
-      <div class="accent accent--portrait"></div>
-      <div class="accent accent--profile"></div>
-      <div class="accent accent--social"></div>
+      <div class="accent accent--portrait" aria-hidden="true"></div>
+      <div class="accent accent--profile" aria-hidden="true"></div>
+      <div class="accent accent--social" aria-hidden="true"></div>
 
       <div class="row row--bleed-top row--hrule">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
       </div>
 
       <nav class="row row--nav row--hrule">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-        <p class="wordmark">[&nbsp;<span class="cjk">张舒皿</span>&nbsp;]</p>
-          <a class="nav-item nav-item--work is-active" href="/">Work</a>
-          <a class="nav-item nav-item--sandbox" href="/sandbox">Sandbox</a>
-          <a class="nav-item nav-item--about" href="/about">About&nbsp;Me</a>
-          <a class="nav-item nav-item--resume" href="#">Resume</a>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <p class="wordmark"><a href="/">[&nbsp;<span class="cjk">张舒皿</span>&nbsp;]</a></p>
+        <a class="nav-item nav-item--work" href="/" aria-current="page">Work</a>
+        <a class="nav-item nav-item--sandbox" href="/sandbox">Sandbox</a>
+        <a class="nav-item nav-item--about" href="/about">About&nbsp;Me</a>
+        <a class="nav-item nav-item--resume" href="#">Resume</a>
       </nav>
 
       <div class="row row--space row--hrule">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
       </div>
 
       <div class="row row--name row--hrule">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
         <h1 class="name" aria-label="Katherine Zhang">Katherine<span class="gap" aria-hidden="true"></span>Zhang<i class="name-handle" aria-hidden="true"></i><i class="name-handle" aria-hidden="true"></i><i class="name-handle" aria-hidden="true"></i><i class="name-handle" aria-hidden="true"></i></h1>
       </div>
 
       <div class="row row--tag row--hrule">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
         <p class="tagline">Product designer @ Solace</p>
       </div>
 
       <div class="row row--sub row--hrule">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-        <p class="subtagline">Based in San Fransico</p>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <p class="subtagline">Based in San Francisco<svg class="gg" viewBox="0 0 49.5416 49.541" fill="none" aria-hidden="true"><path d="M48.5095 41.284H47.4774V33.0747L48.5528 33.0272C49.1226 33.0024 49.5643 32.5214 49.5395 31.9517C49.5147 31.382 49.0585 30.9629 48.4661 30.9629L47.4774 31.0062V13.4173C47.4774 12.8476 47.0149 12.3852 46.4452 12.3852C45.8755 12.3852 45.4131 12.8476 45.4131 13.4173V14.4495H41.2847V13.4173C41.2847 12.8476 40.8223 12.3852 40.2525 12.3852C39.6828 12.3852 39.2204 12.8476 39.2204 13.4173V16.5136C37.5752 19.8329 35.6431 20.5244 32.4746 20.6421C31.9049 20.6648 31.4611 21.1457 31.4818 21.7134C31.5004 22.2687 31.9586 22.7062 32.5118 22.7062H32.551C35.2551 22.6051 37.4307 22.056 39.2204 20.1611V23.214C37.2801 24.4587 35.2613 25.0285 33.2074 24.8323C26.9487 24.1945 20.5621 16.6086 16.5142 5.02636V1.03213C16.5142 0.462413 16.0518 0 15.482 0C14.9123 0 14.4499 0.462413 14.4499 1.03213V4.12843L8.25731 4.12843V1.03213C8.25731 0.462413 7.7949 0 7.22518 0C6.65546 0 6.19343 0.462413 6.19343 1.03213V5.12544C6.19343 5.12544 6.19343 5.12544 6.19343 5.12747L6.19343 32.8002L0.989617 33.0273C0.419898 33.052 -0.0218087 33.5351 0.000832949 34.1027C0.0276353 34.658 0.483856 35.0915 1.03297 35.0915H1.07835L6.19343 34.8686L6.19343 47.4767H5.1613C4.59158 47.4767 4.12917 47.9391 4.12917 48.5089C4.12917 49.0786 4.59158 49.541 5.1613 49.541H17.5465C18.1162 49.541 18.5786 49.0786 18.5786 48.5089C18.5786 47.9391 18.1162 47.4767 17.5465 47.4767H16.5144V34.4206L39.2206 33.4339V41.2841H38.1885C37.6187 41.2841 37.1563 41.7465 37.1563 42.3163C37.1563 42.886 37.6187 43.3484 38.1885 43.3484H48.5095C49.0792 43.3484 49.5416 42.886 49.5416 42.3163C49.5416 41.7464 49.0792 41.284 48.5095 41.284ZM14.4502 47.4766H8.2576V43.3482H14.4502V47.4766ZM14.4502 41.284H8.2576V34.7798L14.4502 34.5115V41.284ZM14.4502 32.441L8.2576 32.7093L8.2576 10.1848C9.88829 13.5989 11.9442 16.9863 14.4502 19.5666L14.4502 32.441ZM14.4502 16.4765C12.0805 13.4896 10.1815 9.70796 8.74478 6.1926L14.4502 6.1926V16.4765ZM39.2206 31.3655L16.5144 32.3522V21.414C17.9407 22.5039 19.4868 23.3296 21.165 23.7507C21.2497 23.7713 21.3322 23.7816 21.4169 23.7816C21.8793 23.7816 22.3004 23.4678 22.418 22.9972C22.5584 22.446 22.2219 21.8845 21.6687 21.7463C19.782 21.2736 18.0667 20.1878 16.5145 18.7285V10.6079C20.8513 20.2766 26.8148 26.2587 32.9992 26.8862C33.3439 26.9192 33.701 26.9399 34.0746 26.9399C35.596 26.9399 37.3526 26.6035 39.2207 25.6395L39.2206 31.3655ZM41.2848 16.8191C41.2848 16.8171 41.2848 16.8129 41.2848 16.8109V16.5136H45.31C44.0343 18.5964 42.6885 20.3117 41.2848 21.6205V16.8191ZM45.4132 41.284H41.2848V39.2199H45.4132V41.284ZM45.4132 37.1556H41.2848V33.343L45.4132 33.1634V37.1556ZM45.4132 31.0952L41.2848 31.2748V24.3329C42.6389 23.3111 44.0281 21.9219 45.4132 20.0662V31.0952Z" fill="url(#gg-fade)"/><defs><linearGradient id="gg-fade" x1="24.7708" y1="0" x2="24.7708" y2="49.541" gradientUnits="userSpaceOnUse"><stop offset="0.465" stop-color="#C60000"/><stop offset="1" stop-color="#C60000" stop-opacity="0.2"/></linearGradient></defs></svg></p>
       </div>
 
       <div class="header-blur" aria-hidden="true">
@@ -732,8 +501,8 @@
       </div>
 
       <div class="row row--bleed-foot">
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
-          <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
+        <i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i>
       </div>
     </header>
 
@@ -742,7 +511,7 @@
       <div class="row row--cards">
         <div class="cards">
           <article class="card">
-            <div class="card-media ">
+            <div class="card-media">
               <span class="badge">Internship &#127795;</span>
             </div>
             <div class="card-details">
@@ -754,7 +523,7 @@
             </div>
           </article>
           <article class="card">
-            <div class="card-media ">
+            <div class="card-media">
               <span class="badge">Product Design &#127795;</span>
             </div>
             <div class="card-details">
@@ -770,7 +539,7 @@
       <div class="row row--cards">
         <div class="cards">
           <article class="card">
-            <div class="card-media ">
+            <div class="card-media">
               <span class="badge">Product Design &#127795;</span>
             </div>
             <div class="card-details">
