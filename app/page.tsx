@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useLayoutEffect, useRef, useState } from "react";
 
+import BasedIn from "./components/BasedIn";
 import NameTitle from "./components/NameTitle";
 import ProjectCard from "./components/ProjectCard";
 import VideoPlaceholder from "./components/VideoPlaceholder";
@@ -152,7 +153,7 @@ function MobileHero() {
         </p>
 
         <p className="pb-[41px] text-right font-sans text-[12px] leading-[1.35] text-black">
-          Based in San Fransico
+          <BasedIn />
         </p>
       </div>
 
@@ -276,7 +277,7 @@ function Hero() {
           <div className={styles.rule} style={{ right: "var(--spacing-page)" }} />
 
           {/* Right of "Zhang", and the far side of the column that holds
-              "Based in San Fransico" — both are real column edges of the
+              "Based in San Francisco" — both are real column edges of the
               content grid below, measured rather than guessed. */}
           {m && (
             <>
@@ -340,7 +341,7 @@ function Hero() {
 
       {/* Content. Three columns: the name sizes the first, the
           subtagline sizes the second, and the third takes the slack —
-          so the rule after "Zhang" and the one after "San Fransico" are
+          so the rule after "Zhang" and the one after "San Francisco" are
           genuine column edges, and the subtagline sits in the section
           those edges create, directly right of the name. */}
       <div
@@ -366,7 +367,7 @@ function Hero() {
           ref={subtaglineRef}
           className="col-start-2 row-start-3 whitespace-nowrap font-sans text-[clamp(12px,1.11vw,16px)] leading-[1.35] text-black"
         >
-          Based in San Fransico
+          <BasedIn />
         </p>
 
         <div className="col-span-full row-start-4 h-[clamp(60px,9.65vw,139px)]" />
