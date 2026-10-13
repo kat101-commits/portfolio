@@ -25,8 +25,17 @@ const BODY_H = 1463;
 /* Each card is the frame's tilted polaroid exported at 2x with its tilt
    and drop shadow baked in, so `w`/`h` include the shadow's spill and
    x/y are the frame's card position less that spill. Listed bottom to
-   top, matching the frame's layer order where the cards overlap. */
-type Card = { src: string; alt: string; x: number; y: number; w: number; h: number };
+   top, matching the frame's layer order where the cards overlap. Cards
+   with an `href` open that project's site. */
+type Card = {
+  src: string;
+  alt: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  href?: string;
+};
 
 const CARDS: Card[] = [
   {
@@ -44,6 +53,7 @@ const CARDS: Card[] = [
     y: 81.9,
     w: 532,
     h: 548.5,
+    href: "https://kat101-commits.github.io/lamp-shade-landing/index.html?lit=1",
   },
   {
     src: "/images/playground/sandbox/hoodie.png",
@@ -68,6 +78,7 @@ const CARDS: Card[] = [
     y: 773.5,
     w: 387,
     h: 398.5,
+    href: "https://kat101-commits.github.io/suzhou-book/",
   },
 ];
 
@@ -219,14 +230,11 @@ function Collage() {
         style={{ aspectRatio: `${BODY_W} / ${BODY_H}` }}
       >
         {CARDS.map((card) => (
-          <Image
+          <CardFrame
             key={card.src}
-            src={card.src}
-            alt={card.alt}
-            width={card.w}
-            height={card.h}
+            card={card}
             sizes={`(min-width: 1440px) ${card.w}px, ${((card.w / BODY_W) * 100).toFixed(1)}vw`}
-            className="absolute h-auto max-w-none"
+            className="absolute"
             style={{
               left: `${(card.x / BODY_W) * 100}%`,
               top: `${(card.y / BODY_H) * 100}%`,
@@ -239,18 +247,60 @@ function Collage() {
       {/* Too narrow to scatter: stack them, keeping each card's tilt. */}
       <div className="flex flex-col items-center gap-4 p-4 md:hidden">
         {CARDS.map((card) => (
-          <Image
+          <CardFrame
             key={card.src}
-            src={card.src}
-            alt={card.alt}
-            width={card.w}
-            height={card.h}
+            card={card}
             sizes="90vw"
-            className="h-auto w-full"
+            className="w-full"
             style={{ maxWidth: card.w }}
           />
         ))}
       </div>
     </>
+  );
+}
+
+/* A linked card opens its site in a new tab, like the nav's external
+   links, with the same press-in hover as the work cards. */
+function CardFrame({
+  card,
+  sizes,
+  className,
+  style,
+}: {
+  card: Card;
+  sizes: string;
+  className: string;
+  style: React.CSSProperties;
+}) {
+  const image = (
+    <Image
+      src={card.src}
+      alt={card.alt}
+      width={card.w}
+      height={card.h}
+      sizes={sizes}
+      className="block h-auto w-full"
+    />
+  );
+
+  if (!card.href) {
+    return (
+      <div className={className} style={style}>
+        {image}
+      </div>
+    );
+  }
+
+  return (
+    <a
+      href={card.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`${className} block transform-gpu transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[0.975] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black motion-reduce:transition-none`}
+      style={style}
+    >
+      {image}
+    </a>
   );
 }
